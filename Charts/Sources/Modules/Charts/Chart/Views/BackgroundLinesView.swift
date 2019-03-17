@@ -55,11 +55,11 @@ class BackgroundLinesView: UIView {
   }
   
   private func setup() {
-    for _ in 0..<Constants.lineCount {
+    for index in 0..<Constants.lineCount {
       let shapeLayer = CAShapeLayer()
       shapeLayer.fillColor = UIColor.clear.cgColor
       shapeLayer.strokeColor = UIColor.lightGray.withAlphaComponent(0.5).cgColor
-      shapeLayer.lineWidth = 0.2
+      shapeLayer.lineWidth = index == 0 ? 0.5 : 0.2
       shapeLayer.frame = bounds
       shapeLayers.append(shapeLayer)
       layer.addSublayer(shapeLayer)

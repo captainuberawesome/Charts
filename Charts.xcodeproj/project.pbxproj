@@ -26,6 +26,7 @@
 		FDA2AA1C223D3DC600EE69B5 /* BackgroundLinesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA15223D3DC600EE69B5 /* BackgroundLinesView.swift */; };
 		FDA2AA1E223D3DDF00EE69B5 /* ChartsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA1D223D3DDF00EE69B5 /* ChartsCoordinator.swift */; };
 		FDA2AA20223D4F1200EE69B5 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA1F223D4F1200EE69B5 /* NavigationController.swift */; };
+		FDC8C0C9223E05630011EA51 /* XAxisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC8C0C8223E05630011EA51 /* XAxisView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 		FDA2AA15223D3DC600EE69B5 /* BackgroundLinesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundLinesView.swift; sourceTree = "<group>"; };
 		FDA2AA1D223D3DDF00EE69B5 /* ChartsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartsCoordinator.swift; sourceTree = "<group>"; };
 		FDA2AA1F223D4F1200EE69B5 /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
+		FDC8C0C8223E05630011EA51 /* XAxisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XAxisView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,6 +172,7 @@
 			children = (
 				FDA2AA10223D3DC600EE69B5 /* LineView.swift */,
 				FDA2AA11223D3DC600EE69B5 /* YAxisView.swift */,
+				FDC8C0C8223E05630011EA51 /* XAxisView.swift */,
 				FDA2AA12223D3DC600EE69B5 /* ChartView.swift */,
 				FDA2AA13223D3DC600EE69B5 /* DraggableView.swift */,
 				FDA2AA14223D3DC600EE69B5 /* ChartMiniatureView.swift */,
@@ -254,6 +257,7 @@
 				FDA2AA1B223D3DC600EE69B5 /* ChartMiniatureView.swift in Sources */,
 				FDA2AA00223CB61500EE69B5 /* UIView+RoundCorners.swift in Sources */,
 				FDA2AA18223D3DC600EE69B5 /* YAxisView.swift in Sources */,
+				FDC8C0C9223E05630011EA51 /* XAxisView.swift in Sources */,
 				FDA2AA01223CB61500EE69B5 /* Chart.swift in Sources */,
 				FDA2AA06223CBBD600EE69B5 /* XAxis.swift in Sources */,
 				FDA2AA1A223D3DC600EE69B5 /* DraggableView.swift in Sources */,

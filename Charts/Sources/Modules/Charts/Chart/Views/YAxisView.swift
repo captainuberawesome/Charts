@@ -75,17 +75,16 @@ class YAxisView: UIView {
     
     for index in 0..<Constants.labelCount {
       let label = labels[index]
+      
+      label.text = "\(currentMinValue + currentStepValue * index)"
+      label.sizeToFit()
       let origin = CGPoint(x: 0, y: bounds.height - CGFloat(index) * CGFloat(currentStepPercentage) * bounds.height)
       let newLabelOrigin = CGPoint(x: origin.x, y: origin.y - label.frame.size.height - 3)
-      let newLabelText = "\(currentMinValue + currentStepValue * index)"
-
+      
       if animateIfNeeded, label.frame.origin.y != newLabelOrigin.y {
         animateLabelPositionChange()
         break
       }
-      
-      label.text = newLabelText
-      label.sizeToFit()
       label.frame.origin = newLabelOrigin
     }
     

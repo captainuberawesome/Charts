@@ -87,7 +87,7 @@ class YAxis {
     minValueAcrossY = Int(floor(Double(yMin)) / Double(step)) * step
     maxValueAcrossY = Int(ceil(ceil(Double(yMax)) / Double(step))) * step
     
-    if maxValueAcrossY == step * (Constants.numberOfSteps - 1) || yMax == maxValueAcrossY {
+    if maxValueAcrossY == minValueAcrossY + step * (Constants.numberOfSteps - 1) || yMax == maxValueAcrossY {
       maxValueAcrossY += Int(ceil(0.75 * Double(step)))
     }
 
