@@ -20,6 +20,7 @@ class ChartMiniatureView: UIView {
   
   override init(frame: CGRect) {
     super.init(frame: frame)
+    clipsToBounds = true
     setup()
   }
   
@@ -77,5 +78,20 @@ class ChartMiniatureView: UIView {
     }
     configuredForBounds = bounds
     bringSubviewToFront(draggableView)
+  }
+  
+  func animate(to chart: Chart) {
+    let xAxis = chart.xAxis
+    for (index, yAxis) in chart.yAxes.enumerated() {
+      var points: [CGPoint] = []
+      for (x, y) in zip(xAxis.allValues, yAxis.allValuesNormalized) {
+        let yCoordinate = Double(bounds.height) - y.percentageValue * Double(bounds.height)
+        let point = CGPoint(x: x.percentageValue * Double(bounds.width), y: yCoordinate)
+        points.append(point)
+      }
+      let lineView = lineViews[index]
+      lineView.frame = bounds
+      lineView.animate(to: points, isEnabled: yAxis.isEnabled)
+    }
   }
 }

@@ -69,7 +69,16 @@ class Chart {
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: work)
       normalizationWorkItem = work
     } else {
-      DispatchQueue.main.async(execute: work)
+      let yValuesRaw = toggledYAxes.flatMap({ $0.allValues })
+      let yValues = yValuesRaw.compactMap({ $0.actualValue })
+      let (minValueAcrossY, maxValueAcrossY, _) = YAxis.calculateSpan(yMin: yValues.min() ?? 0, yMax: yValues.max() ?? 0)
+      
+      for (index, yAxis) in yAxes.enumerated() {
+        yAxis.updateSegmentation(unnormalizedValues: valuesArray[index], minValue: minValue, maxValue: maxValue)
+        yAxis.updateNormalizedValues(minValue: minValueAcrossY, maxValue: maxValueAcrossY)
+      }
+
+      onSegmentationNormalizedUpdated?()
     }
   }
 }

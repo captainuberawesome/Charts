@@ -101,7 +101,7 @@ class LineView: UIView {
   
   private func updatePoints(xAxis: XAxis, yAxis: YAxis) {
     var points: [CGPoint] = []
-    for (x, y) in zip(xAxis.allValues, yAxis.allValuesNormalized) {
+    for (x, y) in zip(xAxis.allValues, yAxis.allValuesNormalizedToSegment) {
       let yCoordinate = Double(contentView.bounds.height) - y.percentageValue * Double(contentView.bounds.height)
       let point = CGPoint(x: x.percentageValue * Double(contentView.bounds.width),
                           y: yCoordinate)

@@ -21,6 +21,7 @@ class SimpleLineView: UIView {
   private var startTime: CFAbsoluteTime?
   private var oldPoints: [CGPoint]
   private var isAnimating = false
+  private var isVisible = true
   private var animationCompletionClosure: (() -> Void)?
   
   init(frame: CGRect, points: [CGPoint], color: UIColor, lineWidth: CGFloat = 1.0) {
@@ -48,10 +49,10 @@ class SimpleLineView: UIView {
     fatalError("init(coder:) has not been implemented")
   }
   
-  func animate(to points: [CGPoint]) {
+  func animate(to points: [CGPoint], isEnabled: Bool) {
     guard !isAnimating else {
       animationCompletionClosure = { [weak self, points] in
-        self?.animate(to: points)
+        self?.animate(to: points, isEnabled: isEnabled)
       }
       return
     }
@@ -61,6 +62,18 @@ class SimpleLineView: UIView {
     startTime = CFAbsoluteTimeGetCurrent()
     displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
     displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
+    
+    let animationClosure: ((_ hide: Bool) -> Void) = { hide in
+      UIView.animate(withDuration: 0.2, animations: {
+        self.alpha = hide ? 0.0 : 1.0
+      })
+    }
+    if !isEnabled, isVisible {
+      animationClosure(true)
+    } else if isEnabled, !isVisible {
+      animationClosure(false)
+    }
+    isVisible = isEnabled
   }
   
   private func path(points: [CGPoint]) -> UIBezierPath {

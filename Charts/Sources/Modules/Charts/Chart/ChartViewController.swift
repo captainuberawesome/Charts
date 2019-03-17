@@ -138,6 +138,7 @@ class ChartViewController: UIViewController {
   
   private func handleYAxisToggled() {
     chart.updateSegmentation(shouldWait: false)
+    chartMiniatureView.animate(to: chart)
   }
 }
 

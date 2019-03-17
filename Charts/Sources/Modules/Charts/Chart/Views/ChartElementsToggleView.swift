@@ -32,9 +32,8 @@ class ChartElementsToggleView: UIView {
     for (index, yAxis) in yAxes.enumerated() {
       let chartElementView = createChartElementView(color: UIColor(hexString:  yAxis.colorHex), name: yAxis.name, selected: true)
       stackView.addArrangedSubview(chartElementView)
-      chartElementView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16).isActive = true
-      chartElementView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16).isActive = true
-      chartElementView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+      chartElementView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+      chartElementView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
       
       chartElementView.onTap = { [weak self, yAxis, unowned chartElementView] in
         guard let self = self else { return }
@@ -51,7 +50,6 @@ class ChartElementsToggleView: UIView {
         stackView.addArrangedSubview(separator)
         separator.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         separator.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-        separator.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
       }
     }
   }
@@ -61,7 +59,7 @@ class ChartElementsToggleView: UIView {
     stackView.translatesAutoresizingMaskIntoConstraints = false
     stackView.topAnchor.constraint(equalTo: topAnchor).isActive = true
     stackView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-    stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 50).isActive = true
+    stackView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
     stackView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
     
     stackView.axis = .vertical
@@ -128,7 +126,7 @@ private class ChartElementView: UIView {
     colorView.translatesAutoresizingMaskIntoConstraints = false
     colorView.heightAnchor.constraint(equalToConstant: 12).isActive = true
     colorView.widthAnchor.constraint(equalToConstant: 12).isActive = true
-    colorView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+    colorView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16).isActive = true
     colorView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
     
     addSubview(titleLabel)
@@ -140,7 +138,7 @@ private class ChartElementView: UIView {
     
     addSubview(checkMarkIconImageView)
     checkMarkIconImageView.translatesAutoresizingMaskIntoConstraints = false
-    checkMarkIconImageView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+    checkMarkIconImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16).isActive = true
     checkMarkIconImageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
     checkMarkIconImageView.heightAnchor.constraint(equalToConstant: 10).isActive = true
     checkMarkIconImageView.widthAnchor.constraint(equalToConstant: 14).isActive = true

@@ -24,6 +24,7 @@ class YAxis {
   
   private (set) var allValues: [YValue]
   private (set) var allValuesNormalized: [YValue]
+  private (set) var allValuesNormalizedToSegment: [YValue]
   private (set) var minValueAcrossYSegmented: Int
   private (set) var maxValueAcrossYSegmented: Int
   private (set) var step: YValue
@@ -45,6 +46,7 @@ class YAxis {
       YValue(percentageValue: Double($0 - minValueAcrossY) / Double(maxValueAcrossY - minValueAcrossY),
              actualValue: $0)
     }
+    allValuesNormalizedToSegment = allValues
     allValuesNormalized = allValues
     maxValueAcrossYSegmented = maxValueAcrossY
     minValueAcrossYSegmented = minValueAcrossY
@@ -63,8 +65,14 @@ class YAxis {
     minValueAcrossYSegmented = minValueAcrossY
     self.step = YValue(percentageValue: Double(step) / Double(maxValueAcrossY - minValueAcrossY),
                        actualValue: step)
-    allValuesNormalized = rawValues.map {
+    allValuesNormalizedToSegment = rawValues.map {
       YValue(percentageValue: Double($0 - minValueAcrossY) / Double(maxValueAcrossY - minValueAcrossY), actualValue: $0)
+    }
+  }
+  
+  func updateNormalizedValues(minValue: Int, maxValue: Int) {
+    allValuesNormalized = rawValues.map {
+      YValue(percentageValue: Double($0 - minValue) / Double(maxValue - minValue), actualValue: $0)
     }
   }
   

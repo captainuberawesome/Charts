@@ -43,7 +43,7 @@ class ChartView: UIView {
     let xAxis = chart.xAxis
     let addLineViews = lineViews.isEmpty
     
-    for (index, yAxis) in chart.toggledYAxes.enumerated() {
+    for (index, yAxis) in chart.yAxes.enumerated() {
       if addLineViews {
         let lineView = LineView(frame: linesContainerView.bounds, color: UIColor.init(hexString: yAxis.colorHex), lineWidth: 2.0)
         lineViews.append(lineView)
