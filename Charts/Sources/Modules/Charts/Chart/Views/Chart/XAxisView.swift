@@ -100,6 +100,16 @@ class XAxisView: UIView {
     configuredForBounds = bounds
   }
   
+  func xValue(for position: CGPoint) -> XAxisTapData? {
+    let xPosition = contentView.convert(position, from: self).x
+    if let (value, index) = xAxis?.nextValueAndIndex(for: Double(xPosition / contentView.bounds.width)) {
+      let newPositionX = contentView.bounds.width * CGFloat(value.percentageValue)
+      let newPosition = contentView.convert(CGPoint(x: newPositionX, y: position.y), to: self)
+      return XAxisTapData(value: value.actualValue, index: index, location: newPosition)
+    }
+    return nil
+  }
+  
   private func createLabel() -> UILabel {
     let label = UILabel()
     addSubview(label)

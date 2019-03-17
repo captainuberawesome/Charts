@@ -8,7 +8,19 @@
 
 import UIKit
 
+struct XAxisTapData {
+  let value: TimeInterval
+  let index: Int
+  let location: CGPoint
+}
+
+struct YAxisTapData {
+  let value: YValue
+  let location: CGPoint
+}
+
 class ChartView: UIView {
+  private let chartSelectionBubbleView = ChartSelectionBubbleView()
   private let linesContainerView = UIView()
   private var lineViews: [LineView] = []
   private let yAxisView = YAxisView()
@@ -16,12 +28,13 @@ class ChartView: UIView {
   private let backgroundLinesView = BackgroundLinesView()
   private var configuredForBounds: CGRect = .zero
   private var animationStartedDate: Date?
-  
-  var onNeedsReconfiguring: (() -> Void)?
+  private var chart: Chart?
   
   override init(frame: CGRect) {
     super.init(frame: frame)
     setup()
+    yAxisView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(_:))))
+    yAxisView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:))))
   }
   
   required init?(coder aDecoder: NSCoder) {
@@ -30,12 +43,14 @@ class ChartView: UIView {
   
   override func layoutSubviews() {
     super.layoutSubviews()
-    if bounds != configuredForBounds {
-      onNeedsReconfiguring?()
+    if bounds != configuredForBounds, let chart = chart {
+      configure(chart: chart)
     }
   }
   
   func configure(chart: Chart) {
+    self.chart = chart
+    
     guard bounds.width > 0, bounds.height > 0 else {
       return
     }
@@ -115,5 +130,37 @@ class ChartView: UIView {
     xAxisView.trailingAnchor.constraint(equalTo: backgroundLinesView.trailingAnchor).isActive = true
     xAxisView.topAnchor.constraint(equalTo: backgroundLinesView.bottomAnchor).isActive = true
     xAxisView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+  }
+  
+  @objc private func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
+    switch gestureRecognizer.state {
+    case .began, .changed:
+      let position = gestureRecognizer.location(in: self)
+      handleTapAtLocation(location: position)
+    default:
+      break
+    }
+  }
+  
+  @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
+    let position = gestureRecognizer.location(in: self)
+    handleTapAtLocation(location: position)
+  }
+  
+  private func handleTapAtLocation(location: CGPoint) {
+    guard let xAxisTapData = xAxisView.xValue(for: convert(location, to: xAxisView)) else { return }
+    var yValues: [YAxisTapData] = []
+    for yAxis in chart?.toggledYAxes ?? [] {
+      let yValue = yAxis.allValuesNormalizedToSegment[xAxisTapData.index]
+      let location = yAxisView.location(forValue: yValue, xCoordinate: xAxisTapData.location.x)
+      yValues.append(YAxisTapData(value: yValue, location: location))
+    }
+    addSubview(chartSelectionBubbleView)
+    chartSelectionBubbleView.translatesAutoresizingMaskIntoConstraints = false
+    chartSelectionBubbleView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+    chartSelectionBubbleView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+    chartSelectionBubbleView.setNeedsLayout()
+    chartSelectionBubbleView.layoutIfNeeded()
+    chartSelectionBubbleView.center = CGPoint(x: xAxisTapData.location.x, y: center.y)
   }
 }

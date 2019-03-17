@@ -15,6 +15,7 @@ private struct Constants {
 struct YValue {
   var percentageValue: Double
   var actualValue: Int
+  var colorHex: String
 }
 
 class YAxis {
@@ -40,11 +41,12 @@ class YAxis {
     self.maxValueAcrossY = maxValueAcrossY
     self.minValueAcrossY = minValueAcrossY
     self.step = YValue(percentageValue: Double(step) / Double(maxValueAcrossY - minValueAcrossY),
-                       actualValue: step)
+                       actualValue: step,
+                       colorHex: colorHex)
     self.rawValues = values
     allValues = values.map {
       YValue(percentageValue: Double($0 - minValueAcrossY) / Double(maxValueAcrossY - minValueAcrossY),
-             actualValue: $0)
+             actualValue: $0, colorHex: colorHex)
     }
     allValuesNormalizedToSegment = allValues
     allValuesNormalized = allValues
@@ -64,15 +66,16 @@ class YAxis {
     maxValueAcrossYSegmented = maxValueAcrossY
     minValueAcrossYSegmented = minValueAcrossY
     self.step = YValue(percentageValue: Double(step) / Double(maxValueAcrossY - minValueAcrossY),
-                       actualValue: step)
+                       actualValue: step, colorHex: colorHex)
     allValuesNormalizedToSegment = rawValues.map {
-      YValue(percentageValue: Double($0 - minValueAcrossY) / Double(maxValueAcrossY - minValueAcrossY), actualValue: $0)
+      YValue(percentageValue: Double($0 - minValueAcrossY) / Double(maxValueAcrossY - minValueAcrossY), actualValue: $0,
+             colorHex: colorHex)
     }
   }
   
   func updateNormalizedValues(minValue: Int, maxValue: Int) {
     allValuesNormalized = rawValues.map {
-      YValue(percentageValue: Double($0 - minValue) / Double(maxValue - minValue), actualValue: $0)
+      YValue(percentageValue: Double($0 - minValue) / Double(maxValue - minValue), actualValue: $0, colorHex: colorHex)
     }
   }
   

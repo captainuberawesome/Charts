@@ -38,6 +38,7 @@ class ChartViewController: UIViewController {
     setupChartMiniatureView()
     setupChartElemetsToggleView()
     chartElemetsToggleView.configure(yAxes: chart.yAxes)
+    chartView.configure(chart: chart)
   }
   
   private func setupChartsBackgroundView() {
@@ -74,11 +75,6 @@ class ChartViewController: UIViewController {
     chartView.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor, constant: 16).isActive = true
     chartView.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor, constant: -16).isActive = true
     chartView.heightAnchor.constraint(equalToConstant: 310).isActive = true
-    
-    chartView.onNeedsReconfiguring = { [weak self] in
-      guard let self = self else { return }
-      self.chartView.configure(chart: self.chart)
-    }
   }
   
   private func setupChartMiniatureView() {

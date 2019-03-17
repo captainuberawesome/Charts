@@ -47,6 +47,9 @@ class BackgroundLinesView: UIView {
       }
       return
     }
+    guard fabs(stepPercentage - yAxis.step.percentageValue) > 1e-4 else {
+      return
+    }
     isAnimating = true
     stepPercentage = yAxis.step.percentageValue
     startTime = CFAbsoluteTimeGetCurrent()

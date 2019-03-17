@@ -69,6 +69,15 @@ class XAxis {
     onSegmentationChanged?()
   }
   
+  func nextValueAndIndex(for percentageValue: Double) -> (value: XValue, index: Int)? {
+    if let value = allValues.enumerated().first(where: {
+      return $0.element.percentageValue >= percentageValue
+    }) {
+      return (value: value.element, index: value.offset)
+    }
+    return nil
+  }
+  
   func interpolatedValue(for percentageValue: Double) -> TimeInterval? {
     guard let firstValue = allValues.first?.actualValue,
       let lastValue = allValues.last?.actualValue else { return nil }

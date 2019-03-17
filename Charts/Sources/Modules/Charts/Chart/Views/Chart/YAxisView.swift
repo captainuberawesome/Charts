@@ -91,6 +91,11 @@ class YAxisView: UIView {
     configuredForBounds = bounds
   }
   
+  func location(forValue yValue: YValue, xCoordinate: CGFloat) -> CGPoint {
+    let yCoordinate = bounds.height - bounds.height * CGFloat(yValue.percentageValue)
+    return CGPoint(x: xCoordinate, y: yCoordinate)
+  }
+  
   private func animateLabelPositionChange() {
     guard !isAnimating else {
       animationCompletionClosure = { [weak self] in

@@ -10,8 +10,16 @@
 		FD6B35C8223E2CA500290F7C /* chart_data.json in Resources */ = {isa = PBXBuildFile; fileRef = FD6B35C2223E2CA400290F7C /* chart_data.json */; };
 		FD6B35C9223E2CA500290F7C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FD6B35C3223E2CA400290F7C /* Assets.xcassets */; };
 		FD6B35CA223E2CA500290F7C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FD6B35C4223E2CA400290F7C /* LaunchScreen.storyboard */; };
-		FD6B35CD223E5AB500290F7C /* ChartElementsToggleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35CC223E5AB500290F7C /* ChartElementsToggleView.swift */; };
-		FD6B35CF223E791700290F7C /* SimpleLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35CE223E791700290F7C /* SimpleLineView.swift */; };
+		FD6B35DB223E9DA600290F7C /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35D1223E9DA600290F7C /* LineView.swift */; };
+		FD6B35DC223E9DA600290F7C /* YAxisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35D2223E9DA600290F7C /* YAxisView.swift */; };
+		FD6B35DD223E9DA600290F7C /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35D3223E9DA600290F7C /* ChartView.swift */; };
+		FD6B35DF223E9DA600290F7C /* XAxisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35D5223E9DA600290F7C /* XAxisView.swift */; };
+		FD6B35E0223E9DA600290F7C /* BackgroundLinesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35D6223E9DA600290F7C /* BackgroundLinesView.swift */; };
+		FD6B35E1223E9DA600290F7C /* DraggableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35D8223E9DA600290F7C /* DraggableView.swift */; };
+		FD6B35E2223E9DA600290F7C /* ChartMiniatureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35D9223E9DA600290F7C /* ChartMiniatureView.swift */; };
+		FD6B35E3223E9DA600290F7C /* ChartElementsToggleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35DA223E9DA600290F7C /* ChartElementsToggleView.swift */; };
+		FD6B35E5223E9DBE00290F7C /* SimpleLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35E4223E9DBE00290F7C /* SimpleLineView.swift */; };
+		FD6B35E7223E9DD500290F7C /* ChartSelectionBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35E6223E9DD500290F7C /* ChartSelectionBubbleView.swift */; };
 		FDA2A9FE223CB61500EE69B5 /* DataImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F1223CB61500EE69B5 /* DataImporter.swift */; };
 		FDA2A9FF223CB61500EE69B5 /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F3223CB61500EE69B5 /* UIColor+Hex.swift */; };
 		FDA2AA00223CB61500EE69B5 /* UIView+RoundCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F4223CB61500EE69B5 /* UIView+RoundCorners.swift */; };
@@ -20,15 +28,8 @@
 		FDA2AA06223CBBD600EE69B5 /* XAxis.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA05223CBBD600EE69B5 /* XAxis.swift */; };
 		FDA2AA08223CBBEC00EE69B5 /* YAXis.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA07223CBBEC00EE69B5 /* YAXis.swift */; };
 		FDA2AA16223D3DC600EE69B5 /* ChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA0E223D3DC600EE69B5 /* ChartViewController.swift */; };
-		FDA2AA17223D3DC600EE69B5 /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA10223D3DC600EE69B5 /* LineView.swift */; };
-		FDA2AA18223D3DC600EE69B5 /* YAxisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA11223D3DC600EE69B5 /* YAxisView.swift */; };
-		FDA2AA19223D3DC600EE69B5 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA12223D3DC600EE69B5 /* ChartView.swift */; };
-		FDA2AA1A223D3DC600EE69B5 /* DraggableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA13223D3DC600EE69B5 /* DraggableView.swift */; };
-		FDA2AA1B223D3DC600EE69B5 /* ChartMiniatureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA14223D3DC600EE69B5 /* ChartMiniatureView.swift */; };
-		FDA2AA1C223D3DC600EE69B5 /* BackgroundLinesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA15223D3DC600EE69B5 /* BackgroundLinesView.swift */; };
 		FDA2AA1E223D3DDF00EE69B5 /* ChartsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA1D223D3DDF00EE69B5 /* ChartsCoordinator.swift */; };
 		FDA2AA20223D4F1200EE69B5 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA1F223D4F1200EE69B5 /* NavigationController.swift */; };
-		FDC8C0C9223E05630011EA51 /* XAxisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC8C0C8223E05630011EA51 /* XAxisView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,8 +37,16 @@
 		FD6B35C3223E2CA400290F7C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FD6B35C5223E2CA400290F7C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FD6B35C7223E2CA500290F7C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		FD6B35CC223E5AB500290F7C /* ChartElementsToggleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartElementsToggleView.swift; sourceTree = "<group>"; };
-		FD6B35CE223E791700290F7C /* SimpleLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleLineView.swift; sourceTree = "<group>"; };
+		FD6B35D1223E9DA600290F7C /* LineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
+		FD6B35D2223E9DA600290F7C /* YAxisView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YAxisView.swift; sourceTree = "<group>"; };
+		FD6B35D3223E9DA600290F7C /* ChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
+		FD6B35D5223E9DA600290F7C /* XAxisView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XAxisView.swift; sourceTree = "<group>"; };
+		FD6B35D6223E9DA600290F7C /* BackgroundLinesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundLinesView.swift; sourceTree = "<group>"; };
+		FD6B35D8223E9DA600290F7C /* DraggableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableView.swift; sourceTree = "<group>"; };
+		FD6B35D9223E9DA600290F7C /* ChartMiniatureView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartMiniatureView.swift; sourceTree = "<group>"; };
+		FD6B35DA223E9DA600290F7C /* ChartElementsToggleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartElementsToggleView.swift; sourceTree = "<group>"; };
+		FD6B35E4223E9DBE00290F7C /* SimpleLineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleLineView.swift; sourceTree = "<group>"; };
+		FD6B35E6223E9DD500290F7C /* ChartSelectionBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartSelectionBubbleView.swift; sourceTree = "<group>"; };
 		FD8C8C5A223A796B00393FB1 /* Charts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Charts.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDA2A9F1223CB61500EE69B5 /* DataImporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataImporter.swift; sourceTree = "<group>"; };
 		FDA2A9F3223CB61500EE69B5 /* UIColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
@@ -47,15 +56,8 @@
 		FDA2AA05223CBBD600EE69B5 /* XAxis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XAxis.swift; sourceTree = "<group>"; };
 		FDA2AA07223CBBEC00EE69B5 /* YAXis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YAXis.swift; sourceTree = "<group>"; };
 		FDA2AA0E223D3DC600EE69B5 /* ChartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartViewController.swift; sourceTree = "<group>"; };
-		FDA2AA10223D3DC600EE69B5 /* LineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
-		FDA2AA11223D3DC600EE69B5 /* YAxisView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YAxisView.swift; sourceTree = "<group>"; };
-		FDA2AA12223D3DC600EE69B5 /* ChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
-		FDA2AA13223D3DC600EE69B5 /* DraggableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableView.swift; sourceTree = "<group>"; };
-		FDA2AA14223D3DC600EE69B5 /* ChartMiniatureView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartMiniatureView.swift; sourceTree = "<group>"; };
-		FDA2AA15223D3DC600EE69B5 /* BackgroundLinesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundLinesView.swift; sourceTree = "<group>"; };
 		FDA2AA1D223D3DDF00EE69B5 /* ChartsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartsCoordinator.swift; sourceTree = "<group>"; };
 		FDA2AA1F223D4F1200EE69B5 /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
-		FDC8C0C8223E05630011EA51 /* XAxisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XAxisView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,29 @@
 				FD6B35C7223E2CA500290F7C /* Info.plist */,
 			);
 			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		FD6B35D0223E9DA600290F7C /* Chart */ = {
+			isa = PBXGroup;
+			children = (
+				FD6B35E6223E9DD500290F7C /* ChartSelectionBubbleView.swift */,
+				FD6B35D1223E9DA600290F7C /* LineView.swift */,
+				FD6B35D2223E9DA600290F7C /* YAxisView.swift */,
+				FD6B35D3223E9DA600290F7C /* ChartView.swift */,
+				FD6B35D5223E9DA600290F7C /* XAxisView.swift */,
+				FD6B35D6223E9DA600290F7C /* BackgroundLinesView.swift */,
+			);
+			path = Chart;
+			sourceTree = "<group>";
+		};
+		FD6B35D7223E9DA600290F7C /* Chart Miniature */ = {
+			isa = PBXGroup;
+			children = (
+				FD6B35E4223E9DBE00290F7C /* SimpleLineView.swift */,
+				FD6B35D8223E9DA600290F7C /* DraggableView.swift */,
+				FD6B35D9223E9DA600290F7C /* ChartMiniatureView.swift */,
+			);
+			path = "Chart Miniature";
 			sourceTree = "<group>";
 		};
 		FD8C8C51223A796A00393FB1 = {
@@ -190,15 +215,9 @@
 		FDA2AA0F223D3DC600EE69B5 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				FDA2AA10223D3DC600EE69B5 /* LineView.swift */,
-				FDA2AA11223D3DC600EE69B5 /* YAxisView.swift */,
-				FDC8C0C8223E05630011EA51 /* XAxisView.swift */,
-				FDA2AA12223D3DC600EE69B5 /* ChartView.swift */,
-				FDA2AA13223D3DC600EE69B5 /* DraggableView.swift */,
-				FDA2AA14223D3DC600EE69B5 /* ChartMiniatureView.swift */,
-				FDA2AA15223D3DC600EE69B5 /* BackgroundLinesView.swift */,
-				FD6B35CC223E5AB500290F7C /* ChartElementsToggleView.swift */,
-				FD6B35CE223E791700290F7C /* SimpleLineView.swift */,
+				FD6B35D0223E9DA600290F7C /* Chart */,
+				FD6B35D7223E9DA600290F7C /* Chart Miniature */,
+				FD6B35DA223E9DA600290F7C /* ChartElementsToggleView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -274,25 +293,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FD6B35E1223E9DA600290F7C /* DraggableView.swift in Sources */,
 				FDA2AA08223CBBEC00EE69B5 /* YAXis.swift in Sources */,
+				FD6B35DD223E9DA600290F7C /* ChartView.swift in Sources */,
+				FD6B35E3223E9DA600290F7C /* ChartElementsToggleView.swift in Sources */,
 				FDA2A9FF223CB61500EE69B5 /* UIColor+Hex.swift in Sources */,
-				FDA2AA1B223D3DC600EE69B5 /* ChartMiniatureView.swift in Sources */,
 				FDA2AA00223CB61500EE69B5 /* UIView+RoundCorners.swift in Sources */,
-				FDA2AA18223D3DC600EE69B5 /* YAxisView.swift in Sources */,
-				FDC8C0C9223E05630011EA51 /* XAxisView.swift in Sources */,
 				FDA2AA01223CB61500EE69B5 /* Chart.swift in Sources */,
-				FD6B35CF223E791700290F7C /* SimpleLineView.swift in Sources */,
+				FD6B35E5223E9DBE00290F7C /* SimpleLineView.swift in Sources */,
 				FDA2AA06223CBBD600EE69B5 /* XAxis.swift in Sources */,
-				FDA2AA1A223D3DC600EE69B5 /* DraggableView.swift in Sources */,
-				FDA2AA17223D3DC600EE69B5 /* LineView.swift in Sources */,
+				FD6B35DB223E9DA600290F7C /* LineView.swift in Sources */,
 				FDA2AA20223D4F1200EE69B5 /* NavigationController.swift in Sources */,
-				FD6B35CD223E5AB500290F7C /* ChartElementsToggleView.swift in Sources */,
+				FD6B35DF223E9DA600290F7C /* XAxisView.swift in Sources */,
 				FDA2AA1E223D3DDF00EE69B5 /* ChartsCoordinator.swift in Sources */,
-				FDA2AA19223D3DC600EE69B5 /* ChartView.swift in Sources */,
-				FDA2AA1C223D3DC600EE69B5 /* BackgroundLinesView.swift in Sources */,
+				FD6B35E0223E9DA600290F7C /* BackgroundLinesView.swift in Sources */,
 				FDA2AA16223D3DC600EE69B5 /* ChartViewController.swift in Sources */,
 				FDA2A9FE223CB61500EE69B5 /* DataImporter.swift in Sources */,
+				FD6B35E7223E9DD500290F7C /* ChartSelectionBubbleView.swift in Sources */,
 				FDA2AA02223CB61500EE69B5 /* AppDelegate.swift in Sources */,
+				FD6B35E2223E9DA600290F7C /* ChartMiniatureView.swift in Sources */,
+				FD6B35DC223E9DA600290F7C /* YAxisView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
