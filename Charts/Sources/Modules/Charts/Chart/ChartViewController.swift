@@ -12,12 +12,21 @@ class ChartViewController: UIViewController {
   private let chartMiniatureView = ChartMiniatureView()
   private let chartsBackgroundView = UIView()
   private let chartView = ChartView()
-  private var chart: Chart?
+  private let chartElemetsToggleView = ChartElementsToggleView()
+  private let chart: Chart
   private var chartUpdateWorkItem: DispatchWorkItem?
+  
+  init(chart: Chart) {
+    self.chart = chart
+    super.init(nibName: nil, bundle: nil)
+  }
+  
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    chart = DataImporter.importData().first
     setup()
     bindChart()
   }
@@ -27,6 +36,8 @@ class ChartViewController: UIViewController {
     setupChartsBackgroundView()
     setupChartView()
     setupChartMiniatureView()
+    setupChartElemetsToggleView()
+    chartElemetsToggleView.configure(yAxes: chart.yAxes)
   }
   
   private func setupChartsBackgroundView() {
@@ -65,8 +76,8 @@ class ChartViewController: UIViewController {
     chartView.heightAnchor.constraint(equalToConstant: 310).isActive = true
     
     chartView.onNeedsReconfiguring = { [weak self] in
-      guard let self = self, let chart = self.chart else { return }
-      self.chartView.configure(chart: chart)
+      guard let self = self else { return }
+      self.chartView.configure(chart: self.chart)
     }
   }
   
@@ -76,40 +87,49 @@ class ChartViewController: UIViewController {
     chartMiniatureView.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor, constant: 16).isActive = true
     chartMiniatureView.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor, constant: -16).isActive = true
     chartMiniatureView.topAnchor.constraint(equalTo: chartView.bottomAnchor, constant: 12).isActive = true
-    chartMiniatureView.bottomAnchor.constraint(equalTo: chartsBackgroundView.bottomAnchor, constant: -10).isActive = true
     chartMiniatureView.heightAnchor.constraint(equalToConstant: 44).isActive = true
     
     chartMiniatureView.onNeedsReconfiguring = { [weak self] in
-      guard let self = self, let chart = self.chart else { return }
-      self.chartMiniatureView.configure(chart: chart)
+      guard let self = self else { return }
+      self.chartMiniatureView.configure(chart: self.chart)
     }
     chartMiniatureView.onLeftHandleValueChanged = { [weak self] value in
-      guard let self = self, let chart = self.chart else { return }
-      chart.xAxis.leftSegmentationLimit = value
+      guard let self = self else { return }
+      self.chart.xAxis.leftSegmentationLimit = value
     }
     chartMiniatureView.onRightHandleValueChanged = { [weak self] value in
-      guard let self = self, let chart = self.chart, value > 0 else { return }
-      chart.xAxis.rightSegmentationLimit = value
+      guard let self = self, value > 0 else { return }
+      self.chart.xAxis.rightSegmentationLimit = value
     }
     chartMiniatureView.onBothValueChanged = { [weak self] leftValue, rightValue in
-      guard let self = self, let chart = self.chart else { return }
-      chart.xAxis.updateBothSegmentationLimits(leftLimit: leftValue, rightLimit: rightValue)
+      guard let self = self else { return }
+      self.chart.xAxis.updateBothSegmentationLimits(leftLimit: leftValue, rightLimit: rightValue)
     }
   }
   
+  private func setupChartElemetsToggleView() {
+    chartsBackgroundView.addSubview(chartElemetsToggleView)
+    chartElemetsToggleView.translatesAutoresizingMaskIntoConstraints = false
+    chartElemetsToggleView.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor).isActive = true
+    chartElemetsToggleView.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor).isActive = true
+    chartElemetsToggleView.topAnchor.constraint(equalTo: chartMiniatureView.bottomAnchor, constant: 16).isActive = true
+    chartElemetsToggleView.bottomAnchor.constraint(equalTo: chartsBackgroundView.bottomAnchor).isActive = true
+  }
+  
   private func bindChart() {
-    chart?.onSegmentationUpdated = { [weak self] in
-      guard let self = self, let chart = self.chart else { return }
+    chart.onSegmentationUpdated = { [weak self] in
+      guard let self = self else { return }
       self.chartUpdateWorkItem?.cancel()
       let work = DispatchWorkItem { [weak self] in
-        self?.chartView.configure(chart: chart)
+        guard let self = self else { return }
+        self.chartView.configure(chart: self.chart)
       }
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.001, execute: work)
       self.chartUpdateWorkItem = work
     }
-    chart?.onSegmentationNormalizedUpdated = { [weak self] in
-      guard let self = self, let chart = self.chart else { return }
-      self.chartView.animate(to: chart)
+    chart.onSegmentationNormalizedUpdated = { [weak self] in
+      guard let self = self else { return }
+      self.chartView.animate(to: self.chart)
     }
   }
 }

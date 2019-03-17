@@ -148,6 +148,7 @@ class LineView: UIView {
     scrollView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
     scrollView.showsHorizontalScrollIndicator = false
     scrollView.showsVerticalScrollIndicator = false
+    scrollView.isUserInteractionEnabled = false
     
     scrollView.addSubview(contentView)
     contentView.translatesAutoresizingMaskIntoConstraints = false
