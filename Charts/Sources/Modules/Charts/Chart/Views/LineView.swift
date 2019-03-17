@@ -26,6 +26,7 @@ class LineView: UIView {
   private var currentWindowSize: Double = 0
   private var contentViewWidthConstraint: NSLayoutConstraint?
   private var isAnimating = false
+  private var isVisible = true
   private var animationCompletionClosure: (() -> Void)?
 
   
@@ -54,6 +55,7 @@ class LineView: UIView {
   }
   
   func configure(xAxis: XAxis, yAxis: YAxis) {
+    isVisible = yAxis.isEnabled
     totalWindowSize = Double(xAxis.allValues.count)
     currentWindowSize = xAxis.windowSize * totalWindowSize
     let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(currentWindowSize))
@@ -83,6 +85,18 @@ class LineView: UIView {
     startTime = CFAbsoluteTimeGetCurrent()
     displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
     displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
+    
+    let animationClosure: ((_ hide: Bool) -> Void) = { hide in
+      UIView.animate(withDuration: 0.2, animations: {
+        self.alpha = hide ? 0.0 : 1.0
+      })
+    }
+    if !yAxis.isEnabled, isVisible {
+      animationClosure(true)
+    } else if yAxis.isEnabled, !isVisible {
+      animationClosure(false)
+    }
+    isVisible = yAxis.isEnabled
   }
   
   private func updatePoints(xAxis: XAxis, yAxis: YAxis) {

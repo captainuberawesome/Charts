@@ -64,7 +64,7 @@ class ChartMiniatureView: UIView {
     lineViews.forEach { $0.removeFromSuperview() }
     lineViews = []
     let xAxis = chart.xAxis
-    for yAxis in chart.yAxes {
+    for yAxis in chart.toggledYAxes {
       var points: [CGPoint] = []
       for (x, y) in zip(xAxis.allValues, yAxis.allValues) {
         let yCoordinate = Double(bounds.height) - y.percentageValue * Double(bounds.height)

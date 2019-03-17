@@ -114,6 +114,9 @@ class ChartViewController: UIViewController {
     chartElemetsToggleView.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor).isActive = true
     chartElemetsToggleView.topAnchor.constraint(equalTo: chartMiniatureView.bottomAnchor, constant: 16).isActive = true
     chartElemetsToggleView.bottomAnchor.constraint(equalTo: chartsBackgroundView.bottomAnchor).isActive = true
+    chartElemetsToggleView.onToggledYAxis = { [weak self] _ in
+      self?.handleYAxisToggled()
+    }
   }
   
   private func bindChart() {
@@ -131,6 +134,10 @@ class ChartViewController: UIViewController {
       guard let self = self else { return }
       self.chartView.animate(to: self.chart)
     }
+  }
+  
+  private func handleYAxisToggled() {
+    chart.updateSegmentation(shouldWait: false)
   }
 }
 
