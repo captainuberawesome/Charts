@@ -20,7 +20,7 @@ class ChartsCoordinator {
   
   func start() {
     window.makeKeyAndVisible()
-    let viewController = ChartViewController(chart: DataImporter.importData().first!)
+    let viewController = ChartViewController(chart: DataImporter.importData()[0])
     viewController.title = "Statistics"
     navigationController.pushViewController(viewController, animated: false)
   }

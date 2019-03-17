@@ -31,7 +31,8 @@ class ChartSelectionBubbleView: UIView {
     bubbleView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
     bubbleView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
     bubbleView.topAnchor.constraint(equalTo: topAnchor, constant: 5).isActive = true
-    bubbleView.widthAnchor.constraint(equalToConstant: 120).isActive = true
+    bubbleView.backgroundColor = UIColor(red: 240 / 255, green: 240 / 255, blue: 245 / 255, alpha: 1)
+    bubbleView.layer.cornerRadius = 5
     
     addSubview(verticalLineView)
     verticalLineView.translatesAutoresizingMaskIntoConstraints = false
@@ -83,7 +84,7 @@ private class BubbleView: UIView {
       label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
       label.text = "\(value.actualValue)"
       label.textAlignment = .right
-      stackView.addSubview(label)
+      stackView.addArrangedSubview(label)
     }
   }
   
@@ -99,7 +100,10 @@ private class BubbleView: UIView {
     yearLabel.translatesAutoresizingMaskIntoConstraints = false
     yearLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8).isActive = true
     yearLabel.topAnchor.constraint(equalTo: dayMonthLabel.bottomAnchor, constant: 5).isActive = true
-    yearLabel.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: 8)
+    yearLabel.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -8)
+    let constraint = yearLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8)
+    constraint.priority = .defaultLow
+    constraint.isActive = true
     yearLabel.textColor = .darkGray
     yearLabel.font = UIFont.systemFont(ofSize: 12, weight: .regular)
     
@@ -107,7 +111,7 @@ private class BubbleView: UIView {
     stackView.translatesAutoresizingMaskIntoConstraints = false
     stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
     stackView.topAnchor.constraint(equalTo: topAnchor, constant: 8).isActive = true
-    stackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: 8)
+    stackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -8)
     stackView.axis = .vertical
     stackView.distribution = .equalSpacing
     stackView.spacing = 5

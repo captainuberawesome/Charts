@@ -156,11 +156,8 @@ class ChartView: UIView {
       yValues.append(YAxisTapData(value: yValue, location: location))
     }
     addSubview(chartSelectionBubbleView)
-    chartSelectionBubbleView.translatesAutoresizingMaskIntoConstraints = false
-    chartSelectionBubbleView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-    chartSelectionBubbleView.topAnchor.constraint(equalTo: topAnchor).isActive = true
-    chartSelectionBubbleView.setNeedsLayout()
-    chartSelectionBubbleView.layoutIfNeeded()
-    chartSelectionBubbleView.center = CGPoint(x: xAxisTapData.location.x, y: center.y)
+    chartSelectionBubbleView.frame = CGRect(origin: .zero, size: CGSize(width: 100, height: linesContainerView.bounds.height))
+    chartSelectionBubbleView.center = CGPoint(x: xAxisTapData.location.x, y: linesContainerView.center.y)
+    chartSelectionBubbleView.configure(time: xAxisTapData.value, tapData: yValues)
   }
 }
