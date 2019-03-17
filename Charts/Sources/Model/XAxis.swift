@@ -28,11 +28,9 @@ class XAxis {
   var leftSegmentationLimit: Double = 0 {
     didSet {
       guard allValues.count > 1 else { return }
-      let diff = allValues[1].percentageValue - allValues[0].percentageValue
-      if let leftIndex = allValues.index(where: {
-        let upperDiff = $0.percentageValue - leftSegmentationLimit
-        return upperDiff > 0 && upperDiff < diff
-      }) {
+      if let leftIndex = allValues.enumerated().first(where: {
+        return $0.element.percentageValue >= leftSegmentationLimit
+      })?.offset {
         leftSegmentationIndex = leftIndex
         guard !ignoreSegmentationChange else { return }
         updateSegmentation(leftSegmentationIndex: leftSegmentationIndex, rightSegmentationIndex: rightSegmentationIndex)
@@ -44,12 +42,11 @@ class XAxis {
   var rightSegmentationLimit: Double = 1 {
     didSet {
       guard allValues.count > 1 else { return }
-      let diff = allValues[1].percentageValue - allValues[0].percentageValue
-      if let rightIndex = allValues.index(where: {
-        let upperDiff = $0.percentageValue - rightSegmentationLimit
-        return upperDiff > 0 && upperDiff < diff
-      }) {
-        rightSegmentationIndex = rightIndex
+      
+      if let rightIndex = allValues.reversed().enumerated().first(where: {
+        return $0.element.percentageValue <= rightSegmentationLimit
+      })?.offset {
+        rightSegmentationIndex = (allValues.count - 1) - rightIndex
         guard !ignoreSegmentationChange else { return }
         updateSegmentation(leftSegmentationIndex: leftSegmentationIndex, rightSegmentationIndex: rightSegmentationIndex)
         onSegmentationChanged?()

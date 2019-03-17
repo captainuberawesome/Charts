@@ -49,14 +49,13 @@ class XAxisView: UIView {
     
     guard !xAxis.allValues.isEmpty else { return }
     let oldWindowSize = currentWindowSize
-    totalWindowSize = Double(xAxis.allValues.count)
-    currentWindowSize = xAxis.windowSize * totalWindowSize
-    let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(currentWindowSize))
-    contentViewWidthConstraint?.constant = contentWidth
     
     if !contentView.subviews.isEmpty {
-      if oldWindowSize - currentWindowSize < 1e-4, totalWindowSize > 1 {
-        let offset = contentWidth / CGFloat(totalWindowSize - 1) * CGFloat(xAxis.leftSegmentationIndex)
+      let totalSize = Double(xAxis.allValues.count)
+      let diff = oldWindowSize - xAxis.windowSize * totalSize
+      if diff < 1e-4, diff > 0, totalSize > 1 {
+        let currentContentWidth = contentViewWidthConstraint?.constant ?? 0
+        let offset = currentContentWidth / CGFloat(totalWindowSize - 1) * CGFloat(xAxis.leftSegmentationIndex)
         scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
         for label in labels {
           let labelFrame = convert(label.frame, from: scrollView)
@@ -70,6 +69,11 @@ class XAxisView: UIView {
         // TODO: animate window size change
       }
     }
+    
+    totalWindowSize = Double(xAxis.allValues.count)
+    currentWindowSize = xAxis.windowSize * totalWindowSize
+    let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(currentWindowSize))
+    contentViewWidthConstraint?.constant = contentWidth
     
     let step = bounds.width / CGFloat(Constants.maxLabelCount)
     for offset in stride(from: 20, to: contentWidth, by: step) {
