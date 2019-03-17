@@ -11,6 +11,7 @@ import UIKit
 class ChartSelectionBubbleView: UIView {
   private let bubbleView = BubbleView()
   private let verticalLineView = UIView()
+  private var tapXCoordinate: CGFloat = 0
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -21,11 +22,24 @@ class ChartSelectionBubbleView: UIView {
     fatalError("init(coder:) has not been implemented")
   }
   
-  func configure(time: TimeInterval, tapData: [YAxisTapData]) {
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    verticalLineView.frame = CGRect(x: tapXCoordinate - 0.5, y: bubbleView.frame.maxY - 5, width: 0.5,
+                                    height: bounds.height - bubbleView.frame.maxY + 5)
+  }
+  
+  func configure(time: TimeInterval, tapData: [YAxisTapData], tapXCoordinate: CGFloat) {
+    self.tapXCoordinate = tapXCoordinate
     bubbleView.configure(time: time, values: tapData.compactMap { $0.value })
+    bubbleView.layoutIfNeeded()
+    verticalLineView.frame = CGRect(x: tapXCoordinate - 0.5, y: bubbleView.frame.maxY - 5, width: 0.5,
+                                    height: bounds.height - bubbleView.frame.maxY + 5)
   }
   
   private func setup() {
+    addSubview(verticalLineView)
+    verticalLineView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.5)
+    
     addSubview(bubbleView)
     bubbleView.translatesAutoresizingMaskIntoConstraints = false
     bubbleView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
@@ -33,14 +47,6 @@ class ChartSelectionBubbleView: UIView {
     bubbleView.topAnchor.constraint(equalTo: topAnchor, constant: 5).isActive = true
     bubbleView.backgroundColor = UIColor(red: 240 / 255, green: 240 / 255, blue: 245 / 255, alpha: 1)
     bubbleView.layer.cornerRadius = 5
-    
-    addSubview(verticalLineView)
-    verticalLineView.translatesAutoresizingMaskIntoConstraints = false
-    verticalLineView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-    verticalLineView.topAnchor.constraint(equalTo: bubbleView.bottomAnchor).isActive = true
-    verticalLineView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
-    verticalLineView.widthAnchor.constraint(equalToConstant: 0.5).isActive = true
-    verticalLineView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.5)
   }
 }
 

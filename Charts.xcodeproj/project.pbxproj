@@ -20,6 +20,7 @@
 		FD6B35E3223E9DA600290F7C /* ChartElementsToggleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35DA223E9DA600290F7C /* ChartElementsToggleView.swift */; };
 		FD6B35E5223E9DBE00290F7C /* SimpleLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35E4223E9DBE00290F7C /* SimpleLineView.swift */; };
 		FD6B35E7223E9DD500290F7C /* ChartSelectionBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35E6223E9DD500290F7C /* ChartSelectionBubbleView.swift */; };
+		FD6B35E9223EACD600290F7C /* ImmediatePanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35E8223EACD600290F7C /* ImmediatePanGestureRecognizer.swift */; };
 		FDA2A9FE223CB61500EE69B5 /* DataImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F1223CB61500EE69B5 /* DataImporter.swift */; };
 		FDA2A9FF223CB61500EE69B5 /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F3223CB61500EE69B5 /* UIColor+Hex.swift */; };
 		FDA2AA00223CB61500EE69B5 /* UIView+RoundCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F4223CB61500EE69B5 /* UIView+RoundCorners.swift */; };
@@ -47,6 +48,7 @@
 		FD6B35DA223E9DA600290F7C /* ChartElementsToggleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartElementsToggleView.swift; sourceTree = "<group>"; };
 		FD6B35E4223E9DBE00290F7C /* SimpleLineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleLineView.swift; sourceTree = "<group>"; };
 		FD6B35E6223E9DD500290F7C /* ChartSelectionBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartSelectionBubbleView.swift; sourceTree = "<group>"; };
+		FD6B35E8223EACD600290F7C /* ImmediatePanGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmediatePanGestureRecognizer.swift; sourceTree = "<group>"; };
 		FD8C8C5A223A796B00393FB1 /* Charts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Charts.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDA2A9F1223CB61500EE69B5 /* DataImporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataImporter.swift; sourceTree = "<group>"; };
 		FDA2A9F3223CB61500EE69B5 /* UIColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 			isa = PBXGroup;
 			children = (
 				FDA2A9F1223CB61500EE69B5 /* DataImporter.swift */,
+				FD6B35E8223EACD600290F7C /* ImmediatePanGestureRecognizer.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -298,6 +301,7 @@
 				FD6B35DD223E9DA600290F7C /* ChartView.swift in Sources */,
 				FD6B35E3223E9DA600290F7C /* ChartElementsToggleView.swift in Sources */,
 				FDA2A9FF223CB61500EE69B5 /* UIColor+Hex.swift in Sources */,
+				FD6B35E9223EACD600290F7C /* ImmediatePanGestureRecognizer.swift in Sources */,
 				FDA2AA00223CB61500EE69B5 /* UIView+RoundCorners.swift in Sources */,
 				FDA2AA01223CB61500EE69B5 /* Chart.swift in Sources */,
 				FD6B35E5223E9DBE00290F7C /* SimpleLineView.swift in Sources */,

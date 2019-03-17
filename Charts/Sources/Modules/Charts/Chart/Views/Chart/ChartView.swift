@@ -33,8 +33,7 @@ class ChartView: UIView {
   override init(frame: CGRect) {
     super.init(frame: frame)
     setup()
-    yAxisView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap(_:))))
-    yAxisView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:))))
+    yAxisView.addGestureRecognizer(ImmediatePanGestureRecognizer(target: self, action: #selector(handlePan(_:))))
   }
   
   required init?(coder aDecoder: NSCoder) {
@@ -50,6 +49,7 @@ class ChartView: UIView {
   
   func configure(chart: Chart) {
     self.chart = chart
+    chartSelectionBubbleView.removeFromSuperview()
     
     guard bounds.width > 0, bounds.height > 0 else {
       return
@@ -82,7 +82,8 @@ class ChartView: UIView {
     configuredForBounds = bounds
   }
   
-  func animate(to chart: Chart) {    
+  func animate(to chart: Chart) {
+    chartSelectionBubbleView.removeFromSuperview()
     let xAxis = chart.xAxis
     for (index, yAxis) in chart.yAxes.enumerated() {
       let lineView = lineViews[index]
@@ -142,11 +143,6 @@ class ChartView: UIView {
     }
   }
   
-  @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
-    let position = gestureRecognizer.location(in: self)
-    handleTapAtLocation(location: position)
-  }
-  
   private func handleTapAtLocation(location: CGPoint) {
     guard let xAxisTapData = xAxisView.xValue(for: convert(location, to: xAxisView)) else { return }
     var yValues: [YAxisTapData] = []
@@ -156,8 +152,16 @@ class ChartView: UIView {
       yValues.append(YAxisTapData(value: yValue, location: location))
     }
     addSubview(chartSelectionBubbleView)
-    chartSelectionBubbleView.frame = CGRect(origin: .zero, size: CGSize(width: 100, height: linesContainerView.bounds.height))
+    let bubbleWidth: CGFloat = 100
+    chartSelectionBubbleView.frame = CGRect(origin: .zero, size: CGSize(width: bubbleWidth, height: linesContainerView.bounds.height))
     chartSelectionBubbleView.center = CGPoint(x: xAxisTapData.location.x, y: linesContainerView.center.y)
-    chartSelectionBubbleView.configure(time: xAxisTapData.value, tapData: yValues)
+    if chartSelectionBubbleView.frame.origin.x < 0 {
+      chartSelectionBubbleView.frame.origin = CGPoint(x: 0, y: chartSelectionBubbleView.frame.origin.y)
+    }
+    if chartSelectionBubbleView.frame.maxX > bounds.width {
+      chartSelectionBubbleView.frame.origin = CGPoint(x: bounds.width - bubbleWidth, y: chartSelectionBubbleView.frame.origin.y)
+    }
+    let tapLocation = convert(xAxisTapData.location, to: chartSelectionBubbleView)
+    chartSelectionBubbleView.configure(time: xAxisTapData.value, tapData: yValues, tapXCoordinate: tapLocation.x)
   }
 }
