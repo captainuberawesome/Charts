@@ -10,6 +10,7 @@
 		FD6B35C8223E2CA500290F7C /* chart_data.json in Resources */ = {isa = PBXBuildFile; fileRef = FD6B35C2223E2CA400290F7C /* chart_data.json */; };
 		FD6B35C9223E2CA500290F7C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FD6B35C3223E2CA400290F7C /* Assets.xcassets */; };
 		FD6B35CA223E2CA500290F7C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FD6B35C4223E2CA400290F7C /* LaunchScreen.storyboard */; };
+		FD6B35CD223E5AB500290F7C /* ChartElemetsToggleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6B35CC223E5AB500290F7C /* ChartElemetsToggleView.swift */; };
 		FDA2A9FE223CB61500EE69B5 /* DataImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F1223CB61500EE69B5 /* DataImporter.swift */; };
 		FDA2A9FF223CB61500EE69B5 /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F3223CB61500EE69B5 /* UIColor+Hex.swift */; };
 		FDA2AA00223CB61500EE69B5 /* UIView+RoundCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F4223CB61500EE69B5 /* UIView+RoundCorners.swift */; };
@@ -34,6 +35,7 @@
 		FD6B35C3223E2CA400290F7C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FD6B35C5223E2CA400290F7C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FD6B35C7223E2CA500290F7C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FD6B35CC223E5AB500290F7C /* ChartElemetsToggleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartElemetsToggleView.swift; sourceTree = "<group>"; };
 		FD8C8C5A223A796B00393FB1 /* Charts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Charts.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDA2A9F1223CB61500EE69B5 /* DataImporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataImporter.swift; sourceTree = "<group>"; };
 		FDA2A9F3223CB61500EE69B5 /* UIColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
@@ -193,6 +195,7 @@
 				FDA2AA13223D3DC600EE69B5 /* DraggableView.swift */,
 				FDA2AA14223D3DC600EE69B5 /* ChartMiniatureView.swift */,
 				FDA2AA15223D3DC600EE69B5 /* BackgroundLinesView.swift */,
+				FD6B35CC223E5AB500290F7C /* ChartElemetsToggleView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -279,6 +282,7 @@
 				FDA2AA1A223D3DC600EE69B5 /* DraggableView.swift in Sources */,
 				FDA2AA17223D3DC600EE69B5 /* LineView.swift in Sources */,
 				FDA2AA20223D4F1200EE69B5 /* NavigationController.swift in Sources */,
+				FD6B35CD223E5AB500290F7C /* ChartElemetsToggleView.swift in Sources */,
 				FDA2AA1E223D3DDF00EE69B5 /* ChartsCoordinator.swift in Sources */,
 				FDA2AA19223D3DC600EE69B5 /* ChartView.swift in Sources */,
 				FDA2AA1C223D3DC600EE69B5 /* BackgroundLinesView.swift in Sources */,

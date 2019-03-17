@@ -40,22 +40,16 @@ class ChartView: UIView {
       return
     }
     
-    lineViews.forEach { $0.removeFromSuperview() }
-    lineViews = []
-    
     let xAxis = chart.xAxis
-    for yAxis in chart.yAxes {
-      var points: [CGPoint] = []
-      for (x, y) in zip(xAxis.segmentedValues, yAxis.segmentedValues) {
-        let yCoordinate = Double(linesContainerView.bounds.height) - y.percentageValue * Double(linesContainerView.bounds.height)
-        let point = CGPoint(x: x.percentageValue * Double(linesContainerView.bounds.width),
-                            y: yCoordinate)
-        points.append(point)
+    for (index, yAxis) in chart.yAxes.enumerated() {
+      if lineViews.isEmpty {
+        let lineView = LineView(frame: linesContainerView.bounds, color: UIColor.init(hexString: yAxis.colorHex), lineWidth: 2.0)
+        lineViews.append(lineView)
+        linesContainerView.addSubview(lineView)
       }
-      let lineView = LineView(frame: linesContainerView.bounds, points: points,
-                              color: UIColor.init(hexString: yAxis.colorHex), lineWidth: 2.0)
-      lineViews.append(lineView)
-      linesContainerView.addSubview(lineView)
+      let lineView = lineViews[index]
+      lineView.frame = linesContainerView.bounds
+      lineView.configure(xAxis: xAxis, yAxis: yAxis)
     }
     
     if let yAxis = chart.yAxes.first(where: { $0.isEnabled }) {
@@ -71,16 +65,9 @@ class ChartView: UIView {
   func animate(to chart: Chart) {    
     let xAxis = chart.xAxis
     for (index, yAxis) in chart.yAxes.enumerated() {
-      var points: [CGPoint] = []
-      for (x, y) in zip(xAxis.segmentedValues, yAxis.segmentedValues) {
-        let yCoordinate = Double(linesContainerView.bounds.height) - y.percentageValue * Double(linesContainerView.bounds.height)
-        let point = CGPoint(x: x.percentageValue * Double(linesContainerView.bounds.width),
-                            y: yCoordinate)
-        points.append(point)
-      }
       let lineView = lineViews[index]
       lineView.frame = linesContainerView.bounds
-      lineView.animate(to: points)
+      lineView.reconfigureAnimated(xAxis: xAxis, yAxis: yAxis)
     }
     if let yAxis = chart.yAxes.first(where: { $0.isEnabled }) {
       yAxisView.layoutIfNeeded()

@@ -13,54 +13,87 @@ private struct Constants {
 }
 
 class LineView: UIView {
-  private var points: [CGPoint]
+  private var points: [CGPoint] = []
   private let color: UIColor
   private let lineWidth: CGFloat
   private var shapeLayer = CAShapeLayer()
   private var displayLink: CADisplayLink?
   private var startTime: CFAbsoluteTime?
-  private var oldPoints: [CGPoint]
+  private var oldPoints: [CGPoint] = []
+  private var scrollView = UIScrollView()
+  private var contentView = UIView()
+  private var totalWindowSize: Double = 0
+  private var currentWindowSize: Double = 0
+  private var contentViewWidthConstraint: NSLayoutConstraint?
   private var isAnimating = false
   private var animationCompletionClosure: (() -> Void)?
+
   
-  init(frame: CGRect, points: [CGPoint], color: UIColor, lineWidth: CGFloat = 1.0) {
-    self.points = points
+  init(frame: CGRect, color: UIColor, lineWidth: CGFloat = 1.0) {
     self.color = color
     self.lineWidth = lineWidth
-    self.oldPoints = points
     super.init(frame: frame)
     isOpaque = false
+    
+    setupScrollView()
     
     shapeLayer.fillColor = UIColor.clear.cgColor
     shapeLayer.strokeColor = color.cgColor
     shapeLayer.lineWidth = lineWidth
-    shapeLayer.frame = bounds
-    layer.addSublayer(shapeLayer)
-    shapeLayer.path = path(points: points).cgPath
+    shapeLayer.frame = contentView.bounds
+    contentView.layer.addSublayer(shapeLayer)
   }
   
   override func layoutSubviews() {
     super.layoutSubviews()
-    shapeLayer.frame = bounds
+    shapeLayer.frame = contentView.bounds
   }
   
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
   
-  func animate(to points: [CGPoint]) {
+  func configure(xAxis: XAxis, yAxis: YAxis) {
+    totalWindowSize = Double(xAxis.allValues.count)
+    currentWindowSize = xAxis.windowSize * totalWindowSize
+    let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(currentWindowSize))
+    contentViewWidthConstraint?.constant = contentWidth
+    contentView.setNeedsLayout()
+    contentView.layoutIfNeeded()
+    
+    updatePoints(xAxis: xAxis, yAxis: yAxis)
+    oldPoints = points
+    shapeLayer.path = path(points: points).cgPath
+    
+    let currentContentWidth = contentViewWidthConstraint?.constant ?? 0
+    let offset = currentContentWidth / CGFloat(totalWindowSize - 1) * CGFloat(xAxis.leftSegmentationIndex)
+    scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
+  }
+  
+  func reconfigureAnimated(xAxis: XAxis, yAxis: YAxis) {
     guard !isAnimating else {
-      animationCompletionClosure = { [weak self, points] in
-        self?.animate(to: points)
+      animationCompletionClosure = { [weak self, xAxis, yAxis] in
+        self?.reconfigureAnimated(xAxis: xAxis, yAxis: yAxis)
       }
       return
     }
     isAnimating = true
     oldPoints = self.points
-    self.points = points
+    updatePoints(xAxis: xAxis, yAxis: yAxis)
     startTime = CFAbsoluteTimeGetCurrent()
     displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
     displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
+  }
+  
+  private func updatePoints(xAxis: XAxis, yAxis: YAxis) {
+    var points: [CGPoint] = []
+    for (x, y) in zip(xAxis.allValues, yAxis.allValuesNormalized) {
+      let yCoordinate = Double(contentView.bounds.height) - y.percentageValue * Double(contentView.bounds.height)
+      let point = CGPoint(x: x.percentageValue * Double(contentView.bounds.width),
+                          y: yCoordinate)
+      points.append(point)
+    }
+    self.points = points
   }
   
   private func path(points: [CGPoint]) -> UIBezierPath {
@@ -104,5 +137,26 @@ class LineView: UIView {
     
     let newPath = path(between: oldPoints, second: points, percentage: percent)
     shapeLayer.path = newPath.cgPath
+  }
+  
+  private func setupScrollView() {
+    addSubview(scrollView)
+    scrollView.translatesAutoresizingMaskIntoConstraints = false
+    scrollView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+    scrollView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+    scrollView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+    scrollView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+    scrollView.showsHorizontalScrollIndicator = false
+    scrollView.showsVerticalScrollIndicator = false
+    
+    scrollView.addSubview(contentView)
+    contentView.translatesAutoresizingMaskIntoConstraints = false
+    contentView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
+    contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
+    contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
+    contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+    contentView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
+    contentViewWidthConstraint = contentView.widthAnchor.constraint(equalToConstant: 0)
+    contentViewWidthConstraint?.isActive = true
   }
 }

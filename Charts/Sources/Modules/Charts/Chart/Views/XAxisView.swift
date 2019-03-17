@@ -44,7 +44,7 @@ class XAxisView: UIView {
     }
   }
   
-  func configure(xAxis: XAxis, windowSizeChanged: Bool = false) {
+  func configure(xAxis: XAxis) {
     self.xAxis = xAxis
     
     guard !xAxis.allValues.isEmpty else { return }
@@ -66,7 +66,6 @@ class XAxisView: UIView {
       } else {
         contentView.subviews.forEach { $0.removeFromSuperview() }
         labels = []
-        // TODO: animate window size change
       }
     }
     
