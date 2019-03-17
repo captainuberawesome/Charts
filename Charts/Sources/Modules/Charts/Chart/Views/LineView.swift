@@ -20,6 +20,8 @@ class LineView: UIView {
   private var displayLink: CADisplayLink?
   private var startTime: CFAbsoluteTime?
   private var oldPoints: [CGPoint]
+  private var isAnimating = false
+  private var animationCompletionClosure: (() -> Void)?
   
   init(frame: CGRect, points: [CGPoint], color: UIColor, lineWidth: CGFloat = 1.0) {
     self.points = points
@@ -47,6 +49,13 @@ class LineView: UIView {
   }
   
   func animate(to points: [CGPoint]) {
+    guard !isAnimating else {
+      animationCompletionClosure = { [weak self, points] in
+        self?.animate(to: points)
+      }
+      return
+    }
+    isAnimating = true
     oldPoints = self.points
     self.points = points
     startTime = CFAbsoluteTimeGetCurrent()
@@ -84,10 +93,13 @@ class LineView: UIView {
     let elapsed = CFAbsoluteTimeGetCurrent() - startTime
     let percent = elapsed / Constants.animationDuration
     
-    if percent >= 1 {
+    guard percent < 1 else {
       oldPoints = points
       shapeLayer.path = path(points: points).cgPath
       displayLink.remove(from: RunLoop.main, forMode: RunLoop.Mode.common)
+      isAnimating = false
+      self.startTime = nil
+      return
     }
     
     let newPath = path(between: oldPoints, second: points, percentage: percent)

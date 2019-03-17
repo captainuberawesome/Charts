@@ -7,45 +7,49 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FD8C8C63223A796B00393FB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FD8C8C61223A796B00393FB1 /* Main.storyboard */; };
 		FD8C8C65223A796C00393FB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FD8C8C64223A796C00393FB1 /* Assets.xcassets */; };
 		FD8C8C68223A796C00393FB1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FD8C8C66223A796C00393FB1 /* LaunchScreen.storyboard */; };
 		FD8C8C75223A7A9000393FB1 /* chart_data.json in Resources */ = {isa = PBXBuildFile; fileRef = FD8C8C74223A7A9000393FB1 /* chart_data.json */; };
-		FDA2A9F9223CB61500EE69B5 /* ChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9EA223CB61500EE69B5 /* ChartViewController.swift */; };
-		FDA2A9FA223CB61500EE69B5 /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9EC223CB61500EE69B5 /* LineView.swift */; };
-		FDA2A9FB223CB61500EE69B5 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9ED223CB61500EE69B5 /* ChartView.swift */; };
-		FDA2A9FC223CB61500EE69B5 /* DraggableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9EE223CB61500EE69B5 /* DraggableView.swift */; };
-		FDA2A9FD223CB61500EE69B5 /* ChartMiniatureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9EF223CB61500EE69B5 /* ChartMiniatureView.swift */; };
 		FDA2A9FE223CB61500EE69B5 /* DataImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F1223CB61500EE69B5 /* DataImporter.swift */; };
 		FDA2A9FF223CB61500EE69B5 /* UIColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F3223CB61500EE69B5 /* UIColor+Hex.swift */; };
 		FDA2AA00223CB61500EE69B5 /* UIView+RoundCorners.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F4223CB61500EE69B5 /* UIView+RoundCorners.swift */; };
 		FDA2AA01223CB61500EE69B5 /* Chart.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F6223CB61500EE69B5 /* Chart.swift */; };
 		FDA2AA02223CB61500EE69B5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2A9F8223CB61500EE69B5 /* AppDelegate.swift */; };
-		FDA2AA04223CB63700EE69B5 /* YAxisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA03223CB63700EE69B5 /* YAxisView.swift */; };
 		FDA2AA06223CBBD600EE69B5 /* XAxis.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA05223CBBD600EE69B5 /* XAxis.swift */; };
 		FDA2AA08223CBBEC00EE69B5 /* YAXis.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA07223CBBEC00EE69B5 /* YAXis.swift */; };
+		FDA2AA16223D3DC600EE69B5 /* ChartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA0E223D3DC600EE69B5 /* ChartViewController.swift */; };
+		FDA2AA17223D3DC600EE69B5 /* LineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA10223D3DC600EE69B5 /* LineView.swift */; };
+		FDA2AA18223D3DC600EE69B5 /* YAxisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA11223D3DC600EE69B5 /* YAxisView.swift */; };
+		FDA2AA19223D3DC600EE69B5 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA12223D3DC600EE69B5 /* ChartView.swift */; };
+		FDA2AA1A223D3DC600EE69B5 /* DraggableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA13223D3DC600EE69B5 /* DraggableView.swift */; };
+		FDA2AA1B223D3DC600EE69B5 /* ChartMiniatureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA14223D3DC600EE69B5 /* ChartMiniatureView.swift */; };
+		FDA2AA1C223D3DC600EE69B5 /* BackgroundLinesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA15223D3DC600EE69B5 /* BackgroundLinesView.swift */; };
+		FDA2AA1E223D3DDF00EE69B5 /* ChartsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA1D223D3DDF00EE69B5 /* ChartsCoordinator.swift */; };
+		FDA2AA20223D4F1200EE69B5 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDA2AA1F223D4F1200EE69B5 /* NavigationController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		FD8C8C5A223A796B00393FB1 /* Charts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Charts.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		FD8C8C62223A796B00393FB1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		FD8C8C64223A796C00393FB1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FD8C8C67223A796C00393FB1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FD8C8C69223A796C00393FB1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FD8C8C74223A7A9000393FB1 /* chart_data.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = chart_data.json; sourceTree = "<group>"; };
-		FDA2A9EA223CB61500EE69B5 /* ChartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartViewController.swift; sourceTree = "<group>"; };
-		FDA2A9EC223CB61500EE69B5 /* LineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
-		FDA2A9ED223CB61500EE69B5 /* ChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
-		FDA2A9EE223CB61500EE69B5 /* DraggableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableView.swift; sourceTree = "<group>"; };
-		FDA2A9EF223CB61500EE69B5 /* ChartMiniatureView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartMiniatureView.swift; sourceTree = "<group>"; };
 		FDA2A9F1223CB61500EE69B5 /* DataImporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataImporter.swift; sourceTree = "<group>"; };
 		FDA2A9F3223CB61500EE69B5 /* UIColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Hex.swift"; sourceTree = "<group>"; };
 		FDA2A9F4223CB61500EE69B5 /* UIView+RoundCorners.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+RoundCorners.swift"; sourceTree = "<group>"; };
 		FDA2A9F6223CB61500EE69B5 /* Chart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chart.swift; sourceTree = "<group>"; };
 		FDA2A9F8223CB61500EE69B5 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		FDA2AA03223CB63700EE69B5 /* YAxisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YAxisView.swift; sourceTree = "<group>"; };
 		FDA2AA05223CBBD600EE69B5 /* XAxis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XAxis.swift; sourceTree = "<group>"; };
 		FDA2AA07223CBBEC00EE69B5 /* YAXis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YAXis.swift; sourceTree = "<group>"; };
+		FDA2AA0E223D3DC600EE69B5 /* ChartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartViewController.swift; sourceTree = "<group>"; };
+		FDA2AA10223D3DC600EE69B5 /* LineView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LineView.swift; sourceTree = "<group>"; };
+		FDA2AA11223D3DC600EE69B5 /* YAxisView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YAxisView.swift; sourceTree = "<group>"; };
+		FDA2AA12223D3DC600EE69B5 /* ChartView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
+		FDA2AA13223D3DC600EE69B5 /* DraggableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DraggableView.swift; sourceTree = "<group>"; };
+		FDA2AA14223D3DC600EE69B5 /* ChartMiniatureView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartMiniatureView.swift; sourceTree = "<group>"; };
+		FDA2AA15223D3DC600EE69B5 /* BackgroundLinesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundLinesView.swift; sourceTree = "<group>"; };
+		FDA2AA1D223D3DDF00EE69B5 /* ChartsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartsCoordinator.swift; sourceTree = "<group>"; };
+		FDA2AA1F223D4F1200EE69B5 /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,7 +83,6 @@
 			isa = PBXGroup;
 			children = (
 				FDA2A9E8223CB61500EE69B5 /* Sources */,
-				FD8C8C61223A796B00393FB1 /* Main.storyboard */,
 				FD8C8C64223A796C00393FB1 /* Assets.xcassets */,
 				FD8C8C66223A796C00393FB1 /* LaunchScreen.storyboard */,
 				FD8C8C74223A7A9000393FB1 /* chart_data.json */,
@@ -93,32 +96,11 @@
 			children = (
 				FDA2A9F7223CB61500EE69B5 /* Application */,
 				FDA2A9F2223CB61500EE69B5 /* Extensions */,
-				FDA2A9E9223CB61500EE69B5 /* Chart */,
 				FDA2A9F0223CB61500EE69B5 /* Utils */,
 				FDA2A9F5223CB61500EE69B5 /* Model */,
+				FDA2AA0B223D3DC600EE69B5 /* Modules */,
 			);
 			path = Sources;
-			sourceTree = "<group>";
-		};
-		FDA2A9E9223CB61500EE69B5 /* Chart */ = {
-			isa = PBXGroup;
-			children = (
-				FDA2A9EB223CB61500EE69B5 /* Views */,
-				FDA2A9EA223CB61500EE69B5 /* ChartViewController.swift */,
-			);
-			path = Chart;
-			sourceTree = "<group>";
-		};
-		FDA2A9EB223CB61500EE69B5 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				FDA2A9EC223CB61500EE69B5 /* LineView.swift */,
-				FDA2A9ED223CB61500EE69B5 /* ChartView.swift */,
-				FDA2A9EE223CB61500EE69B5 /* DraggableView.swift */,
-				FDA2A9EF223CB61500EE69B5 /* ChartMiniatureView.swift */,
-				FDA2AA03223CB63700EE69B5 /* YAxisView.swift */,
-			);
-			path = Views;
 			sourceTree = "<group>";
 		};
 		FDA2A9F0223CB61500EE69B5 /* Utils */ = {
@@ -154,6 +136,46 @@
 				FDA2A9F8223CB61500EE69B5 /* AppDelegate.swift */,
 			);
 			path = Application;
+			sourceTree = "<group>";
+		};
+		FDA2AA0B223D3DC600EE69B5 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				FDA2AA0C223D3DC600EE69B5 /* Charts */,
+				FDA2AA1F223D4F1200EE69B5 /* NavigationController.swift */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		FDA2AA0C223D3DC600EE69B5 /* Charts */ = {
+			isa = PBXGroup;
+			children = (
+				FDA2AA0D223D3DC600EE69B5 /* Chart */,
+				FDA2AA1D223D3DDF00EE69B5 /* ChartsCoordinator.swift */,
+			);
+			path = Charts;
+			sourceTree = "<group>";
+		};
+		FDA2AA0D223D3DC600EE69B5 /* Chart */ = {
+			isa = PBXGroup;
+			children = (
+				FDA2AA0F223D3DC600EE69B5 /* Views */,
+				FDA2AA0E223D3DC600EE69B5 /* ChartViewController.swift */,
+			);
+			path = Chart;
+			sourceTree = "<group>";
+		};
+		FDA2AA0F223D3DC600EE69B5 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FDA2AA10223D3DC600EE69B5 /* LineView.swift */,
+				FDA2AA11223D3DC600EE69B5 /* YAxisView.swift */,
+				FDA2AA12223D3DC600EE69B5 /* ChartView.swift */,
+				FDA2AA13223D3DC600EE69B5 /* DraggableView.swift */,
+				FDA2AA14223D3DC600EE69B5 /* ChartMiniatureView.swift */,
+				FDA2AA15223D3DC600EE69B5 /* BackgroundLinesView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -217,7 +239,6 @@
 				FD8C8C68223A796C00393FB1 /* LaunchScreen.storyboard in Resources */,
 				FD8C8C65223A796C00393FB1 /* Assets.xcassets in Resources */,
 				FD8C8C75223A7A9000393FB1 /* chart_data.json in Resources */,
-				FD8C8C63223A796B00393FB1 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,31 +251,26 @@
 			files = (
 				FDA2AA08223CBBEC00EE69B5 /* YAXis.swift in Sources */,
 				FDA2A9FF223CB61500EE69B5 /* UIColor+Hex.swift in Sources */,
-				FDA2A9FD223CB61500EE69B5 /* ChartMiniatureView.swift in Sources */,
-				FDA2A9FA223CB61500EE69B5 /* LineView.swift in Sources */,
-				FDA2A9F9223CB61500EE69B5 /* ChartViewController.swift in Sources */,
-				FDA2AA04223CB63700EE69B5 /* YAxisView.swift in Sources */,
+				FDA2AA1B223D3DC600EE69B5 /* ChartMiniatureView.swift in Sources */,
 				FDA2AA00223CB61500EE69B5 /* UIView+RoundCorners.swift in Sources */,
+				FDA2AA18223D3DC600EE69B5 /* YAxisView.swift in Sources */,
 				FDA2AA01223CB61500EE69B5 /* Chart.swift in Sources */,
 				FDA2AA06223CBBD600EE69B5 /* XAxis.swift in Sources */,
+				FDA2AA1A223D3DC600EE69B5 /* DraggableView.swift in Sources */,
+				FDA2AA17223D3DC600EE69B5 /* LineView.swift in Sources */,
+				FDA2AA20223D4F1200EE69B5 /* NavigationController.swift in Sources */,
+				FDA2AA1E223D3DDF00EE69B5 /* ChartsCoordinator.swift in Sources */,
+				FDA2AA19223D3DC600EE69B5 /* ChartView.swift in Sources */,
+				FDA2AA1C223D3DC600EE69B5 /* BackgroundLinesView.swift in Sources */,
+				FDA2AA16223D3DC600EE69B5 /* ChartViewController.swift in Sources */,
 				FDA2A9FE223CB61500EE69B5 /* DataImporter.swift in Sources */,
-				FDA2A9FC223CB61500EE69B5 /* DraggableView.swift in Sources */,
 				FDA2AA02223CB61500EE69B5 /* AppDelegate.swift in Sources */,
-				FDA2A9FB223CB61500EE69B5 /* ChartView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		FD8C8C61223A796B00393FB1 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				FD8C8C62223A796B00393FB1 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		FD8C8C66223A796C00393FB1 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -386,8 +402,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = QM38B4ADFA;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = RBAQY4C72X;
 				INFOPLIST_FILE = Charts/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -395,7 +412,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dnovodon.charts;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "General Development Profile";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -405,8 +422,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = QM38B4ADFA;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = RBAQY4C72X;
 				INFOPLIST_FILE = Charts/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -414,7 +432,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dnovodon.charts;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "General Development Profile";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

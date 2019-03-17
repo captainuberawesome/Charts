@@ -63,7 +63,8 @@ class ChartMiniatureView: UIView {
     for yAxis in chart.yAxes {
       var points: [CGPoint] = []
       for (x, y) in zip(xAxis.allValues, yAxis.allValues) {
-        let point = CGPoint(x: x.percentageValue * Double(bounds.width), y: y.percentageValue * Double(bounds.height))
+        let yCoordinate = Double(bounds.height) - y.percentageValue * Double(bounds.height)
+        let point = CGPoint(x: x.percentageValue * Double(bounds.width), y: yCoordinate)
         points.append(point)
       }
       let lineView = LineView(frame: bounds, points: points, color: UIColor.init(hexString: yAxis.colorHex))

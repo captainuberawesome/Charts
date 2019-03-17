@@ -9,7 +9,7 @@
 import UIKit
 
 private struct Constants {
-  static let handleWidth: CGFloat = 12
+  static let handleWidth: CGFloat = 11
   static let iconHeight: CGFloat = 10
   static let iconWidth: CGFloat = 5.5
 }
@@ -73,8 +73,8 @@ class DraggableView: UIView {
     addSubview(topSeparator)
     addSubview(bottomSeparator)
     
-    let backgroundColor = UIColor.init(red: 202 / 255, green: 212 / 255, blue: 222 / 255, alpha: 0.9)
-    let overlayColor = UIColor.init(red: 222 / 255, green: 238 / 255, blue: 255 / 255, alpha: 0.3)
+    let backgroundColor = UIColor(red: 202 / 255, green: 212 / 255, blue: 222 / 255, alpha: 0.9)
+    let overlayColor = UIColor(red: 239 / 255, green: 239 / 255, blue: 244 / 255, alpha: 0.6)
     leftEdgeView.backgroundColor = backgroundColor
     rightEdgeView.backgroundColor = backgroundColor
     topSeparator.backgroundColor = backgroundColor
@@ -119,7 +119,7 @@ class DraggableView: UIView {
                                 width: rightEdgeView.frame.minX - leftEdgeView.frame.maxX,
                                 height: 1)
     bottomSeparator.frame = CGRect(x: leftEdgeView.frame.maxX,
-                                   y: bounds.size.height - 0.5,
+                                   y: bounds.size.height - 1,
                                    width: rightEdgeView.frame.minX - leftEdgeView.frame.maxX,
                                    height: 1)
     leftEdgeDraggingView.frame.size = CGSize(width: leftEdgeView.frame.width * 3, height: leftEdgeView.frame.height)
@@ -129,12 +129,12 @@ class DraggableView: UIView {
     let centerWidth = rightEdgeView.frame.origin.x - leftEdgeView.frame.maxX - 2 * Constants.handleWidth
     centerDraggingView.frame = CGRect(x: leftEdgeView.frame.maxX + Constants.handleWidth, y: 0,
                                       width: centerWidth, height: bounds.size.height)
-    leftDimmingView.frame = CGRect(x: 0, y: 0,
+    leftDimmingView.frame = CGRect(x: 0, y: 1,
                                    width: leftEdgeView.frame.minX + Constants.handleWidth,
-                                   height: bounds.size.height)
-    rightDimmingView.frame = CGRect(x: rightEdgeView.frame.maxX - Constants.handleWidth, y: 0,
+                                   height: bounds.size.height - 2)
+    rightDimmingView.frame = CGRect(x: rightEdgeView.frame.maxX - Constants.handleWidth, y: 1,
                                     width: bounds.size.width - rightEdgeView.frame.maxX + Constants.handleWidth,
-                                    height: bounds.size.height)
+                                    height: bounds.size.height - 2)
   }
   
   @objc private func dragLeft(_ gestureRecognizer: UIPanGestureRecognizer) {

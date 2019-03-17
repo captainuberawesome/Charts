@@ -8,6 +8,10 @@
 
 import Foundation
 
+private struct Constants {
+  static let numberOfSteps = 6
+}
+
 struct YValue {
   var percentageValue: Double
   var actualValue: Int
@@ -58,19 +62,41 @@ class YAxis {
   }
   
   func updateSegmentation(unnormalizedValues: [Int], minValue: Int, maxValue: Int) {
-    let (minValueAcrossY, maxValueAcrossY, step) = YAxis.calculateSpan(yMin: minValue, yMax: minValue)
-    maxValueAcrossYSegmented = minValueAcrossY
-    minValueAcrossYSegmented = maxValueAcrossY
-    self.step = YValue(percentageValue: Double(step) / Double(maxValue - minValue),
+    let (minValueAcrossY, maxValueAcrossY, step) = YAxis.calculateSpan(yMin: minValue, yMax: maxValue)
+    maxValueAcrossYSegmented = maxValueAcrossY
+    minValueAcrossYSegmented = minValueAcrossY
+    self.step = YValue(percentageValue: Double(step) / Double(maxValueAcrossY - minValueAcrossY),
                        actualValue: step)
     segmentedValues = unnormalizedValues.map {
-      YValue(percentageValue: Double($0 - minValue) / Double(maxValue - minValue), actualValue: $0)
+      YValue(percentageValue: Double($0 - minValueAcrossY) / Double(maxValueAcrossY - minValueAcrossY), actualValue: $0)
     }
   }
   
   static func calculateSpan(yMin: Int, yMax: Int) -> (minY: Int, maxY: Int, step: Int) {
+    var step = calculateStep(yMin: yMin, yMax: yMax)
+    
+    var minValueAcrossY = Int(floor(Double(yMin)) / Double(step)) * step
+    var maxValueAcrossY = Int(ceil(ceil(Double(yMax)) / Double(step))) * step
+    
+    if yMax == maxValueAcrossY {
+      maxValueAcrossY += Int(ceil(0.75 * Double(step)))
+    }
+    
+    step = calculateStep(yMin: minValueAcrossY, yMax: maxValueAcrossY)
+    
+    minValueAcrossY = Int(floor(Double(yMin)) / Double(step)) * step
+    maxValueAcrossY = Int(ceil(ceil(Double(yMax)) / Double(step))) * step
+    
+    if maxValueAcrossY == step * (Constants.numberOfSteps - 1) || yMax == maxValueAcrossY {
+      maxValueAcrossY += Int(ceil(0.75 * Double(step)))
+    }
+
+    return (minValueAcrossY, maxValueAcrossY, step)
+  }
+  
+  static private func calculateStep(yMin: Int, yMax: Int) -> Int {
     let span = yMax - yMin
-    var step = span / 6
+    var step = span / Constants.numberOfSteps
     
     if step == 0 {
       step = 5
@@ -85,9 +111,7 @@ class YAxis {
     } else {
       step = Int(ceil(Double(step) / 500) * 500)
     }
-    let minValueAcrossY = Int(floor(Double(yMin)) / Double(step)) * step
-    let halfStep = Double(step) * 0.5
-    let maxValueAcrossY = Int(ceil(ceil(Double(yMax)) / halfStep) * halfStep + halfStep)
-    return (minValueAcrossY, maxValueAcrossY, step)
+    
+    return step
   }
 }

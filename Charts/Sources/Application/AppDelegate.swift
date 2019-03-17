@@ -10,14 +10,21 @@ import UIKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+  private lazy var chartsCoordinator: ChartsCoordinator = createChartsCoordinator()
   var window: UIWindow?
 
 
   func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-    // Override point for customization after application launch.
+    chartsCoordinator.start()
     return true
+  }
+  
+  private func createChartsCoordinator() -> ChartsCoordinator {
+    let windowFrame = UIScreen.main.bounds
+    let newWindow = UIWindow(frame: windowFrame)
+    self.window = newWindow
+    return ChartsCoordinator(window: newWindow)
   }
 }
 
