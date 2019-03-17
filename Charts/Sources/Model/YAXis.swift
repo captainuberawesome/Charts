@@ -24,7 +24,6 @@ class YAxis {
   
   private (set) var allValues: [YValue]
   private (set) var allValuesNormalized: [YValue]
-  private (set) var segmentedValues: [YValue]
   private (set) var minValueAcrossYSegmented: Int
   private (set) var maxValueAcrossYSegmented: Int
   private (set) var step: YValue
@@ -46,7 +45,6 @@ class YAxis {
       YValue(percentageValue: Double($0 - minValueAcrossY) / Double(maxValueAcrossY - minValueAcrossY),
              actualValue: $0)
     }
-    segmentedValues = allValues
     allValuesNormalized = allValues
     maxValueAcrossYSegmented = maxValueAcrossY
     minValueAcrossYSegmented = minValueAcrossY
@@ -56,10 +54,6 @@ class YAxis {
     let unnormalizedValues = rawValues.enumerated().filter({
       return $0.offset >= leftSegmentationIndex && $0.offset <= rightSegmentationIndex
     }).compactMap({ $0.element })
-    segmentedValues = unnormalizedValues.map {
-      YValue(percentageValue: Double($0 - minValueAcrossYSegmented) / Double(maxValueAcrossYSegmented - minValueAcrossYSegmented),
-             actualValue: $0)
-    }
     return unnormalizedValues
   }
   
@@ -69,9 +63,6 @@ class YAxis {
     minValueAcrossYSegmented = minValueAcrossY
     self.step = YValue(percentageValue: Double(step) / Double(maxValueAcrossY - minValueAcrossY),
                        actualValue: step)
-    segmentedValues = unnormalizedValues.map {
-      YValue(percentageValue: Double($0 - minValueAcrossY) / Double(maxValueAcrossY - minValueAcrossY), actualValue: $0)
-    }
     allValuesNormalized = rawValues.map {
       YValue(percentageValue: Double($0 - minValueAcrossY) / Double(maxValueAcrossY - minValueAcrossY), actualValue: $0)
     }

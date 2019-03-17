@@ -66,7 +66,7 @@ class LineView: UIView {
     shapeLayer.path = path(points: points).cgPath
     
     let currentContentWidth = contentViewWidthConstraint?.constant ?? 0
-    let offset = currentContentWidth / CGFloat(totalWindowSize - 1) * CGFloat(xAxis.leftSegmentationIndex)
+    let offset = currentContentWidth * CGFloat(xAxis.leftSegmentationLimit)
     scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
   }
   

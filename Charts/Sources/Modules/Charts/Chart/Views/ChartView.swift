@@ -41,15 +41,20 @@ class ChartView: UIView {
     }
     
     let xAxis = chart.xAxis
+    let addLineViews = lineViews.isEmpty
+    
     for (index, yAxis) in chart.yAxes.enumerated() {
-      if lineViews.isEmpty {
+      if addLineViews {
         let lineView = LineView(frame: linesContainerView.bounds, color: UIColor.init(hexString: yAxis.colorHex), lineWidth: 2.0)
         lineViews.append(lineView)
         linesContainerView.addSubview(lineView)
+        lineView.frame = linesContainerView.bounds
+        lineView.configure(xAxis: xAxis, yAxis: yAxis)
+      } else {
+        let lineView = lineViews[index]
+        lineView.frame = linesContainerView.bounds
+        lineView.configure(xAxis: xAxis, yAxis: yAxis)
       }
-      let lineView = lineViews[index]
-      lineView.frame = linesContainerView.bounds
-      lineView.configure(xAxis: xAxis, yAxis: yAxis)
     }
     
     if let yAxis = chart.yAxes.first(where: { $0.isEnabled }) {

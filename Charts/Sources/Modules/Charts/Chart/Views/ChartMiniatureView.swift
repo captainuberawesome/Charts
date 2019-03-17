@@ -9,7 +9,7 @@
 import UIKit
 
 class ChartMiniatureView: UIView {
-  private var lineViews: [LineView] = []
+  private var lineViews: [SimpleLineView] = []
   private var configuredForBounds: CGRect = .zero
   private let draggableView = DraggableView()
   
@@ -71,7 +71,7 @@ class ChartMiniatureView: UIView {
         let point = CGPoint(x: x.percentageValue * Double(bounds.width), y: yCoordinate)
         points.append(point)
       }
-      let lineView = LineView(frame: bounds, points: points, color: UIColor.init(hexString: yAxis.colorHex))
+      let lineView = SimpleLineView(frame: bounds, points: points, color: UIColor.init(hexString: yAxis.colorHex))
       lineViews.append(lineView)
       addSubview(lineView)
     }

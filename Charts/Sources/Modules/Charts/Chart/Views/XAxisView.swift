@@ -53,9 +53,9 @@ class XAxisView: UIView {
     if !contentView.subviews.isEmpty {
       let totalSize = Double(xAxis.allValues.count)
       let diff = oldWindowSize - xAxis.windowSize * totalSize
-      if diff < 1e-4, diff > 0, totalSize > 1 {
+      if diff < 1e-4, diff >= 0 {
         let currentContentWidth = contentViewWidthConstraint?.constant ?? 0
-        let offset = currentContentWidth / CGFloat(totalWindowSize - 1) * CGFloat(xAxis.leftSegmentationIndex)
+        let offset = currentContentWidth * CGFloat(xAxis.leftSegmentationLimit)
         scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
         for label in labels {
           let labelFrame = convert(label.frame, from: scrollView)

@@ -16,7 +16,6 @@ struct XValue {
 class XAxis {
   private let rawValues: [TimeInterval]
   private (set) var allValues: [XValue]
-  private (set) var segmentedValues: [XValue]
   private var ignoreSegmentationChange = false
   var leftSegmentationIndex: Int = 0
   var rightSegmentationIndex: Int
@@ -33,7 +32,6 @@ class XAxis {
       })?.offset {
         leftSegmentationIndex = leftIndex
         guard !ignoreSegmentationChange else { return }
-        updateSegmentation(leftSegmentationIndex: leftSegmentationIndex, rightSegmentationIndex: rightSegmentationIndex)
         onSegmentationChanged?()
       }
     }
@@ -48,7 +46,6 @@ class XAxis {
       })?.offset {
         rightSegmentationIndex = (allValues.count - 1) - rightIndex
         guard !ignoreSegmentationChange else { return }
-        updateSegmentation(leftSegmentationIndex: leftSegmentationIndex, rightSegmentationIndex: rightSegmentationIndex)
         onSegmentationChanged?()
       }
     }
@@ -61,7 +58,6 @@ class XAxis {
     allValues = Array(0..<values.count).map {
       XValue(percentageValue: Double($0) / Double(values.count - 1), actualValue: values[$0] )
     }
-    segmentedValues = allValues
     rightSegmentationIndex = allValues.count
   }
   
@@ -70,18 +66,7 @@ class XAxis {
     leftSegmentationLimit = leftLimit
     rightSegmentationLimit = rightLimit
     ignoreSegmentationChange = false
-    updateSegmentation(leftSegmentationIndex: leftSegmentationIndex,
-                       rightSegmentationIndex: rightSegmentationIndex)
     onSegmentationChanged?()
-  }
-  
-  func updateSegmentation(leftSegmentationIndex: Int, rightSegmentationIndex: Int) {
-    let filteredValues = rawValues.enumerated().filter({
-      return $0.offset >= leftSegmentationIndex && $0.offset <= rightSegmentationIndex
-    }).compactMap({ $0.element })
-    segmentedValues = Array(0..<filteredValues.count).map {
-      XValue(percentageValue: Double($0) / Double(filteredValues.count - 1), actualValue: filteredValues[$0])
-    }
   }
   
   func interpolatedValue(for percentageValue: Double) -> TimeInterval? {
