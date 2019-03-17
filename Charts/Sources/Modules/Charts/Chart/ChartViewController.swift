@@ -91,6 +91,10 @@ class ChartViewController: UIViewController {
       guard let self = self, let chart = self.chart, value > 0 else { return }
       chart.xAxis.rightSegmentationLimit = value
     }
+    chartMiniatureView.onBothValueChanged = { [weak self] leftValue, rightValue in
+      guard let self = self, let chart = self.chart else { return }
+      chart.xAxis.updateBothSegmentationLimits(leftLimit: leftValue, rightLimit: rightValue)
+    }
   }
   
   private func bindChart() {

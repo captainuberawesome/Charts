@@ -26,15 +26,22 @@ class DraggableView: UIView {
   private let bottomSeparator = UIView()
   private let leftDimmingView = UIView()
   private let rightDimmingView = UIView()
+  private var ignoreValueChange = false
   
   private var centerDraggingViewWidth: CGFloat = 0
   private var leftEdgeViewOriginX: CGFloat = 0 {
     didSet {
+      guard !ignoreValueChange else {
+        return
+      }
       onLeftHandleValueChanged?(leftHandleValue)
     }
   }
   private var rightEdgeViewMaxX: CGFloat = 0 {
     didSet {
+      guard !ignoreValueChange else {
+        return
+      }
       onRightHandleValueChanged?(rightHandleValue)
     }
   }
@@ -50,6 +57,7 @@ class DraggableView: UIView {
   
   var onLeftHandleValueChanged: ((Double) -> Void)?
   var onRightHandleValueChanged: ((Double) -> Void)?
+  var onBothValueChanged: ((Double, Double) -> Void)?
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -122,12 +130,12 @@ class DraggableView: UIView {
                                    y: bounds.size.height - 1,
                                    width: rightEdgeView.frame.minX - leftEdgeView.frame.maxX,
                                    height: 1)
-    leftEdgeDraggingView.frame.size = CGSize(width: leftEdgeView.frame.width * 3, height: leftEdgeView.frame.height)
+    leftEdgeDraggingView.frame.size = CGSize(width: leftEdgeView.frame.width * 2, height: leftEdgeView.frame.height)
     leftEdgeDraggingView.center = leftEdgeView.center
     rightEdgeDraggingView.frame.size = leftEdgeDraggingView.frame.size
     rightEdgeDraggingView.center = rightEdgeView.center
-    let centerWidth = rightEdgeView.frame.origin.x - leftEdgeView.frame.maxX - 2 * Constants.handleWidth
-    centerDraggingView.frame = CGRect(x: leftEdgeView.frame.maxX + Constants.handleWidth, y: 0,
+    let centerWidth = rightEdgeView.frame.origin.x - leftEdgeView.frame.maxX
+    centerDraggingView.frame = CGRect(x: leftEdgeView.frame.maxX, y: 0,
                                       width: centerWidth, height: bounds.size.height)
     leftDimmingView.frame = CGRect(x: 0, y: 1,
                                    width: leftEdgeView.frame.minX + Constants.handleWidth,
@@ -183,8 +191,11 @@ class DraggableView: UIView {
         newOriginX = leftEdgeView.frame.origin.x + translationX
         newMaxX = bounds.width
       }
+      ignoreValueChange = true
       leftEdgeViewOriginX = newOriginX
       rightEdgeViewMaxX = newMaxX
+      ignoreValueChange = false
+      onBothValueChanged?(leftHandleValue, rightHandleValue)
       updateSubviewFrames()
       gestureRecognizer.setTranslation(.zero, in: self)
     default:

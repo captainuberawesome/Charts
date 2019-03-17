@@ -12,6 +12,7 @@ class ChartView: UIView {
   private let linesContainerView = UIView()
   private var lineViews: [LineView] = []
   private let yAxisView = YAxisView()
+  private let xAxisView = XAxisView()
   private let backgroundLinesView = BackgroundLinesView()
   private var configuredForBounds: CGRect = .zero
   private var animationStartedDate: Date?
@@ -63,6 +64,7 @@ class ChartView: UIView {
       backgroundLinesView.layoutIfNeeded()
       backgroundLinesView.configure(yAxis: yAxis)
     }
+    xAxisView.configure(xAxis: chart.xAxis)
     configuredForBounds = bounds
   }
   
@@ -86,11 +88,12 @@ class ChartView: UIView {
       backgroundLinesView.layoutIfNeeded()
       backgroundLinesView.animate(yAxis: yAxis)
     }
+    xAxisView.configure(xAxis: chart.xAxis)
   }
   
   private func setup() {
     let topOffset: CGFloat = 0
-    let bottomOffset: CGFloat = -10
+    let bottomOffset: CGFloat = -17
     
     addSubview(backgroundLinesView)
     backgroundLinesView.translatesAutoresizingMaskIntoConstraints = false
@@ -113,5 +116,12 @@ class ChartView: UIView {
     yAxisView.trailingAnchor.constraint(equalTo: backgroundLinesView.trailingAnchor).isActive = true
     yAxisView.topAnchor.constraint(equalTo: backgroundLinesView.topAnchor).isActive = true
     yAxisView.bottomAnchor.constraint(equalTo: backgroundLinesView.bottomAnchor).isActive = true
+    
+    addSubview(xAxisView)
+    xAxisView.translatesAutoresizingMaskIntoConstraints = false
+    xAxisView.leadingAnchor.constraint(equalTo: backgroundLinesView.leadingAnchor).isActive = true
+    xAxisView.trailingAnchor.constraint(equalTo: backgroundLinesView.trailingAnchor).isActive = true
+    xAxisView.topAnchor.constraint(equalTo: backgroundLinesView.bottomAnchor).isActive = true
+    xAxisView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
   }
 }

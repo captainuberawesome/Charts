@@ -17,25 +17,12 @@ class XAxis {
   private let rawValues: [TimeInterval]
   private (set) var allValues: [XValue]
   private (set) var segmentedValues: [XValue]
+  private var ignoreSegmentationChange = false
+  var leftSegmentationIndex: Int = 0
+  var rightSegmentationIndex: Int
   
-  var onSegmentationChanged: (() -> Void)?
-  
-  init(values: [TimeInterval]) {
-    self.rawValues = values
-    allValues = Array(0..<values.count).map {
-      XValue(percentageValue: Double($0) / Double(values.count - 1), actualValue: values[$0] )
-    }
-    segmentedValues = allValues
-    rightSegmentationIndex = allValues.count
-  }
-  
-  func updateSegmentation(leftSegmentationIndex: Int, rightSegmentationIndex: Int) {
-    let filteredValues = rawValues.enumerated().filter({
-      return $0.offset >= leftSegmentationIndex && $0.offset <= rightSegmentationIndex
-    }).compactMap({ $0.element })
-    segmentedValues = Array(0..<filteredValues.count).map {
-      XValue(percentageValue: Double($0) / Double(filteredValues.count - 1), actualValue: filteredValues[$0])
-    }
+  var windowSize: Double {
+    return rightSegmentationLimit - leftSegmentationLimit
   }
   
   var leftSegmentationLimit: Double = 0 {
@@ -47,6 +34,7 @@ class XAxis {
         return upperDiff > 0 && upperDiff < diff
       }) {
         leftSegmentationIndex = leftIndex
+        guard !ignoreSegmentationChange else { return }
         updateSegmentation(leftSegmentationIndex: leftSegmentationIndex, rightSegmentationIndex: rightSegmentationIndex)
         onSegmentationChanged?()
       }
@@ -62,12 +50,46 @@ class XAxis {
         return upperDiff > 0 && upperDiff < diff
       }) {
         rightSegmentationIndex = rightIndex
+        guard !ignoreSegmentationChange else { return }
         updateSegmentation(leftSegmentationIndex: leftSegmentationIndex, rightSegmentationIndex: rightSegmentationIndex)
         onSegmentationChanged?()
       }
     }
   }
   
-  var leftSegmentationIndex: Int = 0
-  var rightSegmentationIndex: Int
+  var onSegmentationChanged: (() -> Void)?
+  
+  init(values: [TimeInterval]) {
+    self.rawValues = values
+    allValues = Array(0..<values.count).map {
+      XValue(percentageValue: Double($0) / Double(values.count - 1), actualValue: values[$0] )
+    }
+    segmentedValues = allValues
+    rightSegmentationIndex = allValues.count
+  }
+  
+  func updateBothSegmentationLimits(leftLimit: Double, rightLimit: Double) {
+    ignoreSegmentationChange = true
+    leftSegmentationLimit = leftLimit
+    rightSegmentationLimit = rightLimit
+    ignoreSegmentationChange = false
+    updateSegmentation(leftSegmentationIndex: leftSegmentationIndex,
+                       rightSegmentationIndex: rightSegmentationIndex)
+    onSegmentationChanged?()
+  }
+  
+  func updateSegmentation(leftSegmentationIndex: Int, rightSegmentationIndex: Int) {
+    let filteredValues = rawValues.enumerated().filter({
+      return $0.offset >= leftSegmentationIndex && $0.offset <= rightSegmentationIndex
+    }).compactMap({ $0.element })
+    segmentedValues = Array(0..<filteredValues.count).map {
+      XValue(percentageValue: Double($0) / Double(filteredValues.count - 1), actualValue: filteredValues[$0])
+    }
+  }
+  
+  func interpolatedValue(for percentageValue: Double) -> TimeInterval? {
+    guard let firstValue = allValues.first?.actualValue,
+      let lastValue = allValues.last?.actualValue else { return nil }
+    return firstValue + (lastValue - firstValue) * percentageValue
+  }
 }

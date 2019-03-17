@@ -16,6 +16,7 @@ class ChartMiniatureView: UIView {
   var onNeedsReconfiguring: (() -> Void)?
   var onLeftHandleValueChanged: ((Double) -> Void)?
   var onRightHandleValueChanged: ((Double) -> Void)?
+  var onBothValueChanged: ((Double, Double) -> Void)?
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -45,6 +46,9 @@ class ChartMiniatureView: UIView {
     }
     draggableView.onRightHandleValueChanged = { [weak self] value in
       self?.onRightHandleValueChanged?(value)
+    }
+    draggableView.onBothValueChanged = { [weak self] leftValue, rightValue in
+      self?.onBothValueChanged?(leftValue, rightValue)
     }
   }
   
