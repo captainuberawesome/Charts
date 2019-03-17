@@ -12,6 +12,10 @@ private struct Constants {
   static let labelCount = 6
 }
 
+private enum AnimationDirection {
+  case up, down
+}
+
 class YAxisView: UIView {
   private var labels: [UILabel] = []
   private var currentMinValue: Int = 0
@@ -52,10 +56,16 @@ class YAxisView: UIView {
     
     if animateIfNeeded, currentMinValue != yAxis.minValueAcrossYSegmented
       || currentStepValue != yAxis.step.actualValue || currentStepPercentage != yAxis.step.percentageValue {
+      let oldMaxValue = Double(currentMinValue) + Double(Constants.labelCount - 1) * Double(currentStepValue)
       currentMinValue = yAxis.minValueAcrossYSegmented
       currentStepValue = yAxis.step.actualValue
       currentStepPercentage = yAxis.step.percentageValue
-      animateLabelChange()
+      let newMaxValue = Double(currentMinValue) + Double(Constants.labelCount - 1) * Double(currentStepValue)
+      var animationDirection = AnimationDirection.up
+      if newMaxValue < oldMaxValue {
+        animationDirection = .down
+      }
+      animateLabelChange(animationDirection: animationDirection)
       return
     }
     
@@ -107,16 +117,16 @@ class YAxisView: UIView {
     })
   }
   
-  private func animateLabelChange() {
+  private func animateLabelChange(animationDirection: AnimationDirection) {
     guard !isAnimating else {
       animationCompletionClosure = { [weak self] in
-        self?.animateLabelChange()
+        self?.animateLabelChange(animationDirection: animationDirection)
       }
       return
     }
     isAnimating = true
     
-    let animatedOffset: CGFloat = 50
+    let animatedOffset: CGFloat = animationDirection == .up ? 50 : -50
     
     var newLabels: [UILabel] = []
     for index in 0..<Constants.labelCount {
@@ -126,13 +136,10 @@ class YAxisView: UIView {
       label.font = UIFont.systemFont(ofSize: 11, weight: .light)
       label.alpha = 0
       let origin = CGPoint(x: 0, y: bounds.height - CGFloat(index) * CGFloat(currentStepPercentage) * bounds.height)
-      let newLabelOrigin = CGPoint(x: origin.x,
-                                   y: origin.y - label.frame.size.height - 3 + animatedOffset)
-      let newLabelText = "\(currentMinValue + currentStepValue * index)"
-      label.text = newLabelText
+      label.text = "\(currentMinValue + currentStepValue * index)"
       label.sizeToFit()
-      label.frame.origin = newLabelOrigin
-      print("New origin: \(newLabelOrigin)")
+      label.frame.origin = CGPoint(x: origin.x,
+                                   y: origin.y - label.frame.size.height - 3 + animatedOffset)
       newLabels.append(label)
     }
     
