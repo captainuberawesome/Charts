@@ -12,22 +12,36 @@ protocol ChartListViewControllerDelegate: class {
   func chartListViewController(_ viewController: ChartListViewController, didSelectChart chart: Chart, title: String)
 }
 
-class ChartListViewController: UIViewController {
+class ChartListViewController: UIViewController, DayNightViewConfigurable {
   // MARK: - Protperties
+  
   private let tableView = UITableView(frame: .zero, style: .plain)
+  private let dayNightModeToggler: DayNightModeToggler
   private let charts: [Chart]
   
   weak var delegate: ChartListViewControllerDelegate?
   
   // MARK: - Init
   
-  init(charts: [Chart]) {
+  init(charts: [Chart], dayNightModeToggler: DayNightModeToggler) {
     self.charts = charts
+    self.dayNightModeToggler = dayNightModeToggler
     super.init(nibName: nil, bundle: nil)
   }
   
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+  
+  // MARK: - Overrides
+  
+  override var preferredStatusBarStyle: UIStatusBarStyle {
+    switch dayNightModeToggler.currentMode {
+    case .day:
+      return .default
+    case .night:
+      return .lightContent
+    }
   }
   
   // MARK: - View life cycle
@@ -36,12 +50,20 @@ class ChartListViewController: UIViewController {
     super.viewDidLoad()
     setDefaultBackButtonTitle()
     setup()
+    configure(dayNightModeToggler: dayNightModeToggler)
+  }
+  
+  // MARK: - Pubic methods
+  
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    view.backgroundColor = dayNightModeToggler.darkBackgroundColor
+    tableView.reloadData()
+    setNeedsStatusBarAppearanceUpdate()
   }
   
   // MARK: - Setup
   
   private func setup() {
-    view.backgroundColor = UIColor(red: 239 / 255, green: 239 / 255, blue: 244 / 255, alpha: 1)
     setupTableView()
   }
   
@@ -81,13 +103,14 @@ extension ChartListViewController: UITableViewDataSource {
     guard let cell = tableView.dequeueReusableCell(withIdentifier: ChartTableViewCell.reuseIdentifier,
                                                    for: indexPath) as? ChartTableViewCell else { return UITableViewCell () }
     cell.configure(title: "Chart #\(indexPath.row + 1)", showSeparator: indexPath.row + 1 == charts.count)
+    cell.configure(dayNightModeToggler: dayNightModeToggler)
     cell.accessoryType = .disclosureIndicator
     return cell
   }
   
   func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
     let footerView = UIView()
-    footerView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
+    footerView.backgroundColor = dayNightModeToggler.separatorColor
     footerView.frame = CGRect(x: 9, y: 0, width: view.bounds.width, height: 1)
     return footerView
   }

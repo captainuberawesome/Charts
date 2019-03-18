@@ -8,13 +8,15 @@
 
 import UIKit
 
-class BubbleView: UIView {
+class BubbleView: UIView, DayNightViewConfigurable {
+
   // MARK: - Properties
   
   private let dayMonthLabel = UILabel()
   private let yearLabel = UILabel()
   private let stackView = UIStackView()
   private var valueLabels: [UILabel] = []
+  private let dayNightModeToggler: DayNightModeToggler
   private lazy var dayMonthFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.dateFormat = "MMM d"
@@ -43,9 +45,11 @@ class BubbleView: UIView {
   
   // MARK: - Init
   
-  override init(frame: CGRect) {
+  init(dayNightModeToggler: DayNightModeToggler, frame: CGRect = .zero) {
+    self.dayNightModeToggler = dayNightModeToggler
     super.init(frame: frame)
     setup()
+    backgroundColor = dayNightModeToggler.bubbleBackgroundColor
   }
   
   required init?(coder aDecoder: NSCoder) {
@@ -80,6 +84,12 @@ class BubbleView: UIView {
     }
   }
   
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    dayMonthLabel.textColor = dayNightModeToggler.dullerTextColor
+    yearLabel.textColor = dayNightModeToggler.dullerTextColor
+    backgroundColor = dayNightModeToggler.bubbleBackgroundColor
+  }
+  
   // MARK: - Setup
   
   private func setup() {
@@ -89,7 +99,7 @@ class BubbleView: UIView {
     dayMonthLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5).isActive = true
     dayMonthLabel.heightAnchor.constraint(equalToConstant: 15).isActive = true
     dayMonthLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
-    dayMonthLabel.textColor = .darkGray
+    dayMonthLabel.textColor = dayNightModeToggler.dullerTextColor
     
     addSubview(yearLabel)
     yearLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -100,7 +110,7 @@ class BubbleView: UIView {
     let constraint = yearLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5)
     constraint.priority = .defaultLow
     constraint.isActive = true
-    yearLabel.textColor = .darkGray
+    yearLabel.textColor = dayNightModeToggler.dullerTextColor
     yearLabel.font = UIFont.systemFont(ofSize: 12, weight: .regular)
     
     addSubview(stackView)

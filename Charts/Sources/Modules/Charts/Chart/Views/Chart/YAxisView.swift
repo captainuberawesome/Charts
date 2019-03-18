@@ -16,7 +16,8 @@ private enum AnimationDirection {
   case up, down
 }
 
-class YAxisView: UIView {
+class YAxisView: UIView, DayNightViewConfigurable {
+  
   // MARK: - Properties
   
   private var labels: [UILabel] = []
@@ -24,12 +25,14 @@ class YAxisView: UIView {
   private var currentStepValue: Int = 0
   private var currentStepPercentage: Double = 0
   private var isAnimating = false
+  private let dayNightModeToggler: DayNightModeToggler
   private var configuredForBounds: CGRect = .zero
   private var animationCompletionClosure: (() -> Void)?
   
   // MARK: - Init
   
-  override init(frame: CGRect) {
+  init(dayNightModeToggler: DayNightModeToggler, frame: CGRect = .zero) {
+    self.dayNightModeToggler = dayNightModeToggler
     super.init(frame: frame)
     setup()
     clipsToBounds = true
@@ -105,6 +108,12 @@ class YAxisView: UIView {
     return CGPoint(x: xCoordinate, y: yCoordinate)
   }
   
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    for label in labels {
+      label.textColor = dayNightModeToggler.dullestTextColor
+    }
+  }
+  
   // MARK: - Private methods
   
   private func animateLabelPositionChange() {
@@ -148,7 +157,7 @@ class YAxisView: UIView {
     for index in 0..<Constants.labelCount {
       let label = UILabel()
       addSubview(label)
-      label.textColor = UIColor.gray
+      label.textColor = dayNightModeToggler.dullestTextColor
       label.font = UIFont.systemFont(ofSize: 11, weight: .light)
       label.alpha = 0
       let origin = CGPoint(x: 0, y: bounds.height - CGFloat(index) * CGFloat(currentStepPercentage) * bounds.height)
@@ -183,7 +192,7 @@ class YAxisView: UIView {
     for _ in 0..<Constants.labelCount {
       let label = UILabel()
       addSubview(label)
-      label.textColor = UIColor.gray
+      label.textColor = dayNightModeToggler.dullestTextColor
       label.font = UIFont.systemFont(ofSize: 11, weight: .light)
       labels.append(label)
     }

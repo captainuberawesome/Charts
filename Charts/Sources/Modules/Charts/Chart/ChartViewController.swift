@@ -8,7 +8,12 @@
 
 import UIKit
 
-class ChartViewController: UIViewController {
+protocol ChartViewControllerDelegate: class {
+  func chartViewControllerDidToggleDayNightMode(_ viewController: ChartViewController)
+}
+
+class ChartViewController: UIViewController, DayNightViewConfigurable {
+  
   // MARK: - Properties
   
   private let contentView = UIView()
@@ -17,22 +22,43 @@ class ChartViewController: UIViewController {
   private let chartNameLabelContainer = UIView()
   private let chartMiniatureView = ChartMiniatureView()
   private let chartsBackgroundView = UIView()
-  private let chartView = ChartView()
+  private let buttonContainerView = UIView()
+  private let chartView: ChartView
+  private let chartsTopSeparatorView = UIView()
+  private let chartsBottomSeparatorView = UIView()
+  private let buttonTopSeparatorView = UIView()
+  private let buttonBottomSeparatorView = UIView()
   private let chartElemetsToggleView = ChartElementsToggleView()
-  private let chart: Chart
   private var chartUpdateWorkItem: DispatchWorkItem?
-  private var switchDisplayModesButton = UIButton(type: .system)
+  private let switchDisplayModesButton = UIButton(type: .system)
+  private let chart: Chart
+  private let dayNightModeToggler: DayNightModeToggler
+  
+  weak var delegate: ChartViewControllerDelegate?
   
   // MARK: - Init
   
-  init(chart: Chart, chartName: String) {
+  init(chart: Chart, chartName: String, dayNightModeToggler: DayNightModeToggler) {
     self.chart = chart
+    self.dayNightModeToggler = dayNightModeToggler
     chartNameLabel.text = chartName.uppercased()
+    chartView = ChartView(dayNightModeToggler: dayNightModeToggler)
     super.init(nibName: nil, bundle: nil)
   }
   
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+  
+  // MARK: - Overrides
+  
+  override var preferredStatusBarStyle: UIStatusBarStyle {
+    switch dayNightModeToggler.currentMode {
+    case .day:
+      return .default
+    case .night:
+      return .lightContent
+    }
   }
   
   // MARK: - View life cycle
@@ -43,6 +69,7 @@ class ChartViewController: UIViewController {
     setup()
     configure()
     bindChart()
+    configure(dayNightModeToggler: dayNightModeToggler)
   }
   
   override func viewWillAppear(_ animated: Bool) {
@@ -59,10 +86,30 @@ class ChartViewController: UIViewController {
     chartView.animationsAllowed = true
   }
   
+  // MARK: - Public methods
+  
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    view.backgroundColor = dayNightModeToggler.darkBackgroundColor
+    chartNameLabel.textColor = dayNightModeToggler.dullestTextColor
+    chartsBackgroundView.backgroundColor = dayNightModeToggler.lightBackgroundColor
+    chartsTopSeparatorView.backgroundColor = dayNightModeToggler.separatorColor
+    chartsBottomSeparatorView.backgroundColor = dayNightModeToggler.separatorColor
+    buttonTopSeparatorView.backgroundColor = dayNightModeToggler.separatorColor
+    buttonBottomSeparatorView.backgroundColor = dayNightModeToggler.separatorColor
+    buttonContainerView.backgroundColor = dayNightModeToggler.lightBackgroundColor
+    let title = dayNightModeToggler.currentMode == .day ? "Switch to Night Mode"
+                                                        : "Switch to Day Mode"
+    switchDisplayModesButton.setTitle(title, for: .normal)
+    
+    chartView.configure(dayNightModeToggler: dayNightModeToggler)
+    chartMiniatureView.configure(dayNightModeToggler: dayNightModeToggler)
+    chartElemetsToggleView.configure(dayNightModeToggler: dayNightModeToggler)
+    setNeedsStatusBarAppearanceUpdate()
+  }
+  
   // MARK: - Setup
   
   private func setup() {
-    view.backgroundColor = UIColor(red: 239 / 255, green: 239 / 255, blue: 244 / 255, alpha: 1)
     setupScrollView()
     setupChartNameLabel()
     setupChartsBackgroundView()
@@ -105,34 +152,28 @@ class ChartViewController: UIViewController {
     chartNameLabel.leadingAnchor.constraint(equalTo: chartNameLabelContainer.leadingAnchor, constant: 16).isActive = true
     chartNameLabel.topAnchor.constraint(equalTo: chartNameLabelContainer.topAnchor, constant: 30).isActive = true
     chartNameLabel.font = UIFont.systemFont(ofSize: 14, weight: .light)
-    chartNameLabel.textColor = .darkGray
   }
   
   private func setupChartsBackgroundView() {
     contentView.addSubview(chartsBackgroundView)
-    chartsBackgroundView.backgroundColor = .white
     chartsBackgroundView.translatesAutoresizingMaskIntoConstraints = false
     chartsBackgroundView.topAnchor.constraint(equalTo: chartNameLabelContainer.bottomAnchor).isActive = true
     chartsBackgroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
     chartsBackgroundView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
+  
+    chartsBackgroundView.addSubview(chartsTopSeparatorView)
+    chartsTopSeparatorView.translatesAutoresizingMaskIntoConstraints = false
+    chartsTopSeparatorView.topAnchor.constraint(equalTo: chartsBackgroundView.topAnchor).isActive = true
+    chartsTopSeparatorView.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor).isActive = true
+    chartsTopSeparatorView.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor).isActive = true
+    chartsTopSeparatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
     
-    let topSeparatorView = UIView()
-    topSeparatorView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
-    chartsBackgroundView.addSubview(topSeparatorView)
-    topSeparatorView.translatesAutoresizingMaskIntoConstraints = false
-    topSeparatorView.topAnchor.constraint(equalTo: chartsBackgroundView.topAnchor).isActive = true
-    topSeparatorView.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor).isActive = true
-    topSeparatorView.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor).isActive = true
-    topSeparatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
-    
-    let bottomSeparatorView = UIView()
-    bottomSeparatorView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
-    chartsBackgroundView.addSubview(bottomSeparatorView)
-    bottomSeparatorView.translatesAutoresizingMaskIntoConstraints = false
-    bottomSeparatorView.bottomAnchor.constraint(equalTo: chartsBackgroundView.bottomAnchor).isActive = true
-    bottomSeparatorView.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor).isActive = true
-    bottomSeparatorView.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor).isActive = true
-    bottomSeparatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+    chartsBackgroundView.addSubview(chartsBottomSeparatorView)
+    chartsBottomSeparatorView.translatesAutoresizingMaskIntoConstraints = false
+    chartsBottomSeparatorView.bottomAnchor.constraint(equalTo: chartsBackgroundView.bottomAnchor).isActive = true
+    chartsBottomSeparatorView.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor).isActive = true
+    chartsBottomSeparatorView.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor).isActive = true
+    chartsBottomSeparatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
   }
   
   private func setupChartView() {
@@ -192,8 +233,6 @@ class ChartViewController: UIViewController {
   }
   
   private func setupSwitchDisplayModesButton() {
-    let buttonContainerView = UIView()
-    buttonContainerView.backgroundColor = .white
     contentView.addSubview(buttonContainerView)
     buttonContainerView.translatesAutoresizingMaskIntoConstraints = false
     buttonContainerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
@@ -202,32 +241,27 @@ class ChartViewController: UIViewController {
     buttonContainerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -35).isActive = true
     buttonContainerView.heightAnchor.constraint(equalToConstant: 44).isActive = true
     
-    let topSeparatorView = UIView()
-    topSeparatorView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
-    buttonContainerView.addSubview(topSeparatorView)
-    topSeparatorView.translatesAutoresizingMaskIntoConstraints = false
-    topSeparatorView.topAnchor.constraint(equalTo: buttonContainerView.topAnchor).isActive = true
-    topSeparatorView.leadingAnchor.constraint(equalTo: buttonContainerView.leadingAnchor).isActive = true
-    topSeparatorView.trailingAnchor.constraint(equalTo: buttonContainerView.trailingAnchor).isActive = true
-    topSeparatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+    buttonContainerView.addSubview(buttonTopSeparatorView)
+    buttonTopSeparatorView.translatesAutoresizingMaskIntoConstraints = false
+    buttonTopSeparatorView.topAnchor.constraint(equalTo: buttonContainerView.topAnchor).isActive = true
+    buttonTopSeparatorView.leadingAnchor.constraint(equalTo: buttonContainerView.leadingAnchor).isActive = true
+    buttonTopSeparatorView.trailingAnchor.constraint(equalTo: buttonContainerView.trailingAnchor).isActive = true
+    buttonTopSeparatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
     
-    let bottomSeparatorView = UIView()
-    bottomSeparatorView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
-    buttonContainerView.addSubview(bottomSeparatorView)
-    bottomSeparatorView.translatesAutoresizingMaskIntoConstraints = false
-    bottomSeparatorView.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor).isActive = true
-    bottomSeparatorView.leadingAnchor.constraint(equalTo: buttonContainerView.leadingAnchor).isActive = true
-    bottomSeparatorView.trailingAnchor.constraint(equalTo: buttonContainerView.trailingAnchor).isActive = true
-    bottomSeparatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+    buttonContainerView.addSubview(buttonBottomSeparatorView)
+    buttonBottomSeparatorView.translatesAutoresizingMaskIntoConstraints = false
+    buttonBottomSeparatorView.bottomAnchor.constraint(equalTo: buttonContainerView.bottomAnchor).isActive = true
+    buttonBottomSeparatorView.leadingAnchor.constraint(equalTo: buttonContainerView.leadingAnchor).isActive = true
+    buttonBottomSeparatorView.trailingAnchor.constraint(equalTo: buttonContainerView.trailingAnchor).isActive = true
+    buttonBottomSeparatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
     
     buttonContainerView.addSubview(switchDisplayModesButton)
     switchDisplayModesButton.translatesAutoresizingMaskIntoConstraints = false
-    switchDisplayModesButton.topAnchor.constraint(equalTo: topSeparatorView.bottomAnchor).isActive = true
-    switchDisplayModesButton.bottomAnchor.constraint(equalTo: bottomSeparatorView.topAnchor).isActive = true
+    switchDisplayModesButton.topAnchor.constraint(equalTo: buttonTopSeparatorView.bottomAnchor).isActive = true
+    switchDisplayModesButton.bottomAnchor.constraint(equalTo: buttonBottomSeparatorView.topAnchor).isActive = true
     switchDisplayModesButton.leadingAnchor.constraint(equalTo: buttonContainerView.leadingAnchor).isActive = true
     switchDisplayModesButton.trailingAnchor.constraint(equalTo: buttonContainerView.trailingAnchor).isActive = true
     switchDisplayModesButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
-    switchDisplayModesButton.setTitle("Switch to Night Mode", for: .normal)
     switchDisplayModesButton.addTarget(self, action: #selector(handleSwitchDisplayModesButtonTap(_:)), for: .touchUpInside)
   }
   
@@ -267,6 +301,8 @@ class ChartViewController: UIViewController {
   // MARK: - Actions
   
   @objc private func handleSwitchDisplayModesButtonTap(_ sender: UIButton) {
-    
+    dayNightModeToggler.toggle()
+    configure(dayNightModeToggler: dayNightModeToggler)
+    delegate?.chartViewControllerDidToggleDayNightMode(self)
   }
 }

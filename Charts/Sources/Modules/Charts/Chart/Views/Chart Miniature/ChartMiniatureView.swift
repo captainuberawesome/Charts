@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ChartMiniatureView: ViewWithTouchesOutside {
+class ChartMiniatureView: ViewWithTouchesOutside, DayNightViewConfigurable {
   // MARK: - Properties
   
   private var lineViews: [SimpleLineView] = []
@@ -93,6 +93,11 @@ class ChartMiniatureView: ViewWithTouchesOutside {
       lineView.frame = bounds
       lineView.animate(to: points, isEnabled: yAxis.isEnabled)
     }
+  }
+  
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    draggableView.configure(dayNightModeToggler: dayNightModeToggler)
+    backgroundColor = dayNightModeToggler.miniatureChartBackgroundColor
   }
   
   // MARK: - Setup

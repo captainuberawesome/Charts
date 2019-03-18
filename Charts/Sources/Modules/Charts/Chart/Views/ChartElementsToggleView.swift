@@ -8,11 +8,12 @@
 
 import UIKit
 
-class ChartElementsToggleView: UIView {
+class ChartElementsToggleView: UIView, DayNightViewConfigurable {
   // MARK: - Properties
   
   private let stackView = UIStackView()
   private var chartElementViews: [ChartElementView] = []
+  private var separators: [UIView] = []
   
   // MARK: - Callbacks
   
@@ -36,6 +37,10 @@ class ChartElementsToggleView: UIView {
       stackView.removeArrangedSubview(subview)
       subview.removeFromSuperview()
     }
+    
+    chartElementViews = []
+    separators = []
+    
     for (index, yAxis) in yAxes.enumerated() {
       let chartElementView = createChartElementView(color: UIColor(hexString: yAxis.colorHex), name: yAxis.name, selected: true)
       stackView.addArrangedSubview(chartElementView)
@@ -58,6 +63,15 @@ class ChartElementsToggleView: UIView {
         separator.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
         separator.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
       }
+    }
+  }
+  
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    for chartElementView in chartElementViews {
+      chartElementView.configure(dayNightModeToggler: dayNightModeToggler)
+    }
+    for separator in separators {
+      separator.backgroundColor = dayNightModeToggler.separatorColor
     }
   }
   
@@ -90,7 +104,7 @@ class ChartElementsToggleView: UIView {
     separator.leadingAnchor.constraint(equalTo: separatorContainer.leadingAnchor, constant: 46).isActive = true
     separator.trailingAnchor.constraint(equalTo: separatorContainer.trailingAnchor).isActive = true
     separator.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
-    separator.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
+    separators.append(separator)
     return separatorContainer
   }
   

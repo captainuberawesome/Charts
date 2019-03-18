@@ -8,7 +8,8 @@
 
 import UIKit
 
-class ChartElementView: UIView {
+class ChartElementView: UIView, DayNightViewConfigurable {
+  
   // MARK: - Properties
   
   private let checkMarkIconImageView = UIImageView(image: #imageLiteral(resourceName: "checkmark"))
@@ -44,6 +45,10 @@ class ChartElementView: UIView {
     isSelected = selected
   }
   
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    titleLabel.textColor = dayNightModeToggler.brightTextColor
+  }
+  
   // MARK: - Setup
   
   private func setup() {
@@ -57,7 +62,6 @@ class ChartElementView: UIView {
     
     addSubview(titleLabel)
     titleLabel.font = UIFont.systemFont(ofSize: 14)
-    titleLabel.textColor = .black
     titleLabel.translatesAutoresizingMaskIntoConstraints = false
     titleLabel.leadingAnchor.constraint(equalTo: colorView.trailingAnchor, constant: 16).isActive = true
     titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true

@@ -12,13 +12,15 @@ private struct Constants {
   static let maxLabelCount = 6
 }
 
-class XAxisView: UIView, ViewScrollable {
+class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
+  
   // MARK: - Properties
   
   private var configuredForBounds: CGRect = .zero
   private var totalWindowSize: Double = 0
   private var currentWindowSize: Double = 0
   private var labels: [UILabel] = []
+  private let dayNightModeToggler: DayNightModeToggler
   private lazy var dateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.dateFormat = "MMM d"
@@ -31,7 +33,8 @@ class XAxisView: UIView, ViewScrollable {
   
    // MARK: - Init
   
-  override init(frame: CGRect) {
+  init(dayNightModeToggler: DayNightModeToggler, frame: CGRect = .zero) {
+    self.dayNightModeToggler = dayNightModeToggler
     super.init(frame: frame)
     clipsToBounds = true
     setupScrollView()
@@ -98,6 +101,12 @@ class XAxisView: UIView, ViewScrollable {
     return nil
   }
   
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    for label in labels {
+      label.textColor = dayNightModeToggler.dullestTextColor
+    }
+  }
+  
    // MARK: - Private methods
   
   private func scrollToSegmentationLimit(xAxis: XAxis) {
@@ -118,7 +127,7 @@ class XAxisView: UIView, ViewScrollable {
   private func createLabel() -> UILabel {
     let label = UILabel()
     addSubview(label)
-    label.textColor = UIColor.gray
+    label.textColor = dayNightModeToggler.dullestTextColor
     label.font = UIFont.systemFont(ofSize: 11, weight: .light)
     return label
   }

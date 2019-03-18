@@ -35,10 +35,10 @@ class NavigationController: UINavigationController {
   
   // MARK: - Navigation Bar Appearance
   
-  func configureNavigationBarAppearance() {
+  func configureNavigationBarAppearance(dayNightModeToggler: DayNightModeToggler) {
     navigationBar.isTranslucent = false
-    let textColor: UIColor = .black
-    let backgroundColor = UIColor(red: 247 / 255, green: 247 / 255, blue: 247 / 255, alpha: 1)
+    let textColor: UIColor = dayNightModeToggler.brightTextColor
+    let backgroundColor = dayNightModeToggler.navbarBackgroundColor
     navigationBar.setBackgroundImage(UIImage(), for: .default)
     navigationBar.tintColor = textColor
     navigationBar.barTintColor = backgroundColor

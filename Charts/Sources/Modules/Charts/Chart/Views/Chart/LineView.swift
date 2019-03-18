@@ -8,7 +8,8 @@
 
 import UIKit
 
-class LineView: UIView, ViewScrollable, LineAnimating {
+class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable {
+  
   // MARK: - Properties
   
   private let color: UIColor
@@ -16,6 +17,7 @@ class LineView: UIView, ViewScrollable, LineAnimating {
   private let circleView: CircleView
   private var totalWindowSize: Double = 0
   private var currentWindowSize: Double = 0
+  private let dayNightModeToggler: DayNightModeToggler
   private (set) var isVisible = true
   
   var oldPoints: [CGPoint] = []
@@ -32,10 +34,12 @@ class LineView: UIView, ViewScrollable, LineAnimating {
   
   // MARK: - Init
   
-  init(frame: CGRect, color: UIColor, lineWidth: CGFloat = 1.0) {
+  init(frame: CGRect, dayNightModeToggler: DayNightModeToggler, color: UIColor, lineWidth: CGFloat = 1.0) {
     self.color = color
     self.lineWidth = lineWidth
-    circleView = CircleView(frame: CGRect(origin: .zero, size: CGSize(width: 8, height: 8)), color: color)
+    self.dayNightModeToggler = dayNightModeToggler
+    circleView = CircleView(frame: CGRect(origin: .zero, size: CGSize(width: 8, height: 8)),
+                            color: color, dayNightModeToggler: dayNightModeToggler)
     super.init(frame: frame)
     isOpaque = false
     
@@ -118,6 +122,10 @@ class LineView: UIView, ViewScrollable, LineAnimating {
       animationClosure(false)
     }
     isVisible = yAxis.isEnabled
+  }
+  
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    circleView.configure(dayNightModeToggler: dayNightModeToggler)
   }
   
   // MARK: - Private methods

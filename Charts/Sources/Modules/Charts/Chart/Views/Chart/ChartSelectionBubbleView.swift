@@ -8,10 +8,12 @@
 
 import UIKit
 
-class ChartSelectionBubbleView: UIView {
+class ChartSelectionBubbleView: UIView, DayNightViewConfigurable {
+  
   // MARK: - Properties
   
-  private let bubbleView = BubbleView()
+  private let bubbleView: BubbleView
+  private let dayNightModeToggler: DayNightModeToggler
   
   var calculatedWidth: CGFloat {
     return bubbleView.calculatedWidth
@@ -23,7 +25,9 @@ class ChartSelectionBubbleView: UIView {
   
   // MARK: - Init
   
-  override init(frame: CGRect) {
+  init(dayNightModeToggler: DayNightModeToggler, frame: CGRect = .zero) {
+    self.dayNightModeToggler = dayNightModeToggler
+    bubbleView = BubbleView(dayNightModeToggler: dayNightModeToggler)
     super.init(frame: frame)
     setup()
   }
@@ -51,6 +55,10 @@ class ChartSelectionBubbleView: UIView {
     bubbleView.layoutIfNeeded()
   }
   
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    bubbleView.configure(dayNightModeToggler: dayNightModeToggler)
+  }
+  
   // MARK: - Setup
   
   private func setup() {
@@ -59,7 +67,6 @@ class ChartSelectionBubbleView: UIView {
     bubbleView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
     bubbleView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
     bubbleView.topAnchor.constraint(equalTo: topAnchor, constant: 5).isActive = true
-    bubbleView.backgroundColor = UIColor(red: 240 / 255, green: 240 / 255, blue: 245 / 255, alpha: 1)
     bubbleView.layer.cornerRadius = 5
     bubbleView.isUserInteractionEnabled = true
     bubbleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))

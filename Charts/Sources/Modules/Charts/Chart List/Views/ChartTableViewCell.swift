@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ChartTableViewCell: UITableViewCell {
+class ChartTableViewCell: UITableViewCell, DayNightViewConfigurable {
   // MARK: - Properties
   
   private let separatorView = UIView()
@@ -45,18 +45,22 @@ class ChartTableViewCell: UITableViewCell {
     separatorView.isHidden = showSeparator
   }
   
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    backgroundColor = dayNightModeToggler.lightBackgroundColor
+    contentView.backgroundColor = dayNightModeToggler.lightBackgroundColor
+    separatorView.backgroundColor = dayNightModeToggler.separatorColor
+    label.textColor = dayNightModeToggler.brightTextColor
+  }
+  
   // MARK: - Setup
   
   private func setup() {
-    contentView.backgroundColor = .white
-    
     contentView.addSubview(label)
     label.translatesAutoresizingMaskIntoConstraints = false
     label.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
     label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
     label.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
     label.font = UIFont.systemFont(ofSize: 14)
-    label.textColor = .black
     
     contentView.addSubview(separatorView)
     separatorView.translatesAutoresizingMaskIntoConstraints = false
@@ -64,7 +68,6 @@ class ChartTableViewCell: UITableViewCell {
     separatorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
     separatorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
     separatorView.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
-    separatorView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.3)
     separatorView.isHidden = true
   }
 }

@@ -25,15 +25,16 @@ struct YAxisTapData {
 
 // MARK: - ChartView
 
-class ChartView: UIView {
+class ChartView: UIView, DayNightViewConfigurable {
   // MARK: - Properties
   
-  private let chartSelectionBubbleView = ChartSelectionBubbleView()
+  private let dayNightModeToggler: DayNightModeToggler
+  private let chartSelectionBubbleView: ChartSelectionBubbleView
   private let linesContainerView = UIView()
   private var lineViews: [LineView] = []
-  private let yAxisView = YAxisView()
-  private let xAxisView = XAxisView()
-  private let backgroundLinesView = BackgroundLinesView()
+  private let yAxisView: YAxisView
+  private let xAxisView: XAxisView
+  private let backgroundLinesView: BackgroundLinesView
   private var configuredForBounds: CGRect = .zero
   private var animationStartedDate: Date?
   private var handlePanGestureWorkItem: DispatchWorkItem?
@@ -47,7 +48,12 @@ class ChartView: UIView {
   
   // MARK: - Init
   
-  override init(frame: CGRect) {
+  init(dayNightModeToggler: DayNightModeToggler, frame: CGRect = .zero) {
+    self.dayNightModeToggler = dayNightModeToggler
+    chartSelectionBubbleView = ChartSelectionBubbleView(dayNightModeToggler: dayNightModeToggler)
+    xAxisView = XAxisView(dayNightModeToggler: dayNightModeToggler)
+    yAxisView = YAxisView(dayNightModeToggler: dayNightModeToggler)
+    backgroundLinesView = BackgroundLinesView(dayNightModeToggler: dayNightModeToggler)
     super.init(frame: frame)
     setup()
     yAxisView.addGestureRecognizer(ImmediatePanGestureRecognizer(target: self, action: #selector(handlePan(_:))))
@@ -82,7 +88,8 @@ class ChartView: UIView {
     
     for (index, yAxis) in chart.yAxes.enumerated() {
       if addLineViews {
-        let lineView = LineView(frame: linesContainerView.bounds, color: UIColor(hexString: yAxis.colorHex), lineWidth: 2.0)
+        let lineView = LineView(frame: linesContainerView.bounds, dayNightModeToggler: dayNightModeToggler,
+                                color: UIColor(hexString: yAxis.colorHex), lineWidth: 2.0)
         lineViews.append(lineView)
         linesContainerView.addSubview(lineView)
         lineView.frame = linesContainerView.bounds
@@ -166,6 +173,16 @@ class ChartView: UIView {
       chartSelectionBubbleView.frame.origin = CGPoint(x: bounds.width + 5 - bubbleWidth,
                                                       y: chartSelectionBubbleView.frame.origin.y)
     }
+  }
+  
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    for lineView in lineViews {
+      lineView.configure(dayNightModeToggler: dayNightModeToggler)
+    }
+    chartSelectionBubbleView.configure(dayNightModeToggler: dayNightModeToggler)
+    xAxisView.configure(dayNightModeToggler: dayNightModeToggler)
+    yAxisView.configure(dayNightModeToggler: dayNightModeToggler)
+    backgroundLinesView.configure(dayNightModeToggler: dayNightModeToggler)
   }
   
   // MARK: - Setup

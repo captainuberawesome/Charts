@@ -13,7 +13,7 @@ private struct Constants {
   static let animationDuration: TimeInterval = 0.2
 }
 
-class BackgroundLinesView: UIView {
+class BackgroundLinesView: UIView, DayNightViewConfigurable {
    // MARK: - Properties
   
   private var shapeLayers: [CAShapeLayer] = []
@@ -24,12 +24,15 @@ class BackgroundLinesView: UIView {
   private var lineStartingPoints: [CGPoint] = []
   private var lineStartingPointsDuringAnimation: [CGPoint] = []
   private var isAnimating = false
+  private let dayNightModeToggler: DayNightModeToggler
   
    // MARK: - Init
   
-  override init(frame: CGRect) {
+  init(dayNightModeToggler: DayNightModeToggler, frame: CGRect = .zero) {
+    self.dayNightModeToggler = dayNightModeToggler
     super.init(frame: frame)
     setup()
+    configure(dayNightModeToggler: dayNightModeToggler)
   }
   
   required init?(coder aDecoder: NSCoder) {
@@ -50,7 +53,7 @@ class BackgroundLinesView: UIView {
   func addVerticalLine(atXCoordinate xCoordinate: CGFloat) {
     verticalLineView.removeFromSuperview()
     addSubview(verticalLineView)
-    verticalLineView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.5)
+    verticalLineView.backgroundColor = dayNightModeToggler.separatorColor
     verticalLineView.frame = CGRect(x: xCoordinate - 0.5, y: 5, width: 1,
                                     height: bounds.height - 5)
   }
@@ -74,14 +77,21 @@ class BackgroundLinesView: UIView {
     }
   }
   
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    for shapeLayer in shapeLayers {
+      shapeLayer.strokeColor = dayNightModeToggler.chartBackgroundLinesColor.cgColor
+    }
+    verticalLineView.backgroundColor = dayNightModeToggler.separatorColor
+  }
+  
    // MARK: - Setup
   
   private func setup() {
     for index in 0..<Constants.lineCount {
       let shapeLayer = CAShapeLayer()
       shapeLayer.fillColor = UIColor.clear.cgColor
-      shapeLayer.strokeColor = UIColor.lightGray.withAlphaComponent(0.5).cgColor
-      shapeLayer.lineWidth = index == 0 ? 1 : 0.2
+      shapeLayer.strokeColor = dayNightModeToggler.chartBackgroundLinesColor.cgColor
+      shapeLayer.lineWidth = index == 0 ? 1 : 0.5
       shapeLayer.frame = bounds
       shapeLayers.append(shapeLayer)
       layer.addSublayer(shapeLayer)

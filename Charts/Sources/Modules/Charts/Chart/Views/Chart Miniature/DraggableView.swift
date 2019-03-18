@@ -14,7 +14,7 @@ private struct Constants {
   static let iconWidth: CGFloat = 5.5
 }
 
-class DraggableView: UIView {
+class DraggableView: UIView, DayNightViewConfigurable {
   // MARK: - Properties
   
   private let leftEdgeView = UIView()
@@ -113,6 +113,20 @@ class DraggableView: UIView {
     return bounds.contains(point)
   }
   
+  // MARK: - Public methods
+  
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    let backgroundColor = dayNightModeToggler.draggableViewHandleColor
+    let overlayColor = dayNightModeToggler.draggableViewOverlayColor
+    
+    leftEdgeView.backgroundColor = backgroundColor
+    rightEdgeView.backgroundColor = backgroundColor
+    topSeparator.backgroundColor = backgroundColor
+    bottomSeparator.backgroundColor = backgroundColor
+    leftDimmingView.backgroundColor = overlayColor
+    rightDimmingView.backgroundColor = overlayColor
+  }
+  
   // MARK: - Setup
   
   private func setup() {
@@ -128,14 +142,6 @@ class DraggableView: UIView {
     addSubview(topSeparator)
     addSubview(bottomSeparator)
     
-    let backgroundColor = UIColor(red: 202 / 255, green: 212 / 255, blue: 222 / 255, alpha: 0.9)
-    let overlayColor = UIColor(red: 239 / 255, green: 239 / 255, blue: 244 / 255, alpha: 0.6)
-    leftEdgeView.backgroundColor = backgroundColor
-    rightEdgeView.backgroundColor = backgroundColor
-    topSeparator.backgroundColor = backgroundColor
-    bottomSeparator.backgroundColor = backgroundColor
-    leftDimmingView.backgroundColor = overlayColor
-    rightDimmingView.backgroundColor = overlayColor
     leftIconView.tintColor = .white
     leftIconView.frame.size = CGSize(width: Constants.iconWidth, height: Constants.iconHeight)
     leftEdgeView.contentMode = .scaleAspectFit
