@@ -12,17 +12,22 @@ private struct Constants {
   static let animationDuration: TimeInterval = 0.2
 }
 
-class SimpleLineView: UIView {
-  private var points: [CGPoint]
+class SimpleLineView: UIView, LineAnimating {
+  // MARK: - Properties
+  
   private let color: UIColor
   private let lineWidth: CGFloat
-  private var shapeLayer = CAShapeLayer()
-  private var displayLink: CADisplayLink?
-  private var startTime: CFAbsoluteTime?
-  private var oldPoints: [CGPoint]
-  private var isAnimating = false
   private var isVisible = true
-  private var animationCompletionClosure: (() -> Void)?
+  
+  var oldPoints: [CGPoint]
+  var intermediatePoints: [CGPoint] = []
+  var points: [CGPoint]
+  var shapeLayer = CAShapeLayer()
+  var displayLink: CADisplayLink?
+  var startTime: CFAbsoluteTime?
+  var isAnimating = false
+  
+  // MARK: - Init
   
   init(frame: CGRect, points: [CGPoint], color: UIColor, lineWidth: CGFloat = 1.0) {
     self.points = points
@@ -40,33 +45,40 @@ class SimpleLineView: UIView {
     shapeLayer.path = path(points: points).cgPath
   }
   
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
+  // MARK: - Overrides
+  
   override func layoutSubviews() {
     super.layoutSubviews()
     shapeLayer.frame = bounds
   }
   
-  required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
+  // MARK: - Public methods
   
   func animate(to points: [CGPoint], isEnabled: Bool) {
-    guard !isAnimating else {
-      animationCompletionClosure = { [weak self, points] in
-        self?.animate(to: points, isEnabled: isEnabled)
-      }
-      return
+    if isAnimating {
+      oldPoints = intermediatePoints
+    } else {
+      oldPoints = self.points
     }
-    isAnimating = true
-    oldPoints = self.points
+    
     self.points = points
     startTime = CFAbsoluteTimeGetCurrent()
-    displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
-    displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
+    
+    if !isAnimating {
+      displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
+      displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
+    }
+    
+    isAnimating = true
     
     let animationClosure: ((_ hide: Bool) -> Void) = { hide in
-      UIView.animate(withDuration: 0.2, animations: {
+      UIView.animate(withDuration: 0.2) {
         self.alpha = hide ? 0.0 : 1.0
-      })
+      }
     }
     if !isEnabled, isVisible {
       animationClosure(true)
@@ -76,47 +88,9 @@ class SimpleLineView: UIView {
     isVisible = isEnabled
   }
   
-  private func path(points: [CGPoint]) -> UIBezierPath {
-    let path = UIBezierPath()
-    path.lineJoinStyle = .round
-    path.lineCapStyle = .butt
-    for (index, point) in points.enumerated() {
-      if index == 0 {
-        path.move(to: point)
-      } else {
-        path.addLine(to: point)
-      }
-    }
-    return path
-  }
-  
-  private func path(between first: [CGPoint], second: [CGPoint], percentage: Double) -> UIBezierPath {
-    var points: [CGPoint] = []
-    for index in 0..<min(first.count, second.count) {
-      let firstPoint = first[index]
-      let secondPoint = second[index]
-      let x = firstPoint.x + CGFloat(percentage) * (secondPoint.x - firstPoint.x)
-      let y = firstPoint.y + CGFloat(percentage) * (secondPoint.y - firstPoint.y)
-      points.append(CGPoint(x: x, y: y))
-    }
-    return path(points: points)
-  }
+  // MARK: - Actions
   
   @objc private func handleDisplayLink(displayLink: CADisplayLink) {
-    guard let startTime = startTime else { return }
-    let elapsed = CFAbsoluteTimeGetCurrent() - startTime
-    let percent = elapsed / Constants.animationDuration
-    
-    guard percent < 1 else {
-      oldPoints = points
-      shapeLayer.path = path(points: points).cgPath
-      displayLink.remove(from: RunLoop.main, forMode: RunLoop.Mode.common)
-      isAnimating = false
-      self.startTime = nil
-      return
-    }
-    
-    let newPath = path(between: oldPoints, second: points, percentage: percent)
-    shapeLayer.path = newPath.cgPath
+    animate(with: displayLink)
   }
 }

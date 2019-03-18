@@ -46,4 +46,3 @@ class NavigationController: UINavigationController {
                                          NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16, weight: .medium)]
   }
 }
-

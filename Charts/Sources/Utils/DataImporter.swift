@@ -8,6 +8,48 @@
 
 import Foundation
 
+// MARK: - DataImporter
+
+struct DataImporter {
+  static func importData(jsonFileName: String) -> [Chart] {
+    guard let path = Bundle.main.path(forResource: jsonFileName, ofType: "json") else {
+      return []
+    }
+    var charts: [Chart] = []
+    do {
+      let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+      let jsonResult = try JSONSerialization.jsonObject(with: data, options: .mutableLeaves)
+      guard let chartRawDataArray = jsonResult as? [[String: Any]] else {
+        return []
+      }
+      for chartRawData in chartRawDataArray {
+        let chartData = try ChartData(dictionary: chartRawData)
+        let chartColumns = try chartData.toChartColumns()
+        
+        let yValues = chartColumns.yColumns.flatMap { $0.values }
+        
+        let yMin = yValues.min() ?? 0
+        let yMax = yValues.max() ?? 0
+        
+        let yAxisSpan = YAxis.calculateSpan(yMin: yMin, yMax: yMax)
+        
+        let yAxes = chartColumns.yColumns.map {
+          YAxis(values: $0.values, colorHex: $0.colorHex, name: $0.name,
+                minValueAcrossY: yAxisSpan.minY, maxValueAcrossY: yAxisSpan.maxY, step: yAxisSpan.step)
+        }
+        let xAxis = XAxis(values: chartColumns.xColumn.values)
+        let chart = Chart(xAxis: xAxis, yAxes: yAxes)
+        charts.append(chart)
+      }
+    } catch {
+      print("error while parsing JSON: \(error)")
+    }
+    return charts
+  }
+}
+
+// MARK: - Errors
+
 private enum ColumnCreationError: Error {
   case noType, noColor, noName, noValues
 }
@@ -20,19 +62,31 @@ private enum ColumnParsingError: Error {
   case noLabel
 }
 
-private enum Column {
-  case line(colorHex: String, name: String, values: [Int]), x(values: [TimeInterval])
+private enum ChartParsingError: Error {
+  case noTypes, noNames, noColors, noColumns
 }
+
+// MARK: - Column
+
+private enum Column {
+  case line(colorHex: String, name: String, values: [Int]), xAxis(values: [TimeInterval])
+}
+
+// MARK: - XColumn
 
 private struct XColumn {
   let values: [TimeInterval]
 }
+
+// MARK: - YColumn
 
 private struct YColumn {
   let colorHex: String
   let name: String
   let values: [Int]
 }
+
+// MARK: - ChartColumns
 
 private struct ChartColumns {
   let xColumn: XColumn
@@ -43,7 +97,7 @@ private struct ChartColumns {
     var newXColumn: XColumn?
     for column in columns {
       switch column {
-      case .x(let values):
+      case .xAxis(let values):
         newXColumn = XColumn(values: values)
       case .line(let colorHex, let name, let values):
         newYColumns.append(YColumn(colorHex: colorHex, name: name, values: values))
@@ -58,6 +112,8 @@ private struct ChartColumns {
   }
 }
 
+// MARK: - ColumnData
+
 private struct ColumnData {
   let label: String
   let values: [Any]
@@ -71,9 +127,7 @@ private struct ColumnData {
   }
 }
 
-private enum ChartParsingError: Error {
-  case noTypes, noNames, noColors, noColumns
-}
+// MARK: - ChartData
 
 private struct ChartData {
   let columnDataArray: [ColumnData]
@@ -141,49 +195,11 @@ private struct ChartData {
           throw ColumnCreationError.noValues
         }
         let timeIntervals = values.map { TimeInterval(Double($0) / 1000) }
-        newColumns.append(.x(values: timeIntervals))
+        newColumns.append(.xAxis(values: timeIntervals))
       default:
         throw ColumnCreationError.noType
       }
     }
     return try ChartColumns(columns: newColumns)
-  }
-}
-
-struct DataImporter {
-  static func importData() -> [Chart] {
-    guard let path = Bundle.main.path(forResource: "chart_data", ofType: "json") else {
-      return []
-    }
-    var charts: [Chart] = []
-    do {
-      let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
-      let jsonResult = try JSONSerialization.jsonObject(with: data, options: .mutableLeaves)
-      guard let chartRawDataArray = jsonResult as? [[String: Any]] else {
-        return []
-      }
-      for chartRawData in chartRawDataArray {
-        let chartData = try ChartData(dictionary: chartRawData)
-        let chartColumns = try chartData.toChartColumns()
-        
-        let yValues = chartColumns.yColumns.flatMap({ $0.values })
-        
-        let yMin = yValues.min() ?? 0
-        let yMax = yValues.max() ?? 0
-        
-        let (minValueAcrossY, maxValueAcrossY, step) = YAxis.calculateSpan(yMin: yMin, yMax: yMax)
-        
-        let yAxes = chartColumns.yColumns.map {
-          YAxis(values: $0.values, colorHex: $0.colorHex, name: $0.name,
-                minValueAcrossY: minValueAcrossY, maxValueAcrossY: maxValueAcrossY, step: step)
-        }
-        let xAxis = XAxis(values: chartColumns.xColumn.values)
-        let chart = Chart(xAxis: xAxis, yAxes: yAxes)
-        charts.append(chart)
-      }
-    } catch {
-      print("error while parsing JSON: \(error)")
-    }
-    return charts
   }
 }

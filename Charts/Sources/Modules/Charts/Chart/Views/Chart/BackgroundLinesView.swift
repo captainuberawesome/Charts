@@ -14,14 +14,18 @@ private struct Constants {
 }
 
 class BackgroundLinesView: UIView {
+   // MARK: - Properties
+  
   private var shapeLayers: [CAShapeLayer] = []
   private let verticalLineView = UIView()
   private var displayLink: CADisplayLink?
   private var startTime: CFAbsoluteTime?
   private var stepPercentage: Double = 0
   private var lineStartingPoints: [CGPoint] = []
+  private var lineStartingPointsDuringAnimation: [CGPoint] = []
   private var isAnimating = false
-  private var animationCompletionClosure: (() -> Void)?
+  
+   // MARK: - Init
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -31,6 +35,8 @@ class BackgroundLinesView: UIView {
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+  
+   // MARK: - Public methods
   
   func configure(yAxis: YAxis) {
     stepPercentage = yAxis.step.percentageValue
@@ -54,21 +60,21 @@ class BackgroundLinesView: UIView {
   }
   
   func animate(yAxis: YAxis) {
-    guard !isAnimating else {
-      animationCompletionClosure = { [weak self, yAxis] in
-        self?.animate(yAxis: yAxis)
-      }
-      return
-    }
     guard fabs(stepPercentage - yAxis.step.percentageValue) > 1e-4 else {
       return
     }
     isAnimating = true
     stepPercentage = yAxis.step.percentageValue
     startTime = CFAbsoluteTimeGetCurrent()
-    displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
-    displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
+    if isAnimating {
+      lineStartingPoints = lineStartingPointsDuringAnimation
+    } else {
+      displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
+      displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
+    }
   }
+  
+   // MARK: - Setup
   
   private func setup() {
     for index in 0..<Constants.lineCount {
@@ -81,6 +87,8 @@ class BackgroundLinesView: UIView {
       layer.addSublayer(shapeLayer)
     }
   }
+  
+   // MARK: - Private methods
   
   private func path(index: Int, stepPercentage: Double) -> UIBezierPath {
     let path = UIBezierPath()
@@ -97,17 +105,20 @@ class BackgroundLinesView: UIView {
     let newEndingPoint = CGPoint(x: bounds.width, y: bounds.height - CGFloat(index) * CGFloat(stepPercentage) * bounds.height)
     let oldEndingPoint = CGPoint(x: bounds.width, y: oldStartingPoint.y)
     
-    let x1 = oldStartingPoint.x + CGFloat(percentage) * (newStartingPoint.x - oldStartingPoint.x)
-    let y1 = oldStartingPoint.y + CGFloat(percentage) * (newStartingPoint.y - oldStartingPoint.y)
+    let x1Coordinate = oldStartingPoint.x + CGFloat(percentage) * (newStartingPoint.x - oldStartingPoint.x)
+    let y1Coordinate = oldStartingPoint.y + CGFloat(percentage) * (newStartingPoint.y - oldStartingPoint.y)
     
-    let x2 = oldEndingPoint.x + CGFloat(percentage) * (newEndingPoint.x - oldEndingPoint.x)
-    let y2 = oldEndingPoint.y + CGFloat(percentage) * (newEndingPoint.y - oldEndingPoint.y)
+    let x2Coordinate = oldEndingPoint.x + CGFloat(percentage) * (newEndingPoint.x - oldEndingPoint.x)
+    let y2Coordinate = oldEndingPoint.y + CGFloat(percentage) * (newEndingPoint.y - oldEndingPoint.y)
     
     let path = UIBezierPath()
-    path.move(to: CGPoint(x: x1, y: y1))
-    path.addLine(to: CGPoint(x: x2, y: y2))
+    path.move(to: CGPoint(x: x1Coordinate, y: y1Coordinate))
+    lineStartingPointsDuringAnimation.append(CGPoint(x: x1Coordinate, y: y1Coordinate))
+    path.addLine(to: CGPoint(x: x2Coordinate, y: y2Coordinate))
     return path
   }
+  
+   // MARK: - Actions
   
   @objc private func handleDisplayLink(displayLink: CADisplayLink) {
     guard let startTime = startTime else { return }
@@ -121,6 +132,7 @@ class BackgroundLinesView: UIView {
       return
     }
     
+    lineStartingPointsDuringAnimation = []
     for index in 0..<Constants.lineCount {
       let shapeLayer = shapeLayers[index]
       shapeLayer.path = path(index: index, stepPercentage: stepPercentage,

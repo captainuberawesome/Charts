@@ -9,6 +9,8 @@
 import Foundation
 
 class Chart {
+  // MARK: - Properties
+  
   var yAxes: [YAxis]
   var toggledYAxes: [YAxis] {
     return yAxes.filter { $0.isEnabled }
@@ -19,6 +21,8 @@ class Chart {
   var onSegmentationUpdated: (() -> Void)?
   var onSegmentationNormalizedUpdated: (() -> Void)?
   
+  // MARK: - Initializer
+  
   init(xAxis: XAxis, yAxes: [YAxis]) {
     self.xAxis = xAxis
     self.yAxes = yAxes
@@ -27,6 +31,8 @@ class Chart {
       self.updateSegmentation()
     }
   }
+  
+  // MARK: - Public methods
   
   func updateSegmentation(shouldWait: Bool = true) {
     self.normalizationWorkItem?.cancel()
@@ -69,13 +75,13 @@ class Chart {
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: work)
       normalizationWorkItem = work
     } else {
-      let yValuesRaw = toggledYAxes.flatMap({ $0.allValues })
-      let yValues = yValuesRaw.compactMap({ $0.actualValue })
-      let (minValueAcrossY, maxValueAcrossY, _) = YAxis.calculateSpan(yMin: yValues.min() ?? 0, yMax: yValues.max() ?? 0)
+      let yValuesRaw = toggledYAxes.flatMap { $0.allValues }
+      let yValues = yValuesRaw.compactMap { $0.actualValue }
+      let yAxisSpan = YAxis.calculateSpan(yMin: yValues.min() ?? 0, yMax: yValues.max() ?? 0)
       
       for (index, yAxis) in yAxes.enumerated() {
         yAxis.updateSegmentation(unnormalizedValues: valuesArray[index], minValue: minValue, maxValue: maxValue)
-        yAxis.updateNormalizedValues(minValue: minValueAcrossY, maxValue: maxValueAcrossY)
+        yAxis.updateNormalizedValues(minValue: yAxisSpan.minY, maxValue: yAxisSpan.maxY)
       }
 
       onSegmentationNormalizedUpdated?()

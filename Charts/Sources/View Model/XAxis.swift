@@ -14,6 +14,8 @@ struct XValue {
 }
 
 class XAxis {
+  // MARK: - Properties
+  
   private let rawValues: [TimeInterval]
   private (set) var allValues: [XValue]
   private var ignoreSegmentationChange = false
@@ -53,6 +55,8 @@ class XAxis {
   
   var onSegmentationChanged: (() -> Void)?
   
+  // MARK: - Initializer
+  
   init(values: [TimeInterval]) {
     self.rawValues = values
     allValues = Array(0..<values.count).map {
@@ -60,6 +64,8 @@ class XAxis {
     }
     rightSegmentationIndex = allValues.count
   }
+  
+  // MARK: - Public methods
   
   func updateBothSegmentationLimits(leftLimit: Double, rightLimit: Double) {
     ignoreSegmentationChange = true

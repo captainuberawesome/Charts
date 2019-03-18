@@ -12,13 +12,27 @@ private struct Constants {
   static let numberOfSteps = 6
 }
 
+// MARK: - YValue
+
 struct YValue {
   var percentageValue: Double
   var actualValue: Int
   var colorHex: String
 }
 
+// MARK: - YAxisSpan
+
+struct YAxisSpan {
+  let minY: Int
+  let maxY: Int
+  let step: Int
+}
+
+// MARK: - YAxis
+
 class YAxis {
+  // MARK: - Properties
+  
   private let rawValues: [Int]
   private var maxValueAcrossY: Int
   private var minValueAcrossY: Int
@@ -34,6 +48,8 @@ class YAxis {
   let name: String
   
   var isEnabled = true
+  
+  // MARK: - Initializer
   
   init(values: [Int], colorHex: String, name: String, minValueAcrossY: Int, maxValueAcrossY: Int, step: Int) {
     self.colorHex = colorHex
@@ -54,21 +70,23 @@ class YAxis {
     minValueAcrossYSegmented = minValueAcrossY
   }
   
+  // MARK: - Public methods
+  
   func segmentedUnnormalizedValues(leftSegmentationIndex: Int, rightSegmentationIndex: Int) -> [Int] {
-    let unnormalizedValues = rawValues.enumerated().filter({
+    let unnormalizedValues = rawValues.enumerated().filter {
       return $0.offset >= leftSegmentationIndex && $0.offset <= rightSegmentationIndex
-    }).compactMap({ $0.element })
+    }.compactMap { $0.element } 
     return unnormalizedValues
   }
   
   func updateSegmentation(unnormalizedValues: [Int], minValue: Int, maxValue: Int) {
-    let (minValueAcrossY, maxValueAcrossY, step) = YAxis.calculateSpan(yMin: minValue, yMax: maxValue)
-    maxValueAcrossYSegmented = maxValueAcrossY
-    minValueAcrossYSegmented = minValueAcrossY
-    self.step = YValue(percentageValue: Double(step) / Double(maxValueAcrossY - minValueAcrossY),
-                       actualValue: step, colorHex: colorHex)
+    let yAxisSpan = YAxis.calculateSpan(yMin: minValue, yMax: maxValue)
+    maxValueAcrossYSegmented = yAxisSpan.maxY
+    minValueAcrossYSegmented = yAxisSpan.minY
+    self.step = YValue(percentageValue: Double(yAxisSpan.step) / Double(yAxisSpan.maxY - yAxisSpan.minY),
+                       actualValue: yAxisSpan.step, colorHex: colorHex)
     allValuesNormalizedToSegment = rawValues.map {
-      YValue(percentageValue: Double($0 - minValueAcrossY) / Double(maxValueAcrossY - minValueAcrossY), actualValue: $0,
+      YValue(percentageValue: Double($0 - yAxisSpan.minY) / Double(yAxisSpan.maxY - yAxisSpan.minY), actualValue: $0,
              colorHex: colorHex)
     }
   }
@@ -79,7 +97,9 @@ class YAxis {
     }
   }
   
-  static func calculateSpan(yMin: Int, yMax: Int) -> (minY: Int, maxY: Int, step: Int) {
+  // MARK: - Public static methods
+  
+  static func calculateSpan(yMin: Int, yMax: Int) -> YAxisSpan {
     var step = calculateStep(yMin: yMin, yMax: yMax)
     
     var minValueAcrossY = Int(floor(Double(yMin)) / Double(step)) * step
@@ -103,7 +123,7 @@ class YAxis {
       maxValueAcrossY += Int(ceil(0.75 * Double(step)))
     }
     
-    return (minValueAcrossY, maxValueAcrossY, step)
+    return YAxisSpan(minY: minValueAcrossY, maxY: maxValueAcrossY, step: step)
   }
   
   static private func calculateStep(yMin: Int, yMax: Int) -> Int {

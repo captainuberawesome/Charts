@@ -9,6 +9,8 @@
 import UIKit
 
 class ChartViewController: UIViewController {
+  // MARK: - Properties
+  
   private let contentView = UIView()
   private let scrollView = UIScrollView()
   private let chartNameLabel = UILabel()
@@ -21,6 +23,8 @@ class ChartViewController: UIViewController {
   private var chartUpdateWorkItem: DispatchWorkItem?
   private var switchDisplayModesButton = UIButton(type: .system)
   
+  // MARK: - Init
+  
   init(chart: Chart, chartName: String) {
     self.chart = chart
     chartNameLabel.text = chartName.uppercased()
@@ -31,8 +35,11 @@ class ChartViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
   
+  // MARK: - View life cycle
+  
   override func viewDidLoad() {
     super.viewDidLoad()
+    setDefaultBackButtonTitle()
     setup()
     configure()
     bindChart()
@@ -47,6 +54,13 @@ class ChartViewController: UIViewController {
                                              rightLimit: chartMiniatureView.rightHandleValue)
   }
   
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    chartView.animationsAllowed = true
+  }
+  
+  // MARK: - Setup
+  
   private func setup() {
     view.backgroundColor = UIColor(red: 239 / 255, green: 239 / 255, blue: 244 / 255, alpha: 1)
     setupScrollView()
@@ -56,11 +70,6 @@ class ChartViewController: UIViewController {
     setupChartMiniatureView()
     setupChartElemetsToggleView()
     setupSwitchDisplayModesButton()
-  }
-  
-  private func configure() {
-    chartElemetsToggleView.configure(yAxes: chart.yAxes)
-    chartView.configure(chart: chart)
   }
   
   private func setupScrollView() {
@@ -94,8 +103,8 @@ class ChartViewController: UIViewController {
     chartNameLabelContainer.addSubview(chartNameLabel)
     chartNameLabel.translatesAutoresizingMaskIntoConstraints = false
     chartNameLabel.leadingAnchor.constraint(equalTo: chartNameLabelContainer.leadingAnchor, constant: 16).isActive = true
-    chartNameLabel.topAnchor.constraint(equalTo: chartNameLabelContainer.topAnchor, constant: 25).isActive = true
-    chartNameLabel.font = UIFont.systemFont(ofSize: 16, weight: .light)
+    chartNameLabel.topAnchor.constraint(equalTo: chartNameLabelContainer.topAnchor, constant: 30).isActive = true
+    chartNameLabel.font = UIFont.systemFont(ofSize: 14, weight: .light)
     chartNameLabel.textColor = .darkGray
   }
   
@@ -133,6 +142,15 @@ class ChartViewController: UIViewController {
     chartView.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor, constant: 16).isActive = true
     chartView.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor, constant: -16).isActive = true
     chartView.heightAnchor.constraint(equalToConstant: 310).isActive = true
+    
+    chartView.onNeedsReconfiguring = { [weak self, unowned chartView] in
+      guard let self = self else { return }
+      chartView.configure(chart: self.chart)
+    }
+    chartView.onChartTapped = { [weak self, unowned chartView] location in
+      guard let self = self else { return }
+      chartView.addSelectionBubble(location: location, chart: self.chart)
+    }
   }
   
   private func setupChartMiniatureView() {
@@ -166,7 +184,7 @@ class ChartViewController: UIViewController {
     chartElemetsToggleView.translatesAutoresizingMaskIntoConstraints = false
     chartElemetsToggleView.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor).isActive = true
     chartElemetsToggleView.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor).isActive = true
-    chartElemetsToggleView.topAnchor.constraint(equalTo: chartMiniatureView.bottomAnchor, constant: 16).isActive = true
+    chartElemetsToggleView.topAnchor.constraint(equalTo: chartMiniatureView.bottomAnchor, constant: 8).isActive = true
     chartElemetsToggleView.bottomAnchor.constraint(equalTo: chartsBackgroundView.bottomAnchor).isActive = true
     chartElemetsToggleView.onToggledYAxis = { [weak self] _ in
       self?.handleYAxisToggled()
@@ -213,6 +231,15 @@ class ChartViewController: UIViewController {
     switchDisplayModesButton.addTarget(self, action: #selector(handleSwitchDisplayModesButtonTap(_:)), for: .touchUpInside)
   }
   
+  // MARK: - Configure chart
+  
+  private func configure() {
+    chartElemetsToggleView.configure(yAxes: chart.yAxes)
+    chartView.configure(chart: chart)
+  }
+  
+  // MARK: - Bind chart callbacks
+  
   private func bindChart() {
     chart.onSegmentationUpdated = { [weak self] in
       guard let self = self else { return }
@@ -230,13 +257,16 @@ class ChartViewController: UIViewController {
     }
   }
   
+  // MARK: - Private methods
+  
   private func handleYAxisToggled() {
     chart.updateSegmentation(shouldWait: false)
     chartMiniatureView.animate(to: chart)
   }
   
+  // MARK: - Actions
+  
   @objc private func handleSwitchDisplayModesButtonTap(_ sender: UIButton) {
     
   }
 }
-

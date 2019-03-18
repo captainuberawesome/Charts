@@ -15,6 +15,8 @@ private struct Constants {
 }
 
 class DraggableView: UIView {
+  // MARK: - Properties
+  
   private let leftEdgeView = UIView()
   private let leftIconView = UIImageView(image: #imageLiteral(resourceName: "chevron-left"))
   private let leftEdgeDraggingView = UIView()
@@ -27,8 +29,9 @@ class DraggableView: UIView {
   private let leftDimmingView = UIView()
   private let rightDimmingView = UIView()
   private var ignoreValueChange = false
-  
+  private var updatedSubviewsForBounds: CGRect = .zero
   private var centerDraggingViewWidth: CGFloat = 0
+  
   private var leftEdgeViewOriginX: CGFloat = 0 {
     didSet {
       guard !ignoreValueChange else {
@@ -45,7 +48,6 @@ class DraggableView: UIView {
       onRightHandleValueChanged?(rightHandleValue)
     }
   }
-  private var updatedSubviewsForBounds: CGRect = .zero
   
   var leftHandleValue: Double {
     get {
@@ -71,9 +73,13 @@ class DraggableView: UIView {
     }
   }
   
-  var onLeftHandleValueChanged: ((Double) -> Void)?
-  var onRightHandleValueChanged: ((Double) -> Void)?
+  // MARK: - Callbacks
+  
   var onBothValueChanged: ((Double, Double) -> Void)?
+  var onRightHandleValueChanged: ((Double) -> Void)?
+  var onLeftHandleValueChanged: ((Double) -> Void)?
+  
+  // MARK: - Init
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -83,6 +89,31 @@ class DraggableView: UIView {
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+  
+  // MARK: - Overrides
+  
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    guard bounds.width > 0, bounds.height > 0 else { return }
+    if rightEdgeViewMaxX == 0 {
+      rightEdgeViewMaxX = bounds.size.width
+    }
+    
+    if bounds != updatedSubviewsForBounds {
+      updatedSubviewsForBounds = bounds
+      updateSubviewFrames()
+    }
+  }
+  
+  override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+    if leftEdgeDraggingView.frame.contains(point)
+      || rightEdgeDraggingView.frame.contains(point) {
+      return true
+    }
+    return bounds.contains(point)
+  }
+  
+  // MARK: - Setup
   
   private func setup() {
     addSubview(leftDimmingView)
@@ -117,26 +148,7 @@ class DraggableView: UIView {
     centerDraggingView.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(dragCenter(_:))))
   }
   
-  override func layoutSubviews() {
-    super.layoutSubviews()
-    guard bounds.width > 0, bounds.height > 0 else { return }
-    if rightEdgeViewMaxX == 0 {
-      rightEdgeViewMaxX = bounds.size.width
-    }
-    
-    if bounds != updatedSubviewsForBounds {
-      updatedSubviewsForBounds = bounds
-      updateSubviewFrames()
-    }
-  }
-  
-  override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-    if leftEdgeDraggingView.frame.contains(point)
-      || rightEdgeDraggingView.frame.contains(point) {
-      return true
-    }
-    return bounds.contains(point)
-  }
+  // MARK: - Private methods
   
   private func updateSubviewFrames() {
     leftEdgeView.frame = CGRect(x: leftEdgeViewOriginX, y: 0, width: Constants.handleWidth, height: bounds.size.height)
@@ -168,6 +180,8 @@ class DraggableView: UIView {
                                     width: bounds.size.width - rightEdgeView.frame.maxX + Constants.handleWidth,
                                     height: bounds.size.height - 2)
   }
+  
+  // MARK: - Actions
   
   @objc private func dragLeft(_ gestureRecognizer: UIPanGestureRecognizer) {
     switch gestureRecognizer.state {

@@ -9,6 +9,8 @@
 import UIKit
 
 class ChartMiniatureView: ViewWithTouchesOutside {
+  // MARK: - Properties
+  
   private var lineViews: [SimpleLineView] = []
   private var configuredForBounds: CGRect = .zero
   private let draggableView = DraggableView()
@@ -31,10 +33,14 @@ class ChartMiniatureView: ViewWithTouchesOutside {
     }
   }
   
+  // MARK: - Callbacks
+  
   var onNeedsReconfiguring: (() -> Void)?
   var onLeftHandleValueChanged: ((Double) -> Void)?
   var onRightHandleValueChanged: ((Double) -> Void)?
   var onBothValueChanged: ((Double, Double) -> Void)?
+  
+  // MARK: - Init
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -45,12 +51,51 @@ class ChartMiniatureView: ViewWithTouchesOutside {
     fatalError("init(coder:) has not been implemented")
   }
   
+  // MARK: - Overrides
+  
   override func layoutSubviews() {
     super.layoutSubviews()
     if bounds != configuredForBounds {
       onNeedsReconfiguring?()
     }
   }
+  
+  // MARK: - Public methods
+  
+  func configure(chart: Chart) {
+    guard bounds.width > 0, bounds.height > 0 else {
+      return
+    }
+    
+    if bounds == configuredForBounds {
+      return
+    }
+    
+    lineViews.forEach { $0.removeFromSuperview() }
+    lineViews = []
+    let xAxis = chart.xAxis
+    for yAxis in chart.toggledYAxes {
+      let points = createPointsForLines(xAxis: xAxis, yAxis: yAxis)
+      let lineView = SimpleLineView(frame: bounds, points: points, color: UIColor(hexString: yAxis.colorHex))
+      lineView.clipsToBounds = true
+      lineViews.append(lineView)
+      addSubview(lineView)
+    }
+    configuredForBounds = bounds
+    bringSubviewToFront(draggableView)
+  }
+  
+  func animate(to chart: Chart) {
+    let xAxis = chart.xAxis
+    for (index, yAxis) in chart.yAxes.enumerated() {
+      let points = createPointsForLines(xAxis: xAxis, yAxis: yAxis)
+      let lineView = lineViews[index]
+      lineView.frame = bounds
+      lineView.animate(to: points, isEnabled: yAxis.isEnabled)
+    }
+  }
+  
+  // MARK: - Setup
   
   private func setup() {
     addSubview(draggableView)
@@ -70,46 +115,15 @@ class ChartMiniatureView: ViewWithTouchesOutside {
     }
   }
   
-  func configure(chart: Chart) {
-    guard bounds.width > 0, bounds.height > 0 else {
-      return
-    }
-    
-    if bounds == configuredForBounds {
-      return
-    }
-    
-    lineViews.forEach { $0.removeFromSuperview() }
-    lineViews = []
-    let xAxis = chart.xAxis
-    for yAxis in chart.toggledYAxes {
-      var points: [CGPoint] = []
-      for (x, y) in zip(xAxis.allValues, yAxis.allValues) {
-        let yCoordinate = Double(bounds.height) - y.percentageValue * Double(bounds.height)
-        let point = CGPoint(x: x.percentageValue * Double(bounds.width), y: yCoordinate)
-        points.append(point)
-      }
-      let lineView = SimpleLineView(frame: bounds, points: points, color: UIColor.init(hexString: yAxis.colorHex))
-      lineView.clipsToBounds = true
-      lineViews.append(lineView)
-      addSubview(lineView)
-    }
-    configuredForBounds = bounds
-    bringSubviewToFront(draggableView)
-  }
+  // MARK: - Private methods
   
-  func animate(to chart: Chart) {
-    let xAxis = chart.xAxis
-    for (index, yAxis) in chart.yAxes.enumerated() {
-      var points: [CGPoint] = []
-      for (x, y) in zip(xAxis.allValues, yAxis.allValuesNormalized) {
-        let yCoordinate = Double(bounds.height) - y.percentageValue * Double(bounds.height)
-        let point = CGPoint(x: x.percentageValue * Double(bounds.width), y: yCoordinate)
-        points.append(point)
-      }
-      let lineView = lineViews[index]
-      lineView.frame = bounds
-      lineView.animate(to: points, isEnabled: yAxis.isEnabled)
+  private func createPointsForLines(xAxis: XAxis, yAxis: YAxis) -> [CGPoint] {
+    var points: [CGPoint] = []
+    for (xValue, yValue) in zip(xAxis.allValues, yAxis.allValuesNormalized) {
+      let yCoordinate = Double(bounds.height) - yValue.percentageValue * Double(bounds.height)
+      let point = CGPoint(x: xValue.percentageValue * Double(bounds.width), y: yCoordinate)
+      points.append(point)
     }
+    return points
   }
 }

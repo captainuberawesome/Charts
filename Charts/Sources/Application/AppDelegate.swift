@@ -13,7 +13,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   private lazy var chartsCoordinator: ChartsCoordinator = createChartsCoordinator()
   var window: UIWindow?
 
-
   func application(_ application: UIApplication,
                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     chartsCoordinator.start()
@@ -27,4 +26,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     return ChartsCoordinator(window: newWindow)
   }
 }
-

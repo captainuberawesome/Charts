@@ -17,6 +17,8 @@ private enum AnimationDirection {
 }
 
 class YAxisView: UIView {
+  // MARK: - Properties
+  
   private var labels: [UILabel] = []
   private var currentMinValue: Int = 0
   private var currentStepValue: Int = 0
@@ -24,6 +26,8 @@ class YAxisView: UIView {
   private var isAnimating = false
   private var configuredForBounds: CGRect = .zero
   private var animationCompletionClosure: (() -> Void)?
+  
+  // MARK: - Init
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -34,6 +38,8 @@ class YAxisView: UIView {
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+  
+  // MARK: - Overrides
   
   override func layoutSubviews() {
     super.layoutSubviews()
@@ -46,6 +52,8 @@ class YAxisView: UIView {
       }
     }
   }
+  
+  // MARK: - Public methods
   
   func configure(yAxis: YAxis, animateIfNeeded: Bool = false) {
     guard !isAnimating else {
@@ -97,6 +105,8 @@ class YAxisView: UIView {
     return CGPoint(x: xCoordinate, y: yCoordinate)
   }
   
+  // MARK: - Private methods
+  
   private func animateLabelPositionChange() {
     guard !isAnimating else {
       animationCompletionClosure = { [weak self] in
@@ -107,10 +117,10 @@ class YAxisView: UIView {
     isAnimating = true
 
     UIView.animate(withDuration: 0.2, animations: {
-
       for index in 0..<Constants.labelCount {
         let label = self.labels[index]
-        let origin = CGPoint(x: 0, y: self.bounds.height - CGFloat(index) * CGFloat(self.currentStepPercentage) * self.bounds.height)
+        let origin = CGPoint(x: 0,
+                             y: self.bounds.height - CGFloat(index) * CGFloat(self.currentStepPercentage) * self.bounds.height)
         let newLabelOrigin = CGPoint(x: origin.x, y: origin.y - label.frame.size.height - 3)
         let newLabelText = "\(self.currentMinValue + self.currentStepValue * index)"
         label.text = newLabelText
@@ -119,6 +129,7 @@ class YAxisView: UIView {
       }
     }, completion: { _ in
       self.isAnimating = false
+      self.animationCompletionClosure?()
     })
   }
   
@@ -162,8 +173,11 @@ class YAxisView: UIView {
       self.labels.forEach { $0.removeFromSuperview() }
       self.labels = newLabels
       self.isAnimating = false
+      self.animationCompletionClosure?()
     })
   }
+  
+  // MARK: - Setup
   
   private func setup() {
     for _ in 0..<Constants.labelCount {
