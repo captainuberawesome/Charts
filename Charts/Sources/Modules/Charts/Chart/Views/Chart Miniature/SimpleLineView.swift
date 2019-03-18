@@ -78,12 +78,13 @@ class SimpleLineView: UIView {
   
   private func path(points: [CGPoint]) -> UIBezierPath {
     let path = UIBezierPath()
+    path.lineJoinStyle = .round
+    path.lineCapStyle = .butt
     for (index, point) in points.enumerated() {
       if index == 0 {
         path.move(to: point)
       } else {
         path.addLine(to: point)
-        path.move(to: point)
       }
     }
     return path

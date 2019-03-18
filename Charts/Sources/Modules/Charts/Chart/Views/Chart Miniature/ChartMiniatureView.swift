@@ -8,10 +8,28 @@
 
 import UIKit
 
-class ChartMiniatureView: UIView {
+class ChartMiniatureView: ViewWithTouchesOutside {
   private var lineViews: [SimpleLineView] = []
   private var configuredForBounds: CGRect = .zero
   private let draggableView = DraggableView()
+  
+  var leftHandleValue: Double {
+    get {
+      return draggableView.leftHandleValue
+    }
+    set {
+      draggableView.leftHandleValue = newValue
+    }
+  }
+  
+  var rightHandleValue: Double {
+    get {
+      return draggableView.rightHandleValue
+    }
+    set {
+      draggableView.rightHandleValue = newValue
+    }
+  }
   
   var onNeedsReconfiguring: (() -> Void)?
   var onLeftHandleValueChanged: ((Double) -> Void)?
@@ -20,7 +38,6 @@ class ChartMiniatureView: UIView {
   
   override init(frame: CGRect) {
     super.init(frame: frame)
-    clipsToBounds = true
     setup()
   }
   
@@ -73,6 +90,7 @@ class ChartMiniatureView: UIView {
         points.append(point)
       }
       let lineView = SimpleLineView(frame: bounds, points: points, color: UIColor.init(hexString: yAxis.colorHex))
+      lineView.clipsToBounds = true
       lineViews.append(lineView)
       addSubview(lineView)
     }

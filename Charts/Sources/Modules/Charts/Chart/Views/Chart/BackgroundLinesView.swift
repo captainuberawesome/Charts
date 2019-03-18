@@ -15,6 +15,7 @@ private struct Constants {
 
 class BackgroundLinesView: UIView {
   private var shapeLayers: [CAShapeLayer] = []
+  private let verticalLineView = UIView()
   private var displayLink: CADisplayLink?
   private var startTime: CFAbsoluteTime?
   private var stepPercentage: Double = 0
@@ -40,6 +41,18 @@ class BackgroundLinesView: UIView {
     }
   }
   
+  func addVerticalLine(atXCoordinate xCoordinate: CGFloat) {
+    verticalLineView.removeFromSuperview()
+    addSubview(verticalLineView)
+    verticalLineView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.5)
+    verticalLineView.frame = CGRect(x: xCoordinate - 0.5, y: 5, width: 1,
+                                    height: bounds.height - 5)
+  }
+  
+  func removeVerticalLine() {
+    verticalLineView.removeFromSuperview()
+  }
+  
   func animate(yAxis: YAxis) {
     guard !isAnimating else {
       animationCompletionClosure = { [weak self, yAxis] in
@@ -62,7 +75,7 @@ class BackgroundLinesView: UIView {
       let shapeLayer = CAShapeLayer()
       shapeLayer.fillColor = UIColor.clear.cgColor
       shapeLayer.strokeColor = UIColor.lightGray.withAlphaComponent(0.5).cgColor
-      shapeLayer.lineWidth = index == 0 ? 0.5 : 0.2
+      shapeLayer.lineWidth = index == 0 ? 1 : 0.2
       shapeLayer.frame = bounds
       shapeLayers.append(shapeLayer)
       layer.addSublayer(shapeLayer)

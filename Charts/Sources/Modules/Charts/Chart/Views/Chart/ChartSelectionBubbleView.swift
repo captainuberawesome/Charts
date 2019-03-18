@@ -10,8 +10,8 @@ import UIKit
 
 class ChartSelectionBubbleView: UIView {
   private let bubbleView = BubbleView()
-  private let verticalLineView = UIView()
-  private var tapXCoordinate: CGFloat = 0
+  
+  var onBubbleTapped: (() -> Void)?
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -22,24 +22,22 @@ class ChartSelectionBubbleView: UIView {
     fatalError("init(coder:) has not been implemented")
   }
   
-  override func layoutSubviews() {
-    super.layoutSubviews()
-    verticalLineView.frame = CGRect(x: tapXCoordinate - 0.5, y: bubbleView.frame.maxY - 5, width: 0.5,
-                                    height: bounds.height - bubbleView.frame.maxY + 5)
+  override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+    for subview in subviews {
+      let newPoint = convert(point, to: subview)
+      if subview.point(inside: newPoint, with: event) && subview.isUserInteractionEnabled && !subview.isHidden {
+        return true
+      }
+    }
+    return false
   }
   
-  func configure(time: TimeInterval, tapData: [YAxisTapData], tapXCoordinate: CGFloat) {
-    self.tapXCoordinate = tapXCoordinate
+  func configure(time: TimeInterval, tapData: [YAxisTapData]) {
     bubbleView.configure(time: time, values: tapData.compactMap { $0.value })
     bubbleView.layoutIfNeeded()
-    verticalLineView.frame = CGRect(x: tapXCoordinate - 0.5, y: bubbleView.frame.maxY - 5, width: 0.5,
-                                    height: bounds.height - bubbleView.frame.maxY + 5)
   }
   
   private func setup() {
-    addSubview(verticalLineView)
-    verticalLineView.backgroundColor = UIColor.lightGray.withAlphaComponent(0.5)
-    
     addSubview(bubbleView)
     bubbleView.translatesAutoresizingMaskIntoConstraints = false
     bubbleView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
@@ -47,6 +45,12 @@ class ChartSelectionBubbleView: UIView {
     bubbleView.topAnchor.constraint(equalTo: topAnchor, constant: 5).isActive = true
     bubbleView.backgroundColor = UIColor(red: 240 / 255, green: 240 / 255, blue: 245 / 255, alpha: 1)
     bubbleView.layer.cornerRadius = 5
+    bubbleView.isUserInteractionEnabled = true
+    bubbleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
+  }
+  
+  @objc private func handleTap() {
+    onBubbleTapped?()
   }
 }
 
@@ -97,17 +101,17 @@ private class BubbleView: UIView {
   private func setup() {
     addSubview(dayMonthLabel)
     dayMonthLabel.translatesAutoresizingMaskIntoConstraints = false
-    dayMonthLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10).isActive = true
-    dayMonthLabel.topAnchor.constraint(equalTo: topAnchor, constant: 8).isActive = true
+    dayMonthLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8).isActive = true
+    dayMonthLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5).isActive = true
     dayMonthLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
     dayMonthLabel.textColor = .darkGray
     
     addSubview(yearLabel)
     yearLabel.translatesAutoresizingMaskIntoConstraints = false
     yearLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8).isActive = true
-    yearLabel.topAnchor.constraint(equalTo: dayMonthLabel.bottomAnchor, constant: 5).isActive = true
-    yearLabel.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -8)
-    let constraint = yearLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8)
+    yearLabel.topAnchor.constraint(equalTo: dayMonthLabel.bottomAnchor, constant: 2).isActive = true
+    yearLabel.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -5)
+    let constraint = yearLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5)
     constraint.priority = .defaultLow
     constraint.isActive = true
     yearLabel.textColor = .darkGray
@@ -115,11 +119,11 @@ private class BubbleView: UIView {
     
     addSubview(stackView)
     stackView.translatesAutoresizingMaskIntoConstraints = false
-    stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10).isActive = true
-    stackView.topAnchor.constraint(equalTo: topAnchor, constant: 8).isActive = true
-    stackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -8)
+    stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8).isActive = true
+    stackView.topAnchor.constraint(equalTo: topAnchor, constant: 5).isActive = true
+    stackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor, constant: -5)
     stackView.axis = .vertical
     stackView.distribution = .equalSpacing
-    stackView.spacing = 5
+    stackView.spacing = 2
   }
 }

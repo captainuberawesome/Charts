@@ -29,6 +29,7 @@ class ChartView: UIView {
   private var configuredForBounds: CGRect = .zero
   private var animationStartedDate: Date?
   private var chart: Chart?
+  private var handlePanGestureWorkItem: DispatchWorkItem?
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -50,6 +51,8 @@ class ChartView: UIView {
   func configure(chart: Chart) {
     self.chart = chart
     chartSelectionBubbleView.removeFromSuperview()
+    backgroundLinesView.removeVerticalLine()
+    lineViews.forEach { $0.hideCircleView() }
     
     guard bounds.width > 0, bounds.height > 0 else {
       return
@@ -84,6 +87,13 @@ class ChartView: UIView {
   
   func animate(to chart: Chart) {
     chartSelectionBubbleView.removeFromSuperview()
+    backgroundLinesView.removeVerticalLine()
+    lineViews.forEach { $0.hideCircleView() }
+    
+    guard bounds.width > 0, bounds.height > 0 else {
+      return
+    }
+    
     let xAxis = chart.xAxis
     for (index, yAxis) in chart.yAxes.enumerated() {
       let lineView = lineViews[index]
@@ -116,7 +126,6 @@ class ChartView: UIView {
     linesContainerView.trailingAnchor.constraint(equalTo: backgroundLinesView.trailingAnchor).isActive = true
     linesContainerView.topAnchor.constraint(equalTo: backgroundLinesView.topAnchor).isActive = true
     linesContainerView.bottomAnchor.constraint(equalTo: backgroundLinesView.bottomAnchor).isActive = true
-    linesContainerView.clipsToBounds = true
     
     addSubview(yAxisView)
     yAxisView.translatesAutoresizingMaskIntoConstraints = false
@@ -134,13 +143,19 @@ class ChartView: UIView {
   }
   
   @objc private func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
-    switch gestureRecognizer.state {
-    case .began, .changed:
-      let position = gestureRecognizer.location(in: self)
-      handleTapAtLocation(location: position)
-    default:
-      break
+    var position = gestureRecognizer.location(in: yAxisView)
+    if position.x < 0 {
+      position.x = 0
     }
+    if position.x > yAxisView.bounds.width {
+      position.x = yAxisView.bounds.width
+    }
+    handlePanGestureWorkItem?.cancel()
+    let work = DispatchWorkItem { [position] in
+      self.handleTapAtLocation(location: position)
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.01, execute: work)
+    handlePanGestureWorkItem = work
   }
   
   private func handleTapAtLocation(location: CGPoint) {
@@ -152,16 +167,27 @@ class ChartView: UIView {
       yValues.append(YAxisTapData(value: yValue, location: location))
     }
     addSubview(chartSelectionBubbleView)
+    chartSelectionBubbleView.onBubbleTapped = { [unowned self] in
+      self.chartSelectionBubbleView.removeFromSuperview()
+      self.backgroundLinesView.removeVerticalLine()
+      self.lineViews.forEach { $0.hideCircleView() }
+    }
     let bubbleWidth: CGFloat = 100
     chartSelectionBubbleView.frame = CGRect(origin: .zero, size: CGSize(width: bubbleWidth, height: linesContainerView.bounds.height))
     chartSelectionBubbleView.center = CGPoint(x: xAxisTapData.location.x, y: linesContainerView.center.y)
-    if chartSelectionBubbleView.frame.origin.x < 0 {
-      chartSelectionBubbleView.frame.origin = CGPoint(x: 0, y: chartSelectionBubbleView.frame.origin.y)
+    if chartSelectionBubbleView.frame.origin.x < -5 {
+      chartSelectionBubbleView.frame.origin = CGPoint(x: -5, y: chartSelectionBubbleView.frame.origin.y)
     }
-    if chartSelectionBubbleView.frame.maxX > bounds.width {
-      chartSelectionBubbleView.frame.origin = CGPoint(x: bounds.width - bubbleWidth, y: chartSelectionBubbleView.frame.origin.y)
+    if chartSelectionBubbleView.frame.maxX > bounds.width + 5 {
+      chartSelectionBubbleView.frame.origin = CGPoint(x: bounds.width + 5 - bubbleWidth,
+                                                      y: chartSelectionBubbleView.frame.origin.y)
     }
-    let tapLocation = convert(xAxisTapData.location, to: chartSelectionBubbleView)
-    chartSelectionBubbleView.configure(time: xAxisTapData.value, tapData: yValues, tapXCoordinate: tapLocation.x)
+    backgroundLinesView.addVerticalLine(atXCoordinate: xAxisTapData.location.x)
+    let visibleLineViews = lineViews.filter { $0.isVisible }
+    for (index, tapData) in yValues.enumerated() {
+      let lineView = visibleLineViews[index]
+      lineView.showCircleView(for: tapData)
+    }
+    chartSelectionBubbleView.configure(time: xAxisTapData.value, tapData: yValues)
   }
 }

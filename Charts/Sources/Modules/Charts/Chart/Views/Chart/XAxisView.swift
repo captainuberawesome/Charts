@@ -105,6 +105,9 @@ class XAxisView: UIView {
     if let (value, index) = xAxis?.nextValueAndIndex(for: Double(xPosition / contentView.bounds.width)) {
       let newPositionX = contentView.bounds.width * CGFloat(value.percentageValue)
       let newPosition = contentView.convert(CGPoint(x: newPositionX, y: position.y), to: self)
+      guard newPosition.x >= 0 && newPosition.x <= bounds.width else {
+        return nil
+      }
       return XAxisTapData(value: value.actualValue, index: index, location: newPosition)
     }
     return nil

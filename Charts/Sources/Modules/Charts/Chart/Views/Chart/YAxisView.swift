@@ -28,6 +28,7 @@ class YAxisView: UIView {
   override init(frame: CGRect) {
     super.init(frame: frame)
     setup()
+    clipsToBounds = true
   }
   
   required init?(coder aDecoder: NSCoder) {

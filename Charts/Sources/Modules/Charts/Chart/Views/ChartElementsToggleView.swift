@@ -10,7 +10,7 @@ import UIKit
 
 class ChartElementsToggleView: UIView {
   private let stackView = UIStackView()
-  private var yAxes: [YAxis] = []
+  private var chartElementViews: [ChartElementView] = []
   
   var onToggledYAxis: ((YAxis) -> Void)?
   
@@ -24,7 +24,6 @@ class ChartElementsToggleView: UIView {
   }
   
   func configure(yAxes: [YAxis]) {
-    self.yAxes = yAxes
     for subview in stackView.arrangedSubviews {
       stackView.removeArrangedSubview(subview)
       subview.removeFromSuperview()
@@ -34,10 +33,10 @@ class ChartElementsToggleView: UIView {
       stackView.addArrangedSubview(chartElementView)
       chartElementView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
       chartElementView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
-      
+      chartElementViews.append(chartElementView)
       chartElementView.onTap = { [weak self, yAxis, unowned chartElementView] in
         guard let self = self else { return }
-        if yAxis.isEnabled && self.yAxes.filter({ $0.isEnabled }).count == 1 {
+        if yAxis.isEnabled && self.chartElementViews.filter({ $0.isSelected }).count == 1 {
           return
         }
         yAxis.isEnabled.toggle()

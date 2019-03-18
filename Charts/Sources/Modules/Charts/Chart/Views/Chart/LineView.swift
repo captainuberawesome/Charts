@@ -19,23 +19,26 @@ class LineView: UIView {
   private var shapeLayer = CAShapeLayer()
   private var displayLink: CADisplayLink?
   private var startTime: CFAbsoluteTime?
+  private var intermediatePoints: [CGPoint] = []
   private var oldPoints: [CGPoint] = []
   private var scrollView = UIScrollView()
+  private let circleView: CircleView
   private var contentView = UIView()
   private var totalWindowSize: Double = 0
   private var currentWindowSize: Double = 0
   private var contentViewWidthConstraint: NSLayoutConstraint?
   private var isAnimating = false
-  private var isVisible = true
-  private var animationCompletionClosure: (() -> Void)?
-
+  private (set) var isVisible = true
   
   init(frame: CGRect, color: UIColor, lineWidth: CGFloat = 1.0) {
     self.color = color
     self.lineWidth = lineWidth
+    circleView = CircleView(frame: CGRect(origin: .zero, size: CGSize(width: 8, height: 8)), color: color)
     super.init(frame: frame)
     isOpaque = false
     
+    addSubview(circleView)
+    circleView.isHidden = true
     setupScrollView()
     
     shapeLayer.fillColor = UIColor.clear.cgColor
@@ -43,18 +46,31 @@ class LineView: UIView {
     shapeLayer.lineWidth = lineWidth
     shapeLayer.frame = contentView.bounds
     contentView.layer.addSublayer(shapeLayer)
+    contentView.clipsToBounds = true
   }
   
   override func layoutSubviews() {
     super.layoutSubviews()
     shapeLayer.frame = contentView.bounds
+    bringSubviewToFront(circleView)
   }
   
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
   
+  func showCircleView(for tapData: YAxisTapData) {
+    let center = convert(tapData.location, from: superview)
+    circleView.center = center
+    circleView.isHidden = false
+  }
+  
+  func hideCircleView() {
+    circleView.isHidden = true
+  }
+  
   func configure(xAxis: XAxis, yAxis: YAxis) {
+    guard isVisible else { return }
     isVisible = yAxis.isEnabled
     totalWindowSize = Double(xAxis.allValues.count)
     currentWindowSize = xAxis.windowSize * totalWindowSize
@@ -62,10 +78,15 @@ class LineView: UIView {
     contentViewWidthConstraint?.constant = contentWidth
     contentView.setNeedsLayout()
     contentView.layoutIfNeeded()
-    
-    updatePoints(xAxis: xAxis, yAxis: yAxis)
-    oldPoints = points
-    shapeLayer.path = path(points: points).cgPath
+
+    if isAnimating {
+      startTime = CFAbsoluteTimeGetCurrent()
+      oldPoints = intermediatePoints
+      updatePoints(xAxis: xAxis, yAxis: yAxis)
+    } else {
+      updatePoints(xAxis: xAxis, yAxis: yAxis)
+      shapeLayer.path = path(points: points).cgPath
+    }
     
     let currentContentWidth = contentViewWidthConstraint?.constant ?? 0
     let offset = currentContentWidth * CGFloat(xAxis.leftSegmentationLimit)
@@ -73,14 +94,8 @@ class LineView: UIView {
   }
   
   func reconfigureAnimated(xAxis: XAxis, yAxis: YAxis) {
-    guard !isAnimating else {
-      animationCompletionClosure = { [weak self, xAxis, yAxis] in
-        self?.reconfigureAnimated(xAxis: xAxis, yAxis: yAxis)
-      }
-      return
-    }
+    oldPoints = isAnimating ? intermediatePoints : points
     isAnimating = true
-    oldPoints = self.points
     updatePoints(xAxis: xAxis, yAxis: yAxis)
     startTime = CFAbsoluteTimeGetCurrent()
     displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
@@ -112,12 +127,13 @@ class LineView: UIView {
   
   private func path(points: [CGPoint]) -> UIBezierPath {
     let path = UIBezierPath()
+    path.lineJoinStyle = .round
+    path.lineCapStyle = .butt
     for (index, point) in points.enumerated() {
       if index == 0 {
         path.move(to: point)
       } else {
         path.addLine(to: point)
-        path.move(to: point)
       }
     }
     return path
@@ -132,6 +148,7 @@ class LineView: UIView {
       let y = firstPoint.y + CGFloat(percentage) * (secondPoint.y - firstPoint.y)
       points.append(CGPoint(x: x, y: y))
     }
+    intermediatePoints = points
     return path(points: points)
   }
   
@@ -141,7 +158,6 @@ class LineView: UIView {
     let percent = elapsed / Constants.animationDuration
     
     guard percent < 1 else {
-      oldPoints = points
       shapeLayer.path = path(points: points).cgPath
       displayLink.remove(from: RunLoop.main, forMode: RunLoop.Mode.common)
       isAnimating = false
@@ -173,5 +189,32 @@ class LineView: UIView {
     contentView.heightAnchor.constraint(equalTo: heightAnchor).isActive = true
     contentViewWidthConstraint = contentView.widthAnchor.constraint(equalToConstant: 0)
     contentViewWidthConstraint?.isActive = true
+  }
+}
+
+private class CircleView: UIView {
+  private let innerCircleView = UIView()
+  
+  init(frame: CGRect, color: UIColor) {
+    super.init(frame: frame)
+    backgroundColor = color
+    layer.cornerRadius = bounds.width * 0.5
+    setup()
+  }
+  
+  required init?(coder aDecoder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    innerCircleView.frame = bounds.inset(by: UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2))
+  }
+  
+  private func setup() {
+    addSubview(innerCircleView)
+    innerCircleView.backgroundColor = .white
+    innerCircleView.frame = bounds.inset(by: UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2))
+    innerCircleView.layer.cornerRadius = innerCircleView.bounds.width * 0.5
   }
 }

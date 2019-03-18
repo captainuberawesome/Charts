@@ -86,7 +86,11 @@ class YAxis {
     var maxValueAcrossY = Int(ceil(ceil(Double(yMax)) / Double(step))) * step
     
     if yMax == maxValueAcrossY {
-      maxValueAcrossY += Int(ceil(0.75 * Double(step)))
+      maxValueAcrossY += step
+    }
+    
+    if yMin == minValueAcrossY {
+      minValueAcrossY -= step
     }
     
     step = calculateStep(yMin: minValueAcrossY, yMax: maxValueAcrossY)
@@ -94,10 +98,11 @@ class YAxis {
     minValueAcrossY = Int(floor(Double(yMin)) / Double(step)) * step
     maxValueAcrossY = Int(ceil(ceil(Double(yMax)) / Double(step))) * step
     
-    if maxValueAcrossY == minValueAcrossY + step * (Constants.numberOfSteps - 1) || yMax == maxValueAcrossY {
+    if maxValueAcrossY == minValueAcrossY + step * (Constants.numberOfSteps - 1)
+      || yMax == maxValueAcrossY {
       maxValueAcrossY += Int(ceil(0.75 * Double(step)))
     }
-
+    
     return (minValueAcrossY, maxValueAcrossY, step)
   }
   

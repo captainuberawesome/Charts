@@ -48,11 +48,27 @@ class DraggableView: UIView {
   private var updatedSubviewsForBounds: CGRect = .zero
   
   var leftHandleValue: Double {
-    return Double(leftEdgeView.frame.minX / bounds.width)
+    get {
+      return Double(leftEdgeView.frame.minX / bounds.width)
+    }
+    set {
+      ignoreValueChange = true
+      leftEdgeViewOriginX = CGFloat(newValue) * bounds.width
+      updateSubviewFrames()
+      ignoreValueChange = false
+    }
   }
   
   var rightHandleValue: Double {
-    return Double(rightEdgeView.frame.maxX / bounds.width)
+    get {
+      return Double(rightEdgeView.frame.maxX / bounds.width)
+    }
+    set {
+      ignoreValueChange = true
+      rightEdgeViewMaxX = CGFloat(newValue) * bounds.width
+      updateSubviewFrames()
+      ignoreValueChange = false
+    }
   }
   
   var onLeftHandleValueChanged: ((Double) -> Void)?
@@ -112,6 +128,14 @@ class DraggableView: UIView {
       updatedSubviewsForBounds = bounds
       updateSubviewFrames()
     }
+  }
+  
+  override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+    if leftEdgeDraggingView.frame.contains(point)
+      || rightEdgeDraggingView.frame.contains(point) {
+      return true
+    }
+    return bounds.contains(point)
   }
   
   private func updateSubviewFrames() {
