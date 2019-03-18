@@ -147,7 +147,15 @@ class ChartView: UIView {
       self.backgroundLinesView.removeVerticalLine()
       self.lineViews.forEach { $0.hideCircleView() }
     }
-    let bubbleWidth: CGFloat = 100
+    backgroundLinesView.addVerticalLine(atXCoordinate: xAxisTapData.location.x)
+    let visibleLineViews = lineViews.filter { $0.isVisible }
+    for (index, tapData) in yValues.enumerated() {
+      let lineView = visibleLineViews[index]
+      lineView.showCircleView(for: tapData)
+    }
+    chartSelectionBubbleView.configure(time: xAxisTapData.value, tapData: yValues)
+    
+    let bubbleWidth = chartSelectionBubbleView.calculatedWidth
     chartSelectionBubbleView.frame = CGRect(origin: .zero,
                                             size: CGSize(width: bubbleWidth, height: linesContainerView.bounds.height))
     chartSelectionBubbleView.center = CGPoint(x: xAxisTapData.location.x, y: linesContainerView.center.y)
@@ -158,13 +166,6 @@ class ChartView: UIView {
       chartSelectionBubbleView.frame.origin = CGPoint(x: bounds.width + 5 - bubbleWidth,
                                                       y: chartSelectionBubbleView.frame.origin.y)
     }
-    backgroundLinesView.addVerticalLine(atXCoordinate: xAxisTapData.location.x)
-    let visibleLineViews = lineViews.filter { $0.isVisible }
-    for (index, tapData) in yValues.enumerated() {
-      let lineView = visibleLineViews[index]
-      lineView.showCircleView(for: tapData)
-    }
-    chartSelectionBubbleView.configure(time: xAxisTapData.value, tapData: yValues)
   }
   
   // MARK: - Setup

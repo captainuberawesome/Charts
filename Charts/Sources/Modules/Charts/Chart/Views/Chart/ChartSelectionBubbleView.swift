@@ -13,6 +13,10 @@ class ChartSelectionBubbleView: UIView {
   
   private let bubbleView = BubbleView()
   
+  var calculatedWidth: CGFloat {
+    return bubbleView.calculatedWidth
+  }
+  
   // MARK: - Callbacks
   
   var onBubbleTapped: (() -> Void)?
