@@ -95,6 +95,12 @@ class ChartMiniatureView: ViewWithTouchesOutside, DayNightViewConfigurable {
     }
   }
   
+  func stopAnimation() {
+    for lineView in lineViews {
+      lineView.stopAnimation()
+    }
+  }
+  
   func configure(dayNightModeToggler: DayNightModeToggler) {
     draggableView.configure(dayNightModeToggler: dayNightModeToggler)
     backgroundColor = dayNightModeToggler.miniatureChartBackgroundColor

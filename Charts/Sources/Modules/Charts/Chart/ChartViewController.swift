@@ -33,8 +33,13 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   private let switchDisplayModesButton = UIButton(type: .system)
   private let chart: Chart
   private let dayNightModeToggler: DayNightModeToggler
+  private var configuredChartMiniatureViewPosition = false
   
   weak var delegate: ChartViewControllerDelegate?
+  
+  override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge {
+    return [.left, .right]
+  }
   
   // MARK: - Init
   
@@ -49,7 +54,7 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
+
   // MARK: - Overrides
   
   override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -74,16 +79,32 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    chartMiniatureView.layoutIfNeeded()
-    chartMiniatureView.leftHandleValue = 0.7
-    chartMiniatureView.rightHandleValue = 1
-    chart.xAxis.updateBothSegmentationLimits(leftLimit: chartMiniatureView.leftHandleValue,
-                                             rightLimit: chartMiniatureView.rightHandleValue)
+    if !configuredChartMiniatureViewPosition {
+      chartMiniatureView.layoutIfNeeded()
+      chartMiniatureView.leftHandleValue = 0.7
+      chartMiniatureView.rightHandleValue = 1
+      chart.xAxis.updateBothSegmentationLimits(leftLimit: chartMiniatureView.leftHandleValue,
+                                               rightLimit: chartMiniatureView.rightHandleValue)
+      configuredChartMiniatureViewPosition = true
+    }
   }
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     chartView.animationsAllowed = true
+    navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+  }
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    chartView.animationsAllowed = false
+  }
+  
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    chartView.stopAnimation()
+    chartMiniatureView.stopAnimation()
+    navigationController?.interactivePopGestureRecognizer?.isEnabled = true
   }
   
   // MARK: - Public methods

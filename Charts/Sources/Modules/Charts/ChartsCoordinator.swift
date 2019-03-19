@@ -38,7 +38,8 @@ class ChartsCoordinator {
   }
   
   func showChartScreen(for chart: Chart, title: String) {
-    let viewController = ChartViewController(chart: chart, chartName: title,
+    guard !(navigationController.topViewController is ChartViewController) else { return }
+    let viewController = ChartViewController(chart: Chart(chart: chart), chartName: title,
                                              dayNightModeToggler: dayNightModeToggler)
     viewController.delegate = self
     viewController.title = "Statistics"

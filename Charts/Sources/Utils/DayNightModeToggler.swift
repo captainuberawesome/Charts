@@ -131,4 +131,13 @@ class DayNightModeToggler {
       return UIColor.DarkThemeColors.miniatureChartBackgroundColor
     }
   }
+  
+  var selectionBubbleVerticalLineColor: UIColor {
+    switch currentMode {
+    case .day:
+      return UIColor.LightThemeColors.bubbleVerticalLineBackgroundColor
+    case .night:
+      return UIColor.DarkThemeColors.bubbleBackgroundColor
+    }
+  }
 }

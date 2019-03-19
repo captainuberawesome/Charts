@@ -26,10 +26,11 @@ extension UIColor {
     static let dullestTextColor = UIColor.gray
     static let chartBackgroundLinesColor = UIColor.lightGray.withAlphaComponent(0.5)
     static let bubbleBackgroundColor =  UIColor.color(fromRed: 240, green: 240, blue: 245)
-    static let draggableViewHandleColor = UIColor.color(fromRed: 202, green: 212, blue: 222, alpha: 0.9)
+    static let draggableViewHandleColor = UIColor.color(fromRed: 202, green: 212, blue: 222, alpha: 0.8)
     static let draggableViewOverlayColor = UIColor.color(fromRed: 239, green: 239, blue: 244, alpha: 0.6)
     static let navbarBackgroundColor = UIColor.color(fromRed: 247, green: 247, blue: 247)
     static let miniatureChartBackgroundColor = UIColor.white
+    static let bubbleVerticalLineBackgroundColor = UIColor.color(fromRed: 207, green: 209, blue: 210)
   }
   
   struct DarkThemeColors {
@@ -41,7 +42,7 @@ extension UIColor {
     static let dullestTextColor = UIColor.color(fromRed: 91, green: 107, blue: 127)
     static let chartBackgroundLinesColor = UIColor.color(fromRed: 27, green: 39, blue: 52)
     static let bubbleBackgroundColor = UIColor.color(fromRed: 26, green: 40, blue: 55)
-    static let draggableViewHandleColor = UIColor.color(fromRed: 91, green: 110, blue: 131, alpha: 0.9)
+    static let draggableViewHandleColor = UIColor.color(fromRed: 66, green: 79, blue: 94, alpha: 0.8)
     static let draggableViewOverlayColor = UIColor.color(fromRed: 24, green: 34, blue: 45, alpha: 0.6)
     static let navbarBackgroundColor = UIColor.color(fromRed: 33, green: 48, blue: 64)
     static let miniatureChartBackgroundColor = UIColor.color(fromRed: 33, green: 47, blue: 63)

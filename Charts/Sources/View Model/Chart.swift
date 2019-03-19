@@ -32,7 +32,13 @@ class Chart {
     }
   }
   
-  // MARK: - Public methods
+  convenience init(chart: Chart) {
+    let xAxis = XAxis(xAxis: chart.xAxis)
+    let yAxes = chart.yAxes.map { YAxis(yAxis: $0) }
+    self.init(xAxis: xAxis, yAxes: yAxes)
+  }
+  
+  // MARK: - Public method
   
   func updateSegmentation(shouldWait: Bool = true) {
     self.normalizationWorkItem?.cancel()
@@ -64,14 +70,14 @@ class Chart {
       onSegmentationUpdated?()
     }
     
-    let work = DispatchWorkItem { [weak self, minValue, maxValue, valuesArray] in
-      guard let self = self else { return }
-      for (index, yAxis) in self.yAxes.enumerated() {
-        yAxis.updateSegmentation(unnormalizedValues: valuesArray[index], minValue: minValue, maxValue: maxValue)
-      }
-      self.onSegmentationNormalizedUpdated?()
-    }
     if shouldWait {
+      let work = DispatchWorkItem { [weak self, minValue, maxValue, valuesArray] in
+        guard let self = self else { return }
+        for (index, yAxis) in self.yAxes.enumerated() {
+          yAxis.updateSegmentation(unnormalizedValues: valuesArray[index], minValue: minValue, maxValue: maxValue)
+        }
+        self.onSegmentationNormalizedUpdated?()
+      }
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: work)
       normalizationWorkItem = work
     } else {

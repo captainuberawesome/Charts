@@ -140,6 +140,13 @@ class ChartView: UIView, DayNightViewConfigurable {
     xAxisView.configure(xAxis: chart.xAxis)
   }
   
+  func stopAnimation() {
+    for lineView in lineViews {
+      lineView.stopAnimation()
+    }
+    backgroundLinesView.stopAnimation()
+  }
+  
   func addSelectionBubble(location: CGPoint, chart: Chart) {
     guard let xAxisTapData = xAxisView.xValue(for: convert(location, to: xAxisView), xAxis: chart.xAxis) else { return }
     var yValues: [YAxisTapData] = []

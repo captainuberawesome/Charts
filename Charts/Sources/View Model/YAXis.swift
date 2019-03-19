@@ -32,11 +32,7 @@ struct YAxisSpan {
 
 class YAxis {
   // MARK: - Properties
-  
   private let rawValues: [Int]
-  private var maxValueAcrossY: Int
-  private var minValueAcrossY: Int
-  
   private (set) var allValues: [YValue]
   private (set) var allValuesNormalized: [YValue]
   private (set) var allValuesNormalizedToSegment: [YValue]
@@ -44,13 +40,16 @@ class YAxis {
   private (set) var maxValueAcrossYSegmented: Int
   private (set) var step: YValue
   
+  let maxValueAcrossY: Int
+  let minValueAcrossY: Int
+  let initialStep: Int
   let colorHex: String
   let name: String
   
   var isEnabled = true
   
   // MARK: - Initializer
-  
+
   init(values: [Int], colorHex: String, name: String, minValueAcrossY: Int, maxValueAcrossY: Int, step: Int) {
     self.colorHex = colorHex
     self.name = name
@@ -68,7 +67,20 @@ class YAxis {
     allValuesNormalized = allValues
     maxValueAcrossYSegmented = maxValueAcrossY
     minValueAcrossYSegmented = minValueAcrossY
+    initialStep = step
   }
+  
+  convenience init(yAxis: YAxis) {
+    let values = yAxis.allValues.map { $0.actualValue }
+    let colorHex = yAxis.colorHex
+    let name = yAxis.name
+    let minValueAcrossY = yAxis.minValueAcrossY
+    let maxValueAcrossY = yAxis.maxValueAcrossY
+    let step = yAxis.initialStep
+    self.init(values: values, colorHex: colorHex, name: name, minValueAcrossY: minValueAcrossY,
+              maxValueAcrossY: maxValueAcrossY, step: step)
+  }
+  
   
   // MARK: - Public methods
   
@@ -100,50 +112,52 @@ class YAxis {
   // MARK: - Public static methods
   
   static func calculateSpan(yMin: Int, yMax: Int) -> YAxisSpan {
-    var step = calculateStep(yMin: yMin, yMax: yMax)
+    let increasedYMax = yMin + Int(round(Double(yMax - yMin) * 1.05))
+    var maxValueAcrossY = increasedYMax
     
-    var minValueAcrossY = Int(floor(Double(yMin)) / Double(step)) * step
-    var maxValueAcrossY = Int(ceil(ceil(Double(yMax)) / Double(step))) * step
+    var step = calculateStep(yMin: yMin, yMax: maxValueAcrossY)
     
-    if yMax == maxValueAcrossY {
-      maxValueAcrossY += step
-    }
+    let minValueAcrossY = Int(floor(Double(yMin)) / Double(step)) * step
+    maxValueAcrossY = Int(ceil(Double(maxValueAcrossY) / Double(step))) * step
     
-    if yMin == minValueAcrossY {
-      minValueAcrossY -= step
+    if maxValueAcrossY - (minValueAcrossY + step * (Constants.numberOfSteps - 1)) <= Int(ceil(0.2 * Double(step)))
+      || yMax == maxValueAcrossY {
+      maxValueAcrossY += Int(ceil(0.2 * Double(step)))
     }
     
     step = calculateStep(yMin: minValueAcrossY, yMax: maxValueAcrossY)
     
-    minValueAcrossY = Int(floor(Double(yMin)) / Double(step)) * step
-    maxValueAcrossY = Int(ceil(ceil(Double(yMax)) / Double(step))) * step
+    maxValueAcrossY = minValueAcrossY + step * (Constants.numberOfSteps - 1) + Int(ceil(0.75 * Double(step)))
     
-    if maxValueAcrossY == minValueAcrossY + step * (Constants.numberOfSteps - 1)
-      || yMax == maxValueAcrossY {
-      maxValueAcrossY += Int(ceil(0.75 * Double(step)))
+    if maxValueAcrossY - yMax < Int(ceil(0.25 * Double(step))) {
+      maxValueAcrossY += Int(ceil(0.25 * Double(step)))
     }
-    
+
     return YAxisSpan(minY: minValueAcrossY, maxY: maxValueAcrossY, step: step)
   }
   
   static private func calculateStep(yMin: Int, yMax: Int) -> Int {
     let span = yMax - yMin
-    var step = span / Constants.numberOfSteps
+    var step = Int(ceil(Double(span) / Double(Constants.numberOfSteps)))
     
     if step == 0 {
-      step = 5
-    } else if step < 25 {
+      step = 1
+    } else if step < 10 {
+      // do nothing
+    } else if step < 75 {
       step = Int(ceil(Double(step) / 5) * 5)
     } else if step < 100 {
       step = Int(ceil(Double(step) / 10) * 10)
-    } else if step < 500 {
-      step = Int(ceil(Double(step) / 50) * 50)
     } else if step < 1000 {
+      step = Int(ceil(Double(step) / 50) * 50)
+    } else if step < 10000 {
       step = Int(ceil(Double(step) / 100) * 100)
-    } else if step < 5000 {
+    } else if step < 100000 {
       step = Int(ceil(Double(step) / 500) * 500)
-    } else {
+    } else if step < 1000000 {
       step = Int(ceil(Double(step) / 1000) * 1000)
+    } else {
+      step = Int(ceil(Double(step) / 5000) * 5000)
     }
     
     return step

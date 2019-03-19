@@ -65,6 +65,11 @@ class XAxis {
     rightSegmentationIndex = allValues.count
   }
   
+  convenience init(xAxis: XAxis) {
+    let values = xAxis.allValues.map { $0.actualValue }
+    self.init(values: values)
+  }
+  
   // MARK: - Public methods
   
   func updateBothSegmentationLimits(leftLimit: Double, rightLimit: Double) {

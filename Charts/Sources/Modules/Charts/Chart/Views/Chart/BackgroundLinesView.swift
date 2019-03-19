@@ -53,7 +53,7 @@ class BackgroundLinesView: UIView, DayNightViewConfigurable {
   func addVerticalLine(atXCoordinate xCoordinate: CGFloat) {
     verticalLineView.removeFromSuperview()
     addSubview(verticalLineView)
-    verticalLineView.backgroundColor = dayNightModeToggler.separatorColor
+    verticalLineView.backgroundColor = dayNightModeToggler.selectionBubbleVerticalLineColor
     verticalLineView.frame = CGRect(x: xCoordinate - 0.5, y: 5, width: 1,
                                     height: bounds.height - 5)
   }
@@ -62,11 +62,14 @@ class BackgroundLinesView: UIView, DayNightViewConfigurable {
     verticalLineView.removeFromSuperview()
   }
   
+  func stopAnimation() {
+    displayLink?.remove(from: RunLoop.main, forMode: RunLoop.Mode.common)
+  }
+  
   func animate(yAxis: YAxis) {
     guard fabs(stepPercentage - yAxis.step.percentageValue) > 1e-4 else {
       return
     }
-    isAnimating = true
     stepPercentage = yAxis.step.percentageValue
     startTime = CFAbsoluteTimeGetCurrent()
     if isAnimating {
@@ -75,6 +78,7 @@ class BackgroundLinesView: UIView, DayNightViewConfigurable {
       displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
       displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
     }
+    isAnimating = true
   }
   
   func configure(dayNightModeToggler: DayNightModeToggler) {
@@ -137,6 +141,7 @@ class BackgroundLinesView: UIView, DayNightViewConfigurable {
     
     guard percent < 1 else {
       displayLink.remove(from: RunLoop.main, forMode: RunLoop.Mode.common)
+      self.displayLink = nil
       isAnimating = false
       self.startTime = nil
       return

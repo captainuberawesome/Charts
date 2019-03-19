@@ -22,11 +22,16 @@ protocol LineAnimating: class {
   var oldPoints: [CGPoint] { get set }
   
   func path(points: [CGPoint]) -> UIBezierPath
-  func path(between first: [CGPoint], second: [CGPoint], percentage: Double) -> UIBezierPath
   func animate(with displayLink: CADisplayLink)
+  func stopAnimation()
 }
 
 extension LineAnimating where Self: UIView {
+  func stopAnimation() {
+    displayLink?.remove(from: RunLoop.main, forMode: RunLoop.Mode.common)
+    isAnimating = false
+  }
+  
   func path(points: [CGPoint]) -> UIBezierPath {
     let path = UIBezierPath()
     path.lineJoinStyle = .round
@@ -41,7 +46,7 @@ extension LineAnimating where Self: UIView {
     return path
   }
   
-  func path(between first: [CGPoint], second: [CGPoint], percentage: Double) -> UIBezierPath {
+  private func path(between first: [CGPoint], second: [CGPoint], percentage: Double) -> UIBezierPath {
     var points: [CGPoint] = []
     for index in 0..<min(first.count, second.count) {
       let firstPoint = first[index]
@@ -62,6 +67,7 @@ extension LineAnimating where Self: UIView {
     guard percent < 1 else {
       shapeLayer.path = path(points: points).cgPath
       displayLink.remove(from: RunLoop.main, forMode: RunLoop.Mode.common)
+      self.displayLink = nil
       isAnimating = false
       self.startTime = nil
       return

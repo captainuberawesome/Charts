@@ -80,7 +80,6 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   }
   
   func configure(xAxis: XAxis, yAxis: YAxis) {
-    guard isVisible else { return }
     isVisible = yAxis.isEnabled
     totalWindowSize = Double(xAxis.allValues.count)
     currentWindowSize = xAxis.windowSize * totalWindowSize
@@ -105,11 +104,13 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   
   func reconfigureAnimated(xAxis: XAxis, yAxis: YAxis) {
     oldPoints = isAnimating ? intermediatePoints : points
-    isAnimating = true
     updatePoints(xAxis: xAxis, yAxis: yAxis)
     startTime = CFAbsoluteTimeGetCurrent()
-    displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
-    displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
+    if !isAnimating {
+      displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
+      displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
+    }
+    isAnimating = true
     
     let animationClosure: ((_ hide: Bool) -> Void) = { hide in
       UIView.animate(withDuration: 0.2) {
