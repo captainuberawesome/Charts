@@ -33,19 +33,19 @@ class DraggableView: UIView, DayNightViewConfigurable {
   private var centerDraggingViewWidth: CGFloat = 0
   
   private var leftEdgeViewOriginX: CGFloat = 0 {
-    didSet {
-      guard !ignoreValueChange else {
+    willSet {
+      guard !ignoreValueChange, abs(newValue - leftEdgeViewOriginX) > 0.01 else {
         return
       }
-      onLeftHandleValueChanged?(leftHandleValue)
+      onLeftHandleValueChanged?(Double(newValue / bounds.width))
     }
   }
   private var rightEdgeViewMaxX: CGFloat = 0 {
-    didSet {
-      guard !ignoreValueChange else {
+    willSet {
+      guard !ignoreValueChange, abs(newValue - rightEdgeViewMaxX) > 0.01 else {
         return
       }
-      onRightHandleValueChanged?(rightHandleValue)
+      onRightHandleValueChanged?(Double(newValue / bounds.width))
     }
   }
   

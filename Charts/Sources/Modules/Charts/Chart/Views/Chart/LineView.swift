@@ -89,7 +89,6 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
     contentView.layoutIfNeeded()
 
     if isAnimating {
-      startTime = CFAbsoluteTimeGetCurrent()
       oldPoints = intermediatePoints
       updatePoints(xAxis: xAxis, yAxis: yAxis)
     } else {
