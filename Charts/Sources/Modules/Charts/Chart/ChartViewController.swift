@@ -14,16 +14,18 @@ protocol ChartViewControllerDelegate: class {
 
 class ChartViewController: UIViewController, DayNightViewConfigurable {
   
-  // MARK: - Properties
+  // MARK: - UI elements
   
+  private let segmentedControl = UISegmentedControl()
   private let contentView = UIView()
   private let scrollView = UIScrollView()
-  private let chartNameLabel = UILabel()
-  private let chartNameLabelContainer = UIView()
-  private let chartMiniatureView = ChartMiniatureView()
+  private let segmentedControlContainer = UIView()
+  private let chartMiniatureViewContainer = UIView()
+  private var chartMiniatureView = ChartMiniatureView()
   private let chartsBackgroundView = UIView()
   private let buttonContainerView = UIView()
-  private let chartView: ChartView
+  private let chartViewContainer = UIView()
+  private var chartView: ChartView
   private let chartsTopSeparatorView = UIView()
   private let chartsBottomSeparatorView = UIView()
   private let buttonTopSeparatorView = UIView()
@@ -31,9 +33,14 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   private let chartElemetsToggleView = ChartElementsToggleView()
   private var chartUpdateWorkItem: DispatchWorkItem?
   private let switchDisplayModesButton = UIButton(type: .system)
-  private let chart: Chart
+  
+  // MARK: - Properties
+  
+  private let charts: [Chart]
   private let dayNightModeToggler: DayNightModeToggler
   private var configuredChartMiniatureViewPosition = false
+  private var currentSelectedIndex: Int = 0
+  private var chart: Chart?
   
   weak var delegate: ChartViewControllerDelegate?
   
@@ -43,12 +50,14 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   
   // MARK: - Init
   
-  init(chart: Chart, chartName: String, dayNightModeToggler: DayNightModeToggler) {
-    self.chart = chart
+  init(charts: [Chart], dayNightModeToggler: DayNightModeToggler) {
+    self.charts = charts
     self.dayNightModeToggler = dayNightModeToggler
-    chartNameLabel.text = chartName.uppercased()
     chartView = ChartView(dayNightModeToggler: dayNightModeToggler)
     super.init(nibName: nil, bundle: nil)
+    if !charts.isEmpty {
+      chart = Chart(chart: charts[0])
+    }
   }
   
   required init?(coder aDecoder: NSCoder) {
@@ -80,12 +89,7 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     if !configuredChartMiniatureViewPosition {
-      chartMiniatureView.layoutIfNeeded()
-      chartMiniatureView.leftHandleValue = 0.7
-      chartMiniatureView.rightHandleValue = 1
-      chart.xAxis.updateBothSegmentationLimits(leftLimit: chartMiniatureView.leftHandleValue,
-                                               rightLimit: chartMiniatureView.rightHandleValue)
-      chart.updateSegmentation(shouldWait: false)
+      configureChartMiniatureViewPosition()
       configuredChartMiniatureViewPosition = true
     }
   }
@@ -112,7 +116,6 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   
   func configure(dayNightModeToggler: DayNightModeToggler) {
     view.backgroundColor = dayNightModeToggler.darkBackgroundColor
-    chartNameLabel.textColor = dayNightModeToggler.dullestTextColor
     chartsBackgroundView.backgroundColor = dayNightModeToggler.lightBackgroundColor
     chartsTopSeparatorView.backgroundColor = dayNightModeToggler.separatorColor
     chartsBottomSeparatorView.backgroundColor = dayNightModeToggler.separatorColor
@@ -135,7 +138,9 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
     setupScrollView()
     setupChartNameLabel()
     setupChartsBackgroundView()
+    setupChartViewContainer()
     setupChartView()
+    setupChartMiniatureContainerView()
     setupChartMiniatureView()
     setupChartElemetsToggleView()
     setupSwitchDisplayModesButton()
@@ -162,24 +167,32 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   }
   
   private func setupChartNameLabel() {
-    contentView.addSubview(chartNameLabelContainer)
-    chartNameLabelContainer.translatesAutoresizingMaskIntoConstraints = false
-    chartNameLabelContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
-    chartNameLabelContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
-    chartNameLabelContainer.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
-    chartNameLabelContainer.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    contentView.addSubview(segmentedControlContainer)
+    segmentedControlContainer.translatesAutoresizingMaskIntoConstraints = false
+    segmentedControlContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
+    segmentedControlContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
+    segmentedControlContainer.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+    segmentedControlContainer.heightAnchor.constraint(equalToConstant: 50).isActive = true
     
-    chartNameLabelContainer.addSubview(chartNameLabel)
-    chartNameLabel.translatesAutoresizingMaskIntoConstraints = false
-    chartNameLabel.leadingAnchor.constraint(equalTo: chartNameLabelContainer.leadingAnchor, constant: 16).isActive = true
-    chartNameLabel.topAnchor.constraint(equalTo: chartNameLabelContainer.topAnchor, constant: 30).isActive = true
-    chartNameLabel.font = UIFont.systemFont(ofSize: 14, weight: .light)
+    segmentedControlContainer.addSubview(segmentedControl)
+    segmentedControl.translatesAutoresizingMaskIntoConstraints = false
+    segmentedControl.centerXAnchor.constraint(equalTo: segmentedControlContainer.centerXAnchor).isActive = true
+    segmentedControl.topAnchor.constraint(equalTo: segmentedControlContainer.topAnchor, constant: 10).isActive = true
+    segmentedControl.leadingAnchor.constraint(greaterThanOrEqualTo: segmentedControlContainer.leadingAnchor,
+                                              constant: 8).isActive = true
+    segmentedControl.trailingAnchor.constraint(lessThanOrEqualTo: segmentedControlContainer.trailingAnchor,
+                                              constant: -8).isActive = true
+    for index in 0..<charts.count {
+      segmentedControl.insertSegment(withTitle: "Chart #\(index + 1)", at: index, animated: false)
+    }
+    segmentedControl.addTarget(self, action: #selector(handleSegmentSelected(_:)), for: .valueChanged)
+    segmentedControl.selectedSegmentIndex = 0
   }
   
   private func setupChartsBackgroundView() {
     contentView.addSubview(chartsBackgroundView)
     chartsBackgroundView.translatesAutoresizingMaskIntoConstraints = false
-    chartsBackgroundView.topAnchor.constraint(equalTo: chartNameLabelContainer.bottomAnchor).isActive = true
+    chartsBackgroundView.topAnchor.constraint(equalTo: segmentedControlContainer.bottomAnchor).isActive = true
     chartsBackgroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
     chartsBackgroundView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
   
@@ -198,47 +211,67 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
     chartsBottomSeparatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
   }
   
+  private func setupChartViewContainer() {
+    chartsBackgroundView.addSubview(chartViewContainer)
+    chartViewContainer.translatesAutoresizingMaskIntoConstraints = false
+    chartViewContainer.topAnchor.constraint(equalTo: chartsBackgroundView.topAnchor).isActive = true
+    chartViewContainer.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor, constant: 16).isActive = true
+    chartViewContainer.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor, constant: -16).isActive = true
+    chartViewContainer.heightAnchor.constraint(equalToConstant: 310).isActive = true
+  }
+  
   private func setupChartView() {
-    chartsBackgroundView.addSubview(chartView)
+    chartViewContainer.addSubview(chartView)
     chartView.translatesAutoresizingMaskIntoConstraints = false
-    chartView.topAnchor.constraint(equalTo: chartsBackgroundView.topAnchor).isActive = true
-    chartView.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor, constant: 16).isActive = true
-    chartView.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor, constant: -16).isActive = true
-    chartView.heightAnchor.constraint(equalToConstant: 310).isActive = true
+    chartView.leadingAnchor.constraint(equalTo: chartViewContainer.leadingAnchor).isActive = true
+    chartView.trailingAnchor.constraint(equalTo: chartViewContainer.trailingAnchor).isActive = true
+    chartView.topAnchor.constraint(equalTo: chartViewContainer.topAnchor).isActive = true
+    chartView.bottomAnchor.constraint(equalTo: chartViewContainer.bottomAnchor).isActive = true
     
     chartView.onNeedsReconfiguring = { [weak self, unowned chartView] in
-      guard let self = self else { return }
-      chartView.configure(chart: self.chart)
+      guard let self = self, let chart = self.chart else { return }
+      chartView.configure(chart: chart)
     }
     chartView.onChartTapped = { [weak self, unowned chartView] location in
-      guard let self = self else { return }
-      chartView.addSelectionBubble(location: location, chart: self.chart)
+      guard let self = self, let chart = self.chart else { return }
+      chartView.addSelectionBubble(location: location, chart: chart)
     }
   }
   
+  private func setupChartMiniatureContainerView() {
+    chartsBackgroundView.addSubview(chartMiniatureViewContainer)
+    chartMiniatureViewContainer.translatesAutoresizingMaskIntoConstraints = false
+    chartMiniatureViewContainer.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor,
+                                                         constant: 16).isActive = true
+    chartMiniatureViewContainer.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor,
+                                                          constant: -16).isActive = true
+    chartMiniatureViewContainer.topAnchor.constraint(equalTo: chartViewContainer.bottomAnchor, constant: 12).isActive = true
+    chartMiniatureViewContainer.heightAnchor.constraint(equalToConstant: 44).isActive = true
+  }
+  
   private func setupChartMiniatureView() {
-    chartsBackgroundView.addSubview(chartMiniatureView)
+    chartMiniatureViewContainer.addSubview(chartMiniatureView)
     chartMiniatureView.translatesAutoresizingMaskIntoConstraints = false
-    chartMiniatureView.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor, constant: 16).isActive = true
-    chartMiniatureView.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor, constant: -16).isActive = true
-    chartMiniatureView.topAnchor.constraint(equalTo: chartView.bottomAnchor, constant: 12).isActive = true
-    chartMiniatureView.heightAnchor.constraint(equalToConstant: 44).isActive = true
+    chartMiniatureView.leadingAnchor.constraint(equalTo: chartMiniatureViewContainer.leadingAnchor).isActive = true
+    chartMiniatureView.trailingAnchor.constraint(equalTo: chartMiniatureViewContainer.trailingAnchor).isActive = true
+    chartMiniatureView.topAnchor.constraint(equalTo: chartMiniatureViewContainer.topAnchor).isActive = true
+    chartMiniatureView.bottomAnchor.constraint(equalTo: chartMiniatureViewContainer.bottomAnchor).isActive = true
     
     chartMiniatureView.onNeedsReconfiguring = { [weak self] in
-      guard let self = self else { return }
-      self.chartMiniatureView.configure(chart: self.chart)
+      guard let self = self, let chart = self.chart else { return }
+      self.chartMiniatureView.configure(chart: chart)
     }
     chartMiniatureView.onLeftHandleValueChanged = { [weak self] value in
-      guard let self = self else { return }
-      self.chart.xAxis.leftSegmentationLimit = value
+      guard let self = self, let chart = self.chart else { return }
+      chart.xAxis.leftSegmentationLimit = value
     }
     chartMiniatureView.onRightHandleValueChanged = { [weak self] value in
-      guard let self = self, value > 0 else { return }
-      self.chart.xAxis.rightSegmentationLimit = value
+      guard let self = self, value > 0, let chart = self.chart else { return }
+      chart.xAxis.rightSegmentationLimit = value
     }
     chartMiniatureView.onBothValueChanged = { [weak self] leftValue, rightValue in
-      guard let self = self else { return }
-      self.chart.xAxis.updateBothSegmentationLimits(leftLimit: leftValue, rightLimit: rightValue)
+      guard let self = self, let chart = self.chart else { return }
+      chart.xAxis.updateBothSegmentationLimits(leftLimit: leftValue, rightLimit: rightValue)
     }
   }
   
@@ -247,7 +280,7 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
     chartElemetsToggleView.translatesAutoresizingMaskIntoConstraints = false
     chartElemetsToggleView.leadingAnchor.constraint(equalTo: chartsBackgroundView.leadingAnchor).isActive = true
     chartElemetsToggleView.trailingAnchor.constraint(equalTo: chartsBackgroundView.trailingAnchor).isActive = true
-    chartElemetsToggleView.topAnchor.constraint(equalTo: chartMiniatureView.bottomAnchor, constant: 8).isActive = true
+    chartElemetsToggleView.topAnchor.constraint(equalTo: chartMiniatureViewContainer.bottomAnchor, constant: 8).isActive = true
     chartElemetsToggleView.bottomAnchor.constraint(equalTo: chartsBackgroundView.bottomAnchor).isActive = true
     chartElemetsToggleView.onToggledYAxis = { [weak self] _ in
       self?.handleYAxisToggled()
@@ -290,6 +323,7 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   // MARK: - Configure chart
   
   private func configure() {
+    guard let chart = chart else { return }
     chartElemetsToggleView.configure(yAxes: chart.yAxes)
     chartView.configure(chart: chart)
   }
@@ -297,34 +331,74 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   // MARK: - Bind chart callbacks
   
   private func bindChart() {
-    chart.onSegmentationUpdated = { [weak self] in
+    chart?.onSegmentationUpdated = { [weak self] in
       guard let self = self else { return }
       self.chartUpdateWorkItem?.cancel()
       let work = DispatchWorkItem { [weak self] in
-        guard let self = self else { return }
-        self.chartView.configure(chart: self.chart)
+        guard let self = self, let chart = self.chart else { return }
+        self.chartView.configure(chart: chart)
       }
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.001, execute: work)
       self.chartUpdateWorkItem = work
     }
-    chart.onSegmentationNormalizedUpdated = { [weak self] in
-      guard let self = self else { return }
-      self.chartView.animate(to: self.chart)
+    chart?.onSegmentationNormalizedUpdated = { [weak self] in
+      guard let self = self, let chart = self.chart else { return }
+      self.chartView.animate(to: chart)
     }
-    chart.onNeedsXAxisUpdate = { [weak self] in
-      guard let self = self else { return }
-      self.chartView.configureXAxis(chart: self.chart)
+    chart?.onNeedsXAxisUpdate = { [weak self] in
+      guard let self = self, let chart = self.chart else { return }
+      self.chartView.configureXAxis(chart: chart)
     }
   }
   
   // MARK: - Private methods
   
   private func handleYAxisToggled() {
-    chart.updateSegmentation(shouldWait: false)
-    chartMiniatureView.animate(to: chart)
+    chart?.updateSegmentation(shouldWait: false)
+    if let chart = chart {
+      chartMiniatureView.animate(to: chart)
+    }
+  }
+  
+  private func reconfigureForChartChange() {
+    chartView.removeFromSuperview()
+    chartView = ChartView(dayNightModeToggler: dayNightModeToggler,
+                          frame: CGRect(origin: .zero,
+                                        size: CGSize(width: view.bounds.width - 32, height: 310)))
+    chartView.animationsAllowed = false
+    setupChartView()
+    chartMiniatureView.removeFromSuperview()
+    chartMiniatureView = ChartMiniatureView(frame: CGRect(origin: .zero,
+                                                          size: CGSize(width: view.bounds.width - 32, height: 44)))
+    setupChartMiniatureView()
+    chartView.setNeedsLayout()
+    chartView.layoutIfNeeded()
+    chartMiniatureView.setNeedsLayout()
+    chartMiniatureView.layoutIfNeeded()
+    configure()
+    bindChart()
+    configureChartMiniatureViewPosition()
+    chartView.animationsAllowed = true
+    configure(dayNightModeToggler: dayNightModeToggler)
+  }
+  
+  private func configureChartMiniatureViewPosition() {
+    chartMiniatureView.layoutIfNeeded()
+    chartMiniatureView.leftHandleValue = 0.7
+    chartMiniatureView.rightHandleValue = 1
+    chart?.xAxis.updateBothSegmentationLimits(leftLimit: chartMiniatureView.leftHandleValue,
+                                              rightLimit: chartMiniatureView.rightHandleValue)
+    chart?.updateSegmentation(shouldWait: false)
   }
   
   // MARK: - Actions
+  
+  @objc private func handleSegmentSelected(_ sender: UISegmentedControl) {
+    guard segmentedControl.selectedSegmentIndex != currentSelectedIndex else { return }
+    currentSelectedIndex = segmentedControl.selectedSegmentIndex
+    chart = Chart(chart: charts[segmentedControl.selectedSegmentIndex])
+    reconfigureForChartChange()
+  }
   
   @objc private func handleSwitchDisplayModesButtonTap(_ sender: UIButton) {
     dayNightModeToggler.toggle()

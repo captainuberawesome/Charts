@@ -36,7 +36,6 @@ class ChartView: UIView, DayNightViewConfigurable {
   private let xAxisView: XAxisView
   private let backgroundLinesView: BackgroundLinesView
   private var configuredForBounds: CGRect = .zero
-  private var animationStartedDate: Date?
   private var handlePanGestureWorkItem: DispatchWorkItem?
   private let chartLinesUpdateThrottler = Throttler(mustRunOnceInInterval: 0.016)
   

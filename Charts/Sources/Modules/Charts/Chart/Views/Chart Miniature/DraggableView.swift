@@ -180,7 +180,9 @@ class DraggableView: UIView, DayNightViewConfigurable {
                                    y: bounds.size.height - 1,
                                    width: rightEdgeView.frame.minX - leftEdgeView.frame.maxX,
                                    height: 1)
-    leftEdgeDraggingView.frame.size = CGSize(width: leftEdgeView.frame.width * 2, height: leftEdgeView.frame.height)
+    let isFullyCollapsed = abs(leftEdgeViewOriginX + 2 * Constants.handleWidth - rightEdgeViewMaxX) < 1
+    let draggingViewsWidth: CGFloat = isFullyCollapsed ? 2 * Constants.handleWidth : 3 * Constants.handleWidth
+    leftEdgeDraggingView.frame.size = CGSize(width: draggingViewsWidth, height: leftEdgeView.frame.height)
     leftEdgeDraggingView.center = leftEdgeView.center
     rightEdgeDraggingView.frame.size = leftEdgeDraggingView.frame.size
     rightEdgeDraggingView.center = rightEdgeView.center

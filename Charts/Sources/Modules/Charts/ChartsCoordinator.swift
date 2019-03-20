@@ -13,7 +13,6 @@ class ChartsCoordinator {
   private let window: UIWindow
   private let navigationController = NavigationController()
   private let charts: [Chart]
-  private var onDayNightModeToggled: (() -> Void)?
   
   init(window: UIWindow) {
     self.window = window
@@ -24,34 +23,14 @@ class ChartsCoordinator {
   
   func start() {
     window.makeKeyAndVisible()
-    showChartListScreen()
+    showChartScreen(charts: charts)
   }
   
-  func showChartListScreen() {
-    let viewController = ChartListViewController(charts: charts, dayNightModeToggler: dayNightModeToggler)
-    viewController.delegate = self
-    viewController.title = "Chart List"
-    onDayNightModeToggled = { [weak viewController, unowned dayNightModeToggler] in
-      viewController?.configure(dayNightModeToggler: dayNightModeToggler)
-    }
-    navigationController.pushViewController(viewController, animated: false)
-  }
-  
-  func showChartScreen(for chart: Chart, title: String) {
-    guard !(navigationController.topViewController is ChartViewController) else { return }
-    let viewController = ChartViewController(chart: Chart(chart: chart), chartName: title,
-                                             dayNightModeToggler: dayNightModeToggler)
+  func showChartScreen(charts: [Chart]) {
+    let viewController = ChartViewController(charts: charts, dayNightModeToggler: dayNightModeToggler)
     viewController.delegate = self
     viewController.title = "Statistics"
     navigationController.pushViewController(viewController, animated: true)
-  }
-}
-
-// MARK: - ChartListViewControllerDelegate
-
-extension ChartsCoordinator: ChartListViewControllerDelegate {
-  func chartListViewController(_ viewController: ChartListViewController, didSelectChart chart: Chart, title: String) {
-    showChartScreen(for: chart, title: title)
   }
 }
 
@@ -60,6 +39,5 @@ extension ChartsCoordinator: ChartListViewControllerDelegate {
 extension ChartsCoordinator: ChartViewControllerDelegate {
   func chartViewControllerDidToggleDayNightMode(_ viewController: ChartViewController) {
     navigationController.configureNavigationBarAppearance(dayNightModeToggler: dayNightModeToggler)
-    onDayNightModeToggled?()
   }
 }
