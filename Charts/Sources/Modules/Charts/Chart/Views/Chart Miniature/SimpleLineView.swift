@@ -26,7 +26,6 @@ class SimpleLineView: UIView, LineAnimating {
   var displayLink: CADisplayLink?
   var startTime: CFAbsoluteTime?
   var isAnimating = false
-  var animationCompletionClosure: (() -> Void)?
   
   // MARK: - Init
   

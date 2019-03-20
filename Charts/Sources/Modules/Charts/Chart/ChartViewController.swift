@@ -85,6 +85,7 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
       chartMiniatureView.rightHandleValue = 1
       chart.xAxis.updateBothSegmentationLimits(leftLimit: chartMiniatureView.leftHandleValue,
                                                rightLimit: chartMiniatureView.rightHandleValue)
+      chart.updateSegmentation(shouldWait: false)
       configuredChartMiniatureViewPosition = true
     }
   }
@@ -309,6 +310,10 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
     chart.onSegmentationNormalizedUpdated = { [weak self] in
       guard let self = self else { return }
       self.chartView.animate(to: self.chart)
+    }
+    chart.onNeedsXAxisUpdate = { [weak self] in
+      guard let self = self else { return }
+      self.chartView.configureXAxis(chart: self.chart)
     }
   }
   

@@ -38,6 +38,7 @@ class ChartView: UIView, DayNightViewConfigurable {
   private var configuredForBounds: CGRect = .zero
   private var animationStartedDate: Date?
   private var handlePanGestureWorkItem: DispatchWorkItem?
+  private let chartLinesUpdateThrottler = Throttler(mustRunOnceInInterval: 0.016)
   
   var animationsAllowed = false
   
@@ -86,20 +87,25 @@ class ChartView: UIView, DayNightViewConfigurable {
     let xAxis = chart.xAxis
     let addLineViews = lineViews.isEmpty
     
-    for (index, yAxis) in chart.yAxes.enumerated() {
-      if addLineViews {
+    if addLineViews {
+      for yAxis in chart.yAxes {
         let lineView = LineView(frame: linesContainerView.bounds, dayNightModeToggler: dayNightModeToggler,
                                 color: UIColor(hexString: yAxis.colorHex), lineWidth: 2.0)
         lineViews.append(lineView)
         linesContainerView.addSubview(lineView)
         lineView.frame = linesContainerView.bounds
         lineView.configure(xAxis: xAxis, yAxis: yAxis)
-      } else {
-        let lineView = lineViews[index]
-        lineView.frame = linesContainerView.bounds
-        lineView.configure(xAxis: xAxis, yAxis: yAxis)
+      }
+    } else {
+      chartLinesUpdateThrottler.addWork { [weak self] in
+        for (index, yAxis) in chart.yAxes.enumerated() {
+          let lineView = self?.lineViews[index]
+          lineView?.frame = self?.linesContainerView.bounds ?? .zero
+          lineView?.configure(xAxis: xAxis, yAxis: yAxis)
+        }
       }
     }
+   
     
     if let yAxis = chart.yAxes.first(where: { $0.isEnabled }) {
       yAxisView.layoutIfNeeded()
@@ -109,6 +115,10 @@ class ChartView: UIView, DayNightViewConfigurable {
     }
     xAxisView.configure(xAxis: chart.xAxis)
     configuredForBounds = bounds
+  }
+  
+  func configureXAxis(chart: Chart) {
+    xAxisView.configure(xAxis: chart.xAxis)
   }
   
   func animate(to chart: Chart) {

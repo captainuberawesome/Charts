@@ -56,7 +56,7 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
     if !contentView.subviews.isEmpty {
       let totalSize = Double(xAxis.allValues.count)
       let diff = oldWindowSize - xAxis.windowSize * totalSize
-      if diff < 1e-4, diff >= 0 {
+      if abs(diff) < 1e-4 {
         scrollToSegmentationLimit(xAxis: xAxis)
         return
       } else {
@@ -71,14 +71,16 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
     contentViewWidthConstraint?.constant = contentWidth
     
     let step = bounds.width / CGFloat(Constants.maxLabelCount)
-    for offset in stride(from: 20, to: contentWidth, by: step) {
+    guard step > 0 else { return }
+    
+    for offset in stride(from: 25, to: contentWidth, by: step) {
       let percentageValue = offset / contentWidth
       guard let value = xAxis.interpolatedValue(for: Double(percentageValue)) else {
         continue
       }
       let label = createLabel()
       contentView.addSubview(label)
-      let date = Date(timeIntervalSince1970: value)
+      let date = Date(timeIntervalSince1970: value).nearestDay()
       let stringValue = dateFormatter.string(from: date)
       label.text = stringValue
       label.sizeToFit()

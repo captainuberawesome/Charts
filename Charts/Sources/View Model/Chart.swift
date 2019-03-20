@@ -19,6 +19,7 @@ class Chart {
   private var normalizationWorkItem: DispatchWorkItem?
   
   var onSegmentationUpdated: (() -> Void)?
+  var onNeedsXAxisUpdate: (() -> Void)?
   var onSegmentationNormalizedUpdated: (() -> Void)?
   
   // MARK: - Initializer
@@ -70,6 +71,8 @@ class Chart {
       onSegmentationUpdated?()
     }
     
+    onNeedsXAxisUpdate?()
+    
     if shouldWait {
       let work = DispatchWorkItem { [weak self, minValue, maxValue, valuesArray] in
         guard let self = self else { return }
@@ -78,7 +81,7 @@ class Chart {
         }
         self.onSegmentationNormalizedUpdated?()
       }
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: work)
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: work)
       normalizationWorkItem = work
     } else {
       let yValuesRaw = toggledYAxes.flatMap { $0.allValues }

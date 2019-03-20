@@ -14,7 +14,6 @@ private struct Constants {
 
 protocol LineAnimating: class {
   var isAnimating: Bool { get set }
-  var animationCompletionClosure: (() -> Void)? { get set }
   var shapeLayer: CAShapeLayer { get }
   var displayLink: CADisplayLink? { get set }
   var startTime: CFAbsoluteTime? { get set }
@@ -63,15 +62,13 @@ extension LineAnimating where Self: UIView {
   func animate(with displayLink: CADisplayLink) {
     guard let startTime = startTime else { return }
     let elapsed = CFAbsoluteTimeGetCurrent() - startTime
-    let percent = elapsed / Constants.animationDuration
+    let percent = abs(elapsed / Constants.animationDuration)
     
     guard percent < 1 else {
       shapeLayer.path = path(points: points).cgPath
       displayLink.remove(from: RunLoop.main, forMode: RunLoop.Mode.common)
       self.displayLink = nil
       isAnimating = false
-      animationCompletionClosure?()
-      animationCompletionClosure = nil
       self.startTime = nil
       return
     }

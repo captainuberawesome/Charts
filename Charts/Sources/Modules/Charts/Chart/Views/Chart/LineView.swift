@@ -17,6 +17,9 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   private var totalWindowSize: Double = 0
   private var currentWindowSize: Double = 0
   private let dayNightModeToggler: DayNightModeToggler
+  private var animationFinishWorkItem: DispatchWorkItem?
+  private let updateDuringAnimationThrottler = Throttler(mustRunOnceInInterval: 0.016)
+  private let animationThrottler = Throttler(mustRunOnceInInterval: 0.2)
   private (set) var isVisible = true
   
   var oldPoints: [CGPoint] = []
@@ -26,7 +29,6 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   var displayLink: CADisplayLink?
   var startTime: CFAbsoluteTime?
   var isAnimating = false
-  var animationCompletionClosure: (() -> Void)?
   
   var scrollView = UIScrollView()
   var contentView = UIView()
@@ -80,49 +82,89 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   }
   
   func configure(xAxis: XAxis, yAxis: YAxis) {
-    if let startTime = startTime {
-      let elapsed = CFAbsoluteTimeGetCurrent() - startTime
-      if elapsed < 0.2 {
-        animationCompletionClosure = { [weak self, xAxis, yAxis] in
-          self?.configure(xAxis: xAxis, yAxis: yAxis)
-        }
+    updateDuringAnimationThrottler.cancel()
+    
+    isVisible = yAxis.isEnabled
+    
+    let oldWindowSize = currentWindowSize
+    
+    if !contentView.subviews.isEmpty {
+      let totalSize = Double(xAxis.allValues.count)
+      let diff = oldWindowSize - xAxis.windowSize * totalSize
+      if abs(diff) < 1e-4 {
+        let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(currentWindowSize))
+        let offset = contentWidth * CGFloat(xAxis.leftSegmentationLimit)
+        scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
         return
       }
     }
     
-    isVisible = yAxis.isEnabled
     totalWindowSize = Double(xAxis.allValues.count)
-    currentWindowSize = xAxis.windowSize * totalWindowSize
-    let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(currentWindowSize))
+    let newWindowSize = xAxis.windowSize * totalWindowSize
+    guard newWindowSize >= 1 else {
+      return
+    }
+    
+    let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(newWindowSize))
+    guard contentWidth > 1 else {
+      return
+    }
+    
+    currentWindowSize = newWindowSize
     contentViewWidthConstraint?.constant = contentWidth
-    
-    let currentContentWidth = contentViewWidthConstraint?.constant ?? 0
-    let offset = currentContentWidth * CGFloat(xAxis.leftSegmentationLimit)
-    
-    contentView.setNeedsLayout()
-    contentView.layoutIfNeeded()
-    updatePoints(xAxis: xAxis, yAxis: yAxis)
-    shapeLayer.path = path(points: points).cgPath
-    scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
+
+    if isAnimating {
+      updateDuringAnimationThrottler.addWork { [weak self] in
+        guard let self = self else { return }
+        let contentWidth = (self.contentViewWidthConstraint?.constant ?? 0)
+        if contentWidth > 0 {
+          let offset = contentWidth * CGFloat(xAxis.leftSegmentationLimit)
+          UIView.animate(withDuration: 0.2, delay: 0.0, options: .beginFromCurrentState, animations: {
+            self.scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
+          }, completion: nil)
+        }
+      }
+    } else {
+      let offset = contentWidth * CGFloat(xAxis.leftSegmentationLimit)
+      
+      contentView.frame.size = CGSize(width: contentWidth, height: contentView.frame.height)
+      updatePoints(xAxis: xAxis, yAxis: yAxis)
+      shapeLayer.path = path(points: points).cgPath
+      scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
+    }
   }
   
   func reconfigureAnimated(xAxis: XAxis, yAxis: YAxis) {
-    if let startTime = startTime {
-      let elapsed = CFAbsoluteTimeGetCurrent() - startTime
-      if elapsed < 0.2 {
-        animationCompletionClosure = { [weak self, xAxis, yAxis] in
-          self?.configure(xAxis: xAxis, yAxis: yAxis)
-        }
-        return
-      }
+    animationThrottler.cancel()
+    animationFinishWorkItem?.cancel()
+
+    animationThrottler.addWork { [weak self] in
+      self?.animateChange(xAxis: xAxis, yAxis: yAxis)
     }
-    
+  }
+  
+  func configure(dayNightModeToggler: DayNightModeToggler) {
+    circleView.configure(dayNightModeToggler: dayNightModeToggler)
+  }
+  
+  // MARK: - Private methods
+  
+  private func animateChange(xAxis: XAxis, yAxis: YAxis) {
     oldPoints = isAnimating ? intermediatePoints : points
     updatePoints(xAxis: xAxis, yAxis: yAxis)
     
     startTime = CFAbsoluteTimeGetCurrent()
-    displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
-    displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
+    
+    let work = DispatchWorkItem { [weak self] in
+      self?.isAnimating = false
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: work)
+    animationFinishWorkItem = work
+    
+    if !isAnimating {
+      displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
+      displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
+    }
     
     isAnimating = true
     
@@ -138,16 +180,19 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
     }
     isVisible = yAxis.isEnabled
     
-    let currentContentWidth = contentViewWidthConstraint?.constant ?? 0
-    let offset = currentContentWidth * CGFloat(xAxis.leftSegmentationLimit)
+    let newWindowSize = xAxis.windowSize * totalWindowSize
+    guard newWindowSize >= 1 else {
+      return
+    }
+    currentWindowSize = newWindowSize
+    let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(currentWindowSize))
+    guard contentWidth > 1 else {
+      return
+    }
+    contentView.frame.size = CGSize(width: contentWidth, height: contentView.frame.height)
+    let offset = contentWidth * CGFloat(xAxis.leftSegmentationLimit)
     scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
   }
-  
-  func configure(dayNightModeToggler: DayNightModeToggler) {
-    circleView.configure(dayNightModeToggler: dayNightModeToggler)
-  }
-  
-  // MARK: - Private methods
   
   private func updatePoints(xAxis: XAxis, yAxis: YAxis) {
     var points: [CGPoint] = []

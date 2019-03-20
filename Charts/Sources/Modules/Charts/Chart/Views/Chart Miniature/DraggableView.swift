@@ -28,6 +28,8 @@ class DraggableView: UIView, DayNightViewConfigurable {
   private let bottomSeparator = UIView()
   private let leftDimmingView = UIView()
   private let rightDimmingView = UIView()
+  private let leftDraggingThrottler = Throttler(mustRunOnceInInterval: 0.01)
+  private let rightDraggingThrottler = Throttler(mustRunOnceInInterval: 0.01)
   private var ignoreValueChange = false
   private var updatedSubviewsForBounds: CGRect = .zero
   private var centerDraggingViewWidth: CGFloat = 0
@@ -37,7 +39,10 @@ class DraggableView: UIView, DayNightViewConfigurable {
       guard !ignoreValueChange, abs(newValue - leftEdgeViewOriginX) > 0.01 else {
         return
       }
-      onLeftHandleValueChanged?(Double(newValue / bounds.width))
+      leftDraggingThrottler.addWork { [weak self] in
+        guard let self = self else { return }
+        self.onLeftHandleValueChanged?(Double(newValue / self.bounds.width))
+      }
     }
   }
   private var rightEdgeViewMaxX: CGFloat = 0 {
@@ -45,7 +50,10 @@ class DraggableView: UIView, DayNightViewConfigurable {
       guard !ignoreValueChange, abs(newValue - rightEdgeViewMaxX) > 0.01 else {
         return
       }
-      onRightHandleValueChanged?(Double(newValue / bounds.width))
+      rightDraggingThrottler.addWork { [weak self] in
+        guard let self = self else { return }
+        self.onRightHandleValueChanged?(Double(newValue / self.bounds.width))
+      }
     }
   }
   
