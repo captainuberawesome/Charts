@@ -20,7 +20,7 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   private let contentView = UIView()
   private let scrollView = UIScrollView()
   private let segmentedControlContainer = UIView()
-  private let chartMiniatureViewContainer = UIView()
+  private let chartMiniatureViewContainer = ViewWithTouchesOutside()
   private var chartMiniatureView = ChartMiniatureView()
   private let chartsBackgroundView = UIView()
   private let buttonContainerView = UIView()
