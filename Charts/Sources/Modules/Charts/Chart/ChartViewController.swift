@@ -88,6 +88,8 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
+    chartView.setNeedsLayout()
+    chartView.layoutIfNeeded()
     if !configuredChartMiniatureViewPosition {
       configureChartMiniatureViewPosition()
       configuredChartMiniatureViewPosition = true
@@ -395,9 +397,13 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   
   @objc private func handleSegmentSelected(_ sender: UISegmentedControl) {
     guard segmentedControl.selectedSegmentIndex != currentSelectedIndex else { return }
+    segmentedControl.isUserInteractionEnabled = false
     currentSelectedIndex = segmentedControl.selectedSegmentIndex
     chart = Chart(chart: charts[segmentedControl.selectedSegmentIndex])
     reconfigureForChartChange()
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+      self.segmentedControl.isUserInteractionEnabled = true
+    }
   }
   
   @objc private func handleSwitchDisplayModesButtonTap(_ sender: UIButton) {

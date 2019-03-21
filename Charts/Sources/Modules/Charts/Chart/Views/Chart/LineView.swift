@@ -18,8 +18,9 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   private var currentWindowSize: Double = 0
   private let dayNightModeToggler: DayNightModeToggler
   private var animationFinishWorkItem: DispatchWorkItem?
-  private let updateDuringAnimationThrottler = Throttler(mustRunOnceInInterval: 0.016)
-  private let animationThrottler = Throttler(mustRunOnceInInterval: 0.2)
+  private let updateDuringAnimationThrottler = Throttler(mustRunOnceInInterval: 0.2)
+  private let animationThrottler = Throttler(mustRunOnceInInterval: 0.1)
+  private var updatePropertyAnimator: UIViewPropertyAnimator?
   private (set) var isVisible = true
   
   var oldPoints: [CGPoint] = []
@@ -82,13 +83,15 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   }
   
   func configure(xAxis: XAxis, yAxis: YAxis) {
+    updatePropertyAnimator?.stopAnimation(true)
+    updatePropertyAnimator = nil
     updateDuringAnimationThrottler.cancel()
     
     isVisible = yAxis.isEnabled
     
     let oldWindowSize = currentWindowSize
     
-    if !contentView.subviews.isEmpty {
+    if !points.isEmpty {
       let totalSize = Double(xAxis.allValues.count)
       let diff = oldWindowSize - xAxis.windowSize * totalSize
       if abs(diff) < 1e-4 {
@@ -106,28 +109,36 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
     }
     
     let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(newWindowSize))
-    guard contentWidth > 1 else {
+    if contentWidth >= bounds.width  {
+      currentWindowSize = newWindowSize
+      contentViewWidthConstraint?.constant = contentWidth
+    } else {
       return
     }
     
-    currentWindowSize = newWindowSize
-    contentViewWidthConstraint?.constant = contentWidth
-
     if isAnimating {
       updateDuringAnimationThrottler.addWork { [weak self] in
         guard let self = self else { return }
+        self.updatePropertyAnimator?.stopAnimation(true)
         let contentWidth = (self.contentViewWidthConstraint?.constant ?? 0)
         if contentWidth > 0 {
           let offset = contentWidth * CGFloat(xAxis.leftSegmentationLimit)
-          UIView.animate(withDuration: 0.2, delay: 0.0, options: .beginFromCurrentState, animations: {
+          self.updatePropertyAnimator = UIViewPropertyAnimator(duration: 0.01, curve: .linear) {
             self.scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
-          }, completion: nil)
+          }
+          self.updatePropertyAnimator?.startAnimation()
+          self.updatePropertyAnimator?.addCompletion { [weak self] _ in
+            self?.isAnimating = false
+          }
         }
       }
     } else {
-      let offset = contentWidth * CGFloat(xAxis.leftSegmentationLimit)
-      
-      contentView.frame.size = CGSize(width: contentWidth, height: contentView.frame.height)
+      displayLink?.remove(from: RunLoop.main, forMode: RunLoop.Mode.common)
+      displayLink = nil
+      let width = contentViewWidthConstraint?.constant ?? 0
+      let offset = width * CGFloat(xAxis.leftSegmentationLimit)
+      contentView.frame.size = CGSize(width: width, height: contentView.frame.height)
+      shapeLayer.frame = contentView.bounds
       updatePoints(xAxis: xAxis, yAxis: yAxis)
       shapeLayer.path = path(points: points).cgPath
       scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
@@ -135,7 +146,6 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   }
   
   func reconfigureAnimated(xAxis: XAxis, yAxis: YAxis) {
-    animationThrottler.cancel()
     animationFinishWorkItem?.cancel()
 
     animationThrottler.addWork { [weak self] in
@@ -150,6 +160,11 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   // MARK: - Private methods
   
   private func animateChange(xAxis: XAxis, yAxis: YAxis) {
+    updatePropertyAnimator?.stopAnimation(true)
+    updatePropertyAnimator = nil
+    updateDuringAnimationThrottler.cancel()
+    animationFinishWorkItem?.cancel()
+    
     oldPoints = isAnimating ? intermediatePoints : points
     updatePoints(xAxis: xAxis, yAxis: yAxis)
     
@@ -186,10 +201,11 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
     }
     currentWindowSize = newWindowSize
     let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(currentWindowSize))
-    guard contentWidth > 1 else {
+    guard contentWidth >= bounds.width else {
       return
     }
     contentView.frame.size = CGSize(width: contentWidth, height: contentView.frame.height)
+    shapeLayer.frame = contentView.bounds
     let offset = contentWidth * CGFloat(xAxis.leftSegmentationLimit)
     scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
   }

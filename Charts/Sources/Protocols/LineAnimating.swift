@@ -9,7 +9,7 @@
 import UIKit
 
 private struct Constants {
-  static let animationDuration: TimeInterval = 0.2
+  static let animationDuration: TimeInterval = 0.15
 }
 
 protocol LineAnimating: class {

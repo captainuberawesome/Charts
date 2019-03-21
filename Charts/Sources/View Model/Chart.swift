@@ -42,7 +42,9 @@ class Chart {
   // MARK: - Public method
   
   func updateSegmentation(shouldWait: Bool = true) {
-    self.normalizationWorkItem?.cancel()
+    if !shouldWait {
+       self.normalizationWorkItem?.cancel()
+    }
     
     var maxValue: Int = 0
     var minValue: Int = Int.max
@@ -74,6 +76,7 @@ class Chart {
     onNeedsXAxisUpdate?()
     
     if shouldWait {
+      self.normalizationWorkItem?.cancel()
       let work = DispatchWorkItem { [weak self, minValue, maxValue, valuesArray] in
         guard let self = self else { return }
         for (index, yAxis) in self.yAxes.enumerated() {
@@ -81,7 +84,7 @@ class Chart {
         }
         self.onSegmentationNormalizedUpdated?()
       }
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: work)
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.15, execute: work)
       normalizationWorkItem = work
     } else {
       let yValuesRaw = toggledYAxes.flatMap { $0.allValues }

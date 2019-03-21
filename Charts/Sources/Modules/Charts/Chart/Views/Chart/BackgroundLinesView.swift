@@ -83,7 +83,10 @@ class BackgroundLinesView: UIView, DayNightViewConfigurable {
   
   func configure(dayNightModeToggler: DayNightModeToggler) {
     for shapeLayer in shapeLayers {
+      CATransaction.begin()
+      CATransaction.setDisableActions(true)
       shapeLayer.strokeColor = dayNightModeToggler.chartBackgroundLinesColor.cgColor
+      CATransaction.commit()
     }
     verticalLineView.backgroundColor = dayNightModeToggler.separatorColor
   }

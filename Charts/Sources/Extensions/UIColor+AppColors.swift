@@ -17,6 +17,8 @@ extension UIColor {
   
   // MARK: - Colors
   
+  static let tintColor = UIColor.color(fromRed: 24, green: 145, blue: 255)
+  
   struct LightThemeColors {
     static let darkBackgroundColor = UIColor.color(fromRed: 239, green: 239, blue: 244)
     static let lightBackgroundColor = UIColor.white

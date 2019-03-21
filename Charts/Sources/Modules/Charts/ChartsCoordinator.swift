@@ -17,6 +17,7 @@ class ChartsCoordinator {
   init(window: UIWindow) {
     self.window = window
     window.rootViewController = navigationController
+    window.tintColor = UIColor.tintColor
     navigationController.configureNavigationBarAppearance(dayNightModeToggler: dayNightModeToggler)
     charts = DataImporter.importData(jsonFileName: "chart_data")
   }

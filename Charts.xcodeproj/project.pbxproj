@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8B2CE49C223F8BE6002FE3FB /* ViewWithTouchesOutside.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2CE49B223F8BE6002FE3FB /* ViewWithTouchesOutside.swift */; };
+		8B321CC7224395640007F20F /* Int+ShortText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B321CC6224395640007F20F /* Int+ShortText.swift */; };
 		8B55008C2241F1AF005B625C /* Date+RoundToDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B55008B2241F1AF005B625C /* Date+RoundToDay.swift */; };
 		8B55008E224246EF005B625C /* Throttler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B55008D224246EF005B625C /* Throttler.swift */; };
 		FD1674A4223FCE3500B3EDC6 /* ViewScrollable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1674A3223FCE3500B3EDC6 /* ViewScrollable.swift */; };
@@ -47,6 +48,7 @@
 
 /* Begin PBXFileReference section */
 		8B2CE49B223F8BE6002FE3FB /* ViewWithTouchesOutside.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewWithTouchesOutside.swift; sourceTree = "<group>"; };
+		8B321CC6224395640007F20F /* Int+ShortText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+ShortText.swift"; sourceTree = "<group>"; };
 		8B55008B2241F1AF005B625C /* Date+RoundToDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+RoundToDay.swift"; sourceTree = "<group>"; };
 		8B55008D224246EF005B625C /* Throttler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Throttler.swift; sourceTree = "<group>"; };
 		FD1674A3223FCE3500B3EDC6 /* ViewScrollable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewScrollable.swift; sourceTree = "<group>"; };
@@ -219,6 +221,7 @@
 				FDA2A9F4223CB61500EE69B5 /* UIView+RoundCorners.swift */,
 				FD1674BA223FEB4D00B3EDC6 /* UIViewController+BackButton.swift */,
 				8B55008B2241F1AF005B625C /* Date+RoundToDay.swift */,
+				8B321CC6224395640007F20F /* Int+ShortText.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -361,6 +364,7 @@
 				FD6B35DF223E9DA600290F7C /* XAxisView.swift in Sources */,
 				FDA2AA1E223D3DDF00EE69B5 /* ChartsCoordinator.swift in Sources */,
 				FD6B35E0223E9DA600290F7C /* BackgroundLinesView.swift in Sources */,
+				8B321CC7224395640007F20F /* Int+ShortText.swift in Sources */,
 				FD1674B5223FD9A600B3EDC6 /* Chart.swift in Sources */,
 				FDA2AA16223D3DC600EE69B5 /* ChartViewController.swift in Sources */,
 				FDA2A9FE223CB61500EE69B5 /* DataImporter.swift in Sources */,
@@ -511,8 +515,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = RBAQY4C72X;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = QM38B4ADFA;
 				INFOPLIST_FILE = "Charts/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -520,7 +524,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dnovodon.charts;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "General Development Profile";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -532,9 +536,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = RBAQY4C72X;
+				DEVELOPMENT_TEAM = QM38B4ADFA;
 				INFOPLIST_FILE = "Charts/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -542,7 +546,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.dnovodon.charts;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "General Development Profile";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";

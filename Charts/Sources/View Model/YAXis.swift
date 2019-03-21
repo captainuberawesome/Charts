@@ -142,22 +142,16 @@ class YAxis {
     
     if step == 0 {
       step = 1
-    } else if step < 10 {
-      // do nothing
-    } else if step < 75 {
+    } else if step < 25 {
       step = Int(ceil(Double(step) / 5) * 5)
     } else if step < 100 {
       step = Int(ceil(Double(step) / 10) * 10)
     } else if step < 1000 {
-      step = Int(ceil(Double(step) / 50) * 50)
-    } else if step < 10000 {
       step = Int(ceil(Double(step) / 100) * 100)
     } else if step < 100000 {
-      step = Int(ceil(Double(step) / 500) * 500)
-    } else if step < 1000000 {
       step = Int(ceil(Double(step) / 1000) * 1000)
     } else {
-      step = Int(ceil(Double(step) / 5000) * 5000)
+      step = Int(ceil(Double(step) / 100000) * 100000)
     }
     
     return step

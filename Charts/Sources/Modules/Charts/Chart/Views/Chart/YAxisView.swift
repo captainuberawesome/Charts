@@ -88,7 +88,7 @@ class YAxisView: UIView, DayNightViewConfigurable {
     for index in 0..<Constants.labelCount {
       let label = labels[index]
       
-      label.text = "\(currentMinValue + currentStepValue * index)"
+      label.text = (currentMinValue + currentStepValue * index).shortText
       label.sizeToFit()
       let origin = CGPoint(x: 0, y: bounds.height - CGFloat(index) * CGFloat(currentStepPercentage) * bounds.height)
       let newLabelOrigin = CGPoint(x: origin.x, y: origin.y - label.frame.size.height - 3)
@@ -131,7 +131,7 @@ class YAxisView: UIView, DayNightViewConfigurable {
         let origin = CGPoint(x: 0,
                              y: self.bounds.height - CGFloat(index) * CGFloat(self.currentStepPercentage) * self.bounds.height)
         let newLabelOrigin = CGPoint(x: origin.x, y: origin.y - label.frame.size.height - 3)
-        let newLabelText = "\(self.currentMinValue + self.currentStepValue * index)"
+        let newLabelText = (self.currentMinValue + self.currentStepValue * index).shortText
         label.text = newLabelText
         label.sizeToFit()
         label.frame.origin = newLabelOrigin
@@ -152,6 +152,7 @@ class YAxisView: UIView, DayNightViewConfigurable {
     isAnimating = true
     
     let animatedOffset: CGFloat = animationDirection == .up ? 50 : -50
+    var keepFirstLabelStatic = false
     
     var newLabels: [UILabel] = []
     for index in 0..<Constants.labelCount {
@@ -161,20 +162,33 @@ class YAxisView: UIView, DayNightViewConfigurable {
       label.font = UIFont.systemFont(ofSize: 11, weight: .light)
       label.alpha = 0
       let origin = CGPoint(x: 0, y: bounds.height - CGFloat(index) * CGFloat(currentStepPercentage) * bounds.height)
-      label.text = "\(currentMinValue + currentStepValue * index)"
+      label.text = (currentMinValue + currentStepValue * index).shortText
       label.sizeToFit()
       label.frame.origin = CGPoint(x: origin.x,
                                    y: origin.y - label.frame.size.height - 3 + animatedOffset)
+      if index == 0 &&  label.text == labels.first?.text {
+        keepFirstLabelStatic = true
+        label.frame.origin = CGPoint(x: origin.x,
+                                     y: origin.y - label.frame.size.height - 3)
+        label.alpha = 1
+      }
       newLabels.append(label)
     }
     
     UIView.animate(withDuration: 0.2, animations: {
-      for label in self.labels {
+      for (index, label) in self.labels.enumerated() {
+        if keepFirstLabelStatic && index == 0 {
+          label.removeFromSuperview()
+          continue
+        }
         label.alpha = 0
         label.frame.origin.y -= animatedOffset
       }
       
-      for label in newLabels {
+      for (index, label) in newLabels.enumerated() {
+        if keepFirstLabelStatic && index == 0 {
+          continue
+        }
         label.alpha = 1
         label.frame.origin.y -= animatedOffset
       }

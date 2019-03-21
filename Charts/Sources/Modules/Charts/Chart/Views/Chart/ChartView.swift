@@ -79,7 +79,7 @@ class ChartView: UIView, DayNightViewConfigurable {
     backgroundLinesView.removeVerticalLine()
     lineViews.forEach { $0.hideCircleView() }
     
-    guard bounds.width > 0, bounds.height > 0 else {
+    guard bounds.width > 0, bounds.height > 0, chart.xAxis.leftSegmentationIndex < chart.xAxis.rightSegmentationIndex else {
       return
     }
     
@@ -125,7 +125,7 @@ class ChartView: UIView, DayNightViewConfigurable {
     backgroundLinesView.removeVerticalLine()
     lineViews.forEach { $0.hideCircleView() }
     
-    guard bounds.width > 0, bounds.height > 0 else {
+    guard bounds.width > 0, bounds.height > 0, chart.xAxis.leftSegmentationIndex < chart.xAxis.rightSegmentationIndex else {
       return
     }
     

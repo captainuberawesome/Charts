@@ -66,14 +66,19 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
     }
     
     totalWindowSize = Double(xAxis.allValues.count)
-    currentWindowSize = xAxis.windowSize * totalWindowSize
-    let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(currentWindowSize))
-    contentViewWidthConstraint?.constant = contentWidth
+    let newWindowSize = xAxis.windowSize * totalWindowSize
+    let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(newWindowSize))
+    if contentWidth >= bounds.width  {
+      currentWindowSize = newWindowSize
+      contentViewWidthConstraint?.constant = contentWidth
+    } else {
+      return
+    }
     
     let step = bounds.width / CGFloat(Constants.maxLabelCount)
     guard step > 0 else { return }
     
-    for offset in stride(from: 25, to: contentWidth, by: step) {
+    for offset in stride(from: 30, to: contentWidth, by: step) {
       let percentageValue = offset / contentWidth
       guard let value = xAxis.interpolatedValue(for: Double(percentageValue)) else {
         continue
