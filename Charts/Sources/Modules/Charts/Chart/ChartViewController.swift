@@ -386,7 +386,7 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   
   private func configureChartMiniatureViewPosition() {
     chartMiniatureView.layoutIfNeeded()
-    chartMiniatureView.leftHandleValue = 0.7
+    chartMiniatureView.leftHandleValue = 0.6
     chartMiniatureView.rightHandleValue = 1
     chart?.xAxis.updateBothSegmentationLimits(leftLimit: chartMiniatureView.leftHandleValue,
                                               rightLimit: chartMiniatureView.rightHandleValue)

@@ -39,6 +39,7 @@ class ChartMiniatureView: ViewWithTouchesOutside, DayNightViewConfigurable {
   var onLeftHandleValueChanged: ((Double) -> Void)?
   var onRightHandleValueChanged: ((Double) -> Void)?
   var onBothValueChanged: ((Double, Double) -> Void)?
+  var onFinished: (() -> Void)?
   
   // MARK: - Init
   
