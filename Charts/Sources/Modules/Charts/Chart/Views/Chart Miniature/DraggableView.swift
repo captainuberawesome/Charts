@@ -28,8 +28,8 @@ class DraggableView: UIView, DayNightViewConfigurable {
   private let bottomSeparator = UIView()
   private let leftDimmingView = UIView()
   private let rightDimmingView = UIView()
-  private let leftDraggingThrottler = Throttler(mustRunOnceInInterval: 0.012)
-  private let rightDraggingThrottler = Throttler(mustRunOnceInInterval: 0.012)
+  private let leftDraggingThrottler = Throttler(mustRunOnceInInterval: 0.016)
+  private let rightDraggingThrottler = Throttler(mustRunOnceInInterval: 0.016)
   private var ignoreValueChange = false
   private var updatedSubviewsForBounds: CGRect = .zero
   private var centerDraggingViewWidth: CGFloat = 0

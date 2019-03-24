@@ -37,7 +37,6 @@ class ChartView: UIView, DayNightViewConfigurable {
   private let backgroundLinesView: BackgroundLinesView
   private var configuredForBounds: CGRect = .zero
   private var handlePanGestureWorkItem: DispatchWorkItem?
-  private let chartLinesUpdateThrottler = Throttler(mustRunOnceInInterval: 0.016)
   
   var animationsAllowed = false
   
@@ -97,12 +96,10 @@ class ChartView: UIView, DayNightViewConfigurable {
         lineView.configure(xAxis: xAxis, yAxis: yAxis)
       }
     } else {
-      chartLinesUpdateThrottler.addWork { [weak self] in
-        for (index, yAxis) in chart.yAxes.enumerated() where index < (self?.lineViews.count ?? 0) {
-          let lineView = self?.lineViews[index]
-          lineView?.frame = self?.linesContainerView.bounds ?? .zero
-          lineView?.configure(xAxis: xAxis, yAxis: yAxis)
-        }
+      for (index, yAxis) in chart.yAxes.enumerated() where index < lineViews.count {
+        let lineView = lineViews[index]
+        lineView.frame = linesContainerView.bounds
+        lineView.configure(xAxis: xAxis, yAxis: yAxis)
       }
     }
    

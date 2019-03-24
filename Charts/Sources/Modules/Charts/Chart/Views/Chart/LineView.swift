@@ -18,7 +18,6 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   private var currentWindowSize: Double = 0
   private let dayNightModeToggler: DayNightModeToggler
   private var animationFinishWorkItem: DispatchWorkItem?
-  private let updateDuringAnimationThrottler = Throttler(mustRunOnceInInterval: 0.2)
   private let animationThrottler = Throttler(mustRunOnceInInterval: 0.1)
   private (set) var isVisible = true
   
@@ -85,8 +84,6 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   func configure(xAxis: XAxis, yAxis: YAxis) {
     guard yAxis.allValues.count > 1 else { return }
     
-    updateDuringAnimationThrottler.cancel()
-    
     isVisible = yAxis.isEnabled
     
     let oldWindowSize = currentWindowSize
@@ -108,25 +105,14 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
       return
     }
     
-    let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(newWindowSize))
-    if contentWidth >= bounds.width {
-      currentWindowSize = newWindowSize
-      contentViewWidthConstraint?.constant = contentWidth
-    } else {
-      return
-    }
-    
-    if isAnimating {
-      updateDuringAnimationThrottler.addWork { [weak self] in
-        guard let self = self else { return }
-        let contentWidth = (self.contentViewWidthConstraint?.constant ?? 0)
-        if contentWidth > 0 {
-          self.contentView.frame.size.width = contentWidth
-          let offset = contentWidth * CGFloat(xAxis.leftSegmentationLimit)
-          self.scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
-        }
+    if !isAnimating {
+      let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(newWindowSize))
+      if contentWidth >= bounds.width {
+        currentWindowSize = newWindowSize
+        contentViewWidthConstraint?.constant = contentWidth
+      } else {
+        return
       }
-    } else {
       updatePath(xAxis: xAxis, yAxis: yAxis)
     }
   }
@@ -159,8 +145,6 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   
   private func animateChange(xAxis: XAxis, yAxis: YAxis) {
     guard xAxis.allValues.count > 1 else { return }
-    
-    updateDuringAnimationThrottler.cancel()
     animationFinishWorkItem?.cancel()
     
     oldPoints = isAnimating ? intermediatePoints : points
@@ -170,6 +154,7 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
     
     let work = DispatchWorkItem { [weak self] in
       self?.isAnimating = false
+      self?.configure(xAxis: xAxis, yAxis: yAxis)
     }
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: work)
     animationFinishWorkItem = work

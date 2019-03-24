@@ -29,18 +29,16 @@ class XAxis {
   var leftSegmentationLimit: Double = 0 {
     didSet {
       guard allValues.count > 1 else { return }
-      
-      if rightSegmentationLimit <= leftSegmentationLimit {
-        rightSegmentationLimit = leftSegmentationLimit + 0.01
+      if rightSegmentationLimit < leftSegmentationLimit {
+        rightSegmentationLimit = leftSegmentationLimit
       }
       
       if let leftIndex = allValues.enumerated().first(where: {
         return $0.element.percentageValue >= leftSegmentationLimit
       })?.offset {
         leftSegmentationIndex = leftIndex
-        
-        if rightSegmentationIndex <= leftSegmentationIndex {
-          rightSegmentationIndex = max(min(leftSegmentationIndex + 1, allValues.count - 1), 0)
+        if rightSegmentationIndex < leftSegmentationIndex {
+          rightSegmentationIndex = leftSegmentationIndex
         }
         
         guard !ignoreSegmentationChange else { return }
@@ -52,15 +50,15 @@ class XAxis {
   var rightSegmentationLimit: Double = 1 {
     didSet {
       guard allValues.count > 1 else { return }
-      if rightSegmentationLimit <= leftSegmentationLimit {
-        rightSegmentationLimit = leftSegmentationLimit + 0.01
+      if rightSegmentationLimit < leftSegmentationLimit {
+        rightSegmentationLimit = leftSegmentationLimit
       }
       if let rightIndex = allValues.reversed().enumerated().first(where: {
         return $0.element.percentageValue <= rightSegmentationLimit
       })?.offset {
         rightSegmentationIndex = (allValues.count - 1) - rightIndex
-        if rightSegmentationIndex <= leftSegmentationIndex {
-          rightSegmentationIndex = max(min(leftSegmentationIndex + 1, allValues.count - 1), 0)
+        if rightSegmentationIndex < leftSegmentationIndex {
+          rightSegmentationIndex = leftSegmentationIndex
         }
         guard !ignoreSegmentationChange else { return }
         onSegmentationChanged?()

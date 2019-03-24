@@ -171,6 +171,7 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
     chartView = ChartView(dayNightModeToggler: dayNightModeToggler,
                           frame: CGRect(origin: .zero,
                                         size: CGSize(width: view.bounds.width - 32, height: 310)))
+    chart?.delayNormalization = false
     chartView.animationsAllowed = false
     setupChartView()
     chartMiniatureView.removeFromSuperview()
@@ -185,6 +186,7 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
     bindChart()
     configureChartMiniatureViewPosition()
     chartView.animationsAllowed = true
+    chart?.delayNormalization = true
     configure(dayNightModeToggler: dayNightModeToggler)
   }
   

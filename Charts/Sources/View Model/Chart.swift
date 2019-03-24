@@ -16,6 +16,7 @@ class Chart {
     return yAxes.filter { $0.isEnabled }
   }
   var xAxis: XAxis
+  var delayNormalization = true
   private var normalizationWorkItem: DispatchWorkItem?
   
   var onSegmentationUpdated: (() -> Void)?
@@ -42,7 +43,7 @@ class Chart {
   // MARK: - Public method
   
   func updateSegmentation(shouldWait: Bool = true) {
-    if !shouldWait {
+    if !shouldWait || !delayNormalization {
        self.normalizationWorkItem?.cancel()
     }
     
@@ -69,13 +70,13 @@ class Chart {
       valuesArray.append(segmentedUnnormalizedValues)
     }
     
-    if shouldWait {
+    if shouldWait && delayNormalization {
       onSegmentationUpdated?()
     }
     
     onNeedsXAxisUpdate?()
     
-    if shouldWait {
+    if shouldWait && delayNormalization {
       self.normalizationWorkItem?.cancel()
       let work = DispatchWorkItem { [weak self, minValue, maxValue, valuesArray] in
         guard let self = self else { return }

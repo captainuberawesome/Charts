@@ -101,7 +101,7 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
     let windowOffset = contentWidth / CGFloat(totalWindowSize - 1) * CGFloat(xAxis.leftSegmentationIndex)
     guard scrollView.bounds.width > 0 else { return }
 
-    let labelsCount = Int(round((contentWidth / scrollView.bounds.width) * CGFloat(Constants.maxLabelCount))) - 2
+    let labelsCount = Int(round((contentWidth / scrollView.bounds.width) * CGFloat(Constants.maxLabelCount))) + 2
     var step = Int(round((Double(xAxis.allValues.count) / Double(labelsCount))))
     if !isPowerOfTwo(number: step) {
       step = Int(pow(2, ceil(log2(Double(step)) - 1)))
