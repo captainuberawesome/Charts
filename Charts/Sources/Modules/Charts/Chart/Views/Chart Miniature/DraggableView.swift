@@ -28,8 +28,8 @@ class DraggableView: UIView, DayNightViewConfigurable {
   private let bottomSeparator = UIView()
   private let leftDimmingView = UIView()
   private let rightDimmingView = UIView()
-  private let leftDraggingThrottler = Throttler(mustRunOnceInInterval: 0.016)
-  private let rightDraggingThrottler = Throttler(mustRunOnceInInterval: 0.016)
+  private let leftDraggingThrottler = Throttler(mustRunOnceInInterval: 0.012)
+  private let rightDraggingThrottler = Throttler(mustRunOnceInInterval: 0.012)
   private var ignoreValueChange = false
   private var updatedSubviewsForBounds: CGRect = .zero
   private var centerDraggingViewWidth: CGFloat = 0
@@ -203,8 +203,8 @@ class DraggableView: UIView, DayNightViewConfigurable {
     switch gestureRecognizer.state {
     case .began, .changed:
       let translation = gestureRecognizer.translation(in: self)
-      var newOriginX = max(leftEdgeView.frame.origin.x + translation.x, 0)
-      newOriginX = min(newOriginX, rightEdgeView.frame.origin.x - Constants.handleWidth)
+      var newOriginX = max(leftEdgeViewOriginX + translation.x, 0)
+      newOriginX = min(newOriginX, rightEdgeViewMaxX - 2 * Constants.handleWidth)
       leftEdgeViewOriginX = newOriginX
       updateSubviewFrames()
       gestureRecognizer.setTranslation(.zero, in: self)
@@ -217,8 +217,8 @@ class DraggableView: UIView, DayNightViewConfigurable {
     switch gestureRecognizer.state {
     case .began, .changed:
       let translation = gestureRecognizer.translation(in: self)
-      var newMaxX = min(rightEdgeView.frame.maxX + translation.x, bounds.width)
-      newMaxX = max(newMaxX, leftEdgeView.frame.maxX + Constants.handleWidth)
+      var newMaxX = min(rightEdgeViewMaxX + translation.x, bounds.width)
+      newMaxX = max(newMaxX, leftEdgeViewOriginX + 2 * Constants.handleWidth)
       rightEdgeViewMaxX = newMaxX
       updateSubviewFrames()
       gestureRecognizer.setTranslation(.zero, in: self)
@@ -249,7 +249,9 @@ class DraggableView: UIView, DayNightViewConfigurable {
       leftEdgeViewOriginX = newOriginX
       rightEdgeViewMaxX = newMaxX
       ignoreValueChange = false
-      onBothValueChanged?(leftHandleValue, rightHandleValue)
+      DispatchQueue.main.async {
+        self.onBothValueChanged?(self.leftHandleValue, self.rightHandleValue)
+      }
       updateSubviewFrames()
       gestureRecognizer.setTranslation(.zero, in: self)
     default:

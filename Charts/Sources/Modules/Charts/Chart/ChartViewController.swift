@@ -78,7 +78,6 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    setDefaultBackButtonTitle()
     setup()
     configure()
     bindChart()

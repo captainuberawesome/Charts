@@ -84,7 +84,7 @@ class Chart {
         }
         self.onSegmentationNormalizedUpdated?()
       }
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.15, execute: work)
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: work)
       normalizationWorkItem = work
     } else {
       let yValuesRaw = toggledYAxes.flatMap { $0.allValues }

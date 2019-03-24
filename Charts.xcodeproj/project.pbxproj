@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		8B2CE49C223F8BE6002FE3FB /* ViewWithTouchesOutside.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B2CE49B223F8BE6002FE3FB /* ViewWithTouchesOutside.swift */; };
 		8B321CC7224395640007F20F /* Int+ShortText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B321CC6224395640007F20F /* Int+ShortText.swift */; };
-		8B55008C2241F1AF005B625C /* Date+RoundToDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B55008B2241F1AF005B625C /* Date+RoundToDay.swift */; };
 		8B55008E224246EF005B625C /* Throttler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B55008D224246EF005B625C /* Throttler.swift */; };
 		FD1674A4223FCE3500B3EDC6 /* ViewScrollable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1674A3223FCE3500B3EDC6 /* ViewScrollable.swift */; };
 		FD1674A6223FD17D00B3EDC6 /* LineAnimating.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1674A5223FD17D00B3EDC6 /* LineAnimating.swift */; };
@@ -19,7 +18,6 @@
 		FD1674B4223FD9A600B3EDC6 /* YAXis.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1674B1223FD9A600B3EDC6 /* YAXis.swift */; };
 		FD1674B5223FD9A600B3EDC6 /* Chart.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1674B2223FD9A600B3EDC6 /* Chart.swift */; };
 		FD1674B6223FD9A600B3EDC6 /* XAxis.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1674B3223FD9A600B3EDC6 /* XAxis.swift */; };
-		FD1674BB223FEB4D00B3EDC6 /* UIViewController+BackButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1674BA223FEB4D00B3EDC6 /* UIViewController+BackButton.swift */; };
 		FD1674BD223FF0AF00B3EDC6 /* DayNightModeToggler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1674BC223FF0AF00B3EDC6 /* DayNightModeToggler.swift */; };
 		FD1674BF223FF0C700B3EDC6 /* UIColor+AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1674BE223FF0C700B3EDC6 /* UIColor+AppColors.swift */; };
 		FD1674C1223FF70100B3EDC6 /* DayNightViewConfigurable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1674C0223FF70100B3EDC6 /* DayNightViewConfigurable.swift */; };
@@ -49,7 +47,6 @@
 /* Begin PBXFileReference section */
 		8B2CE49B223F8BE6002FE3FB /* ViewWithTouchesOutside.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewWithTouchesOutside.swift; sourceTree = "<group>"; };
 		8B321CC6224395640007F20F /* Int+ShortText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+ShortText.swift"; sourceTree = "<group>"; };
-		8B55008B2241F1AF005B625C /* Date+RoundToDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+RoundToDay.swift"; sourceTree = "<group>"; };
 		8B55008D224246EF005B625C /* Throttler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Throttler.swift; sourceTree = "<group>"; };
 		FD1674A3223FCE3500B3EDC6 /* ViewScrollable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewScrollable.swift; sourceTree = "<group>"; };
 		FD1674A5223FD17D00B3EDC6 /* LineAnimating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineAnimating.swift; sourceTree = "<group>"; };
@@ -59,7 +56,6 @@
 		FD1674B1223FD9A600B3EDC6 /* YAXis.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YAXis.swift; sourceTree = "<group>"; };
 		FD1674B2223FD9A600B3EDC6 /* Chart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chart.swift; sourceTree = "<group>"; };
 		FD1674B3223FD9A600B3EDC6 /* XAxis.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XAxis.swift; sourceTree = "<group>"; };
-		FD1674BA223FEB4D00B3EDC6 /* UIViewController+BackButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+BackButton.swift"; sourceTree = "<group>"; };
 		FD1674BC223FF0AF00B3EDC6 /* DayNightModeToggler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayNightModeToggler.swift; sourceTree = "<group>"; };
 		FD1674BE223FF0C700B3EDC6 /* UIColor+AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+AppColors.swift"; sourceTree = "<group>"; };
 		FD1674C0223FF70100B3EDC6 /* DayNightViewConfigurable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayNightViewConfigurable.swift; sourceTree = "<group>"; };
@@ -219,8 +215,6 @@
 				FDA2A9F3223CB61500EE69B5 /* UIColor+Hex.swift */,
 				FD1674BE223FF0C700B3EDC6 /* UIColor+AppColors.swift */,
 				FDA2A9F4223CB61500EE69B5 /* UIView+RoundCorners.swift */,
-				FD1674BA223FEB4D00B3EDC6 /* UIViewController+BackButton.swift */,
-				8B55008B2241F1AF005B625C /* Date+RoundToDay.swift */,
 				8B321CC6224395640007F20F /* Int+ShortText.swift */,
 			);
 			path = Extensions;
@@ -343,7 +337,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B55008C2241F1AF005B625C /* Date+RoundToDay.swift in Sources */,
 				8B2CE49C223F8BE6002FE3FB /* ViewWithTouchesOutside.swift in Sources */,
 				FD6B35E1223E9DA600290F7C /* DraggableView.swift in Sources */,
 				FD6B35DD223E9DA600290F7C /* ChartView.swift in Sources */,
@@ -371,7 +364,6 @@
 				FD6B35E7223E9DD500290F7C /* ChartSelectionBubbleView.swift in Sources */,
 				FD1674AC223FD79400B3EDC6 /* ChartElementView.swift in Sources */,
 				FDA2AA02223CB61500EE69B5 /* AppDelegate.swift in Sources */,
-				FD1674BB223FEB4D00B3EDC6 /* UIViewController+BackButton.swift in Sources */,
 				FD1674A8223FD1C100B3EDC6 /* CircleView.swift in Sources */,
 				FD6B35E2223E9DA600290F7C /* ChartMiniatureView.swift in Sources */,
 				FD1674A6223FD17D00B3EDC6 /* LineAnimating.swift in Sources */,

@@ -20,7 +20,6 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   private var animationFinishWorkItem: DispatchWorkItem?
   private let updateDuringAnimationThrottler = Throttler(mustRunOnceInInterval: 0.2)
   private let animationThrottler = Throttler(mustRunOnceInInterval: 0.1)
-  private var updatePropertyAnimator: UIViewPropertyAnimator?
   private (set) var isVisible = true
   
   var oldPoints: [CGPoint] = []
@@ -44,6 +43,7 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
     circleView = CircleView(frame: CGRect(origin: .zero, size: CGSize(width: 8, height: 8)),
                             color: color, dayNightModeToggler: dayNightModeToggler)
     super.init(frame: frame)
+    shapeLayer.drawsAsynchronously = true
     isOpaque = false
     
     addSubview(circleView)
@@ -85,8 +85,6 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   func configure(xAxis: XAxis, yAxis: YAxis) {
     guard yAxis.allValues.count > 1 else { return }
     
-    updatePropertyAnimator?.stopAnimation(true)
-    updatePropertyAnimator = nil
     updateDuringAnimationThrottler.cancel()
     
     isVisible = yAxis.isEnabled
@@ -121,17 +119,11 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
     if isAnimating {
       updateDuringAnimationThrottler.addWork { [weak self] in
         guard let self = self else { return }
-        self.updatePropertyAnimator?.stopAnimation(true)
         let contentWidth = (self.contentViewWidthConstraint?.constant ?? 0)
         if contentWidth > 0 {
+          self.contentView.frame.size.width = contentWidth
           let offset = contentWidth * CGFloat(xAxis.leftSegmentationLimit)
-          self.updatePropertyAnimator = UIViewPropertyAnimator(duration: 0.01, curve: .linear) {
-            self.scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
-          }
-          self.updatePropertyAnimator?.startAnimation()
-          self.updatePropertyAnimator?.addCompletion { [weak self] _ in
-            self?.isAnimating = false
-          }
+          self.scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
         }
       }
     } else {
@@ -168,8 +160,6 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   private func animateChange(xAxis: XAxis, yAxis: YAxis) {
     guard xAxis.allValues.count > 1 else { return }
     
-    updatePropertyAnimator?.stopAnimation(true)
-    updatePropertyAnimator = nil
     updateDuringAnimationThrottler.cancel()
     animationFinishWorkItem?.cancel()
     
@@ -215,6 +205,7 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
     contentView.frame.size = CGSize(width: contentWidth, height: contentView.frame.height)
     shapeLayer.frame = contentView.bounds
     let offset = contentWidth * CGFloat(xAxis.leftSegmentationLimit)
+    
     scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
   }
   

@@ -101,7 +101,7 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
     let windowOffset = contentWidth / CGFloat(totalWindowSize - 1) * CGFloat(xAxis.leftSegmentationIndex)
     guard scrollView.bounds.width > 0 else { return }
 
-    let labelsCount = Int(round((contentWidth / scrollView.bounds.width) * CGFloat(Constants.maxLabelCount)))
+    let labelsCount = Int(round((contentWidth / scrollView.bounds.width) * CGFloat(Constants.maxLabelCount))) - 2
     var step = Int(round((Double(xAxis.allValues.count) / Double(labelsCount))))
     if !isPowerOfTwo(number: step) {
       step = Int(pow(2, ceil(log2(Double(step)) - 1)))
@@ -172,27 +172,36 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
   
   private func normalizeLabelsAlpha(minAlpha: CGFloat) {
     let firstIndex = labels.enumerated().first {
-      !$0.element.isDisappearing && !$0.element.label.isHidden && $0.element.label.alpha == 1
+      !$0.element.isDisappearing && !$0.element.label.isHidden && $0.element.label.alpha == 1 
       }?.offset ?? 0
     let secondIndex = labels.enumerated().first {
-      !$0.element.isDisappearing && !$0.element.label.isHidden && $0.element.label.alpha == 1
-        && $0.offset != firstIndex
+      !$0.element.isDisappearing && !$0.element.label.isHidden && $0.element.label.alpha == 1 && $0.offset != firstIndex
       }?.offset ?? 0
     
-    let adjustedStep = secondIndex - firstIndex
+    let adjustedStep = min(secondIndex - firstIndex, 2)
+    
     var indices: [Int] = []
     if adjustedStep > 0 {
       for index in stride(from: 0, to: labels.count, by: adjustedStep) {
         indices.append(index)
       }
+      
       for (index, label) in labels.enumerated() {
         if !indices.contains(index) {
           label.isDisappearing = true
+        } else {
+          label.isDisappearing = false
         }
       }
     }
     
-    labels.filter { $0.isDisappearing }.forEach { $0.label.alpha = minAlpha }
+    for label in labels {
+      if label.isDisappearing {
+        label.label.alpha = minAlpha
+      } else {
+        label.label.alpha = 1
+      }
+    }
     
     alphaAdjustmentWork?.cancel()
     let work = DispatchWorkItem { [weak self] in
