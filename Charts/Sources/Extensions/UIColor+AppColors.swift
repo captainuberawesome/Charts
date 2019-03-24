@@ -12,7 +12,7 @@ extension UIColor {
   // MARK: - Common
   
   class func color(fromRed red: Int, green: Int, blue: Int, alpha: CGFloat = 1) -> UIColor {
-    return UIColor(red: CGFloat(red)/255, green: CGFloat(green)/255, blue: CGFloat(blue)/255, alpha: alpha)
+    return UIColor(red: CGFloat(red) / 255, green: CGFloat(green) / 255, blue: CGFloat(blue) / 255, alpha: alpha)
   }
   
   // MARK: - Colors
@@ -27,7 +27,7 @@ extension UIColor {
     static let dullerTextColor = UIColor.darkGray
     static let dullestTextColor = UIColor.gray
     static let chartBackgroundLinesColor = UIColor.lightGray.withAlphaComponent(0.5)
-    static let bubbleBackgroundColor =  UIColor.color(fromRed: 240, green: 240, blue: 245)
+    static let bubbleBackgroundColor = UIColor.color(fromRed: 240, green: 240, blue: 245)
     static let draggableViewHandleColor = UIColor.color(fromRed: 202, green: 212, blue: 222, alpha: 0.8)
     static let draggableViewOverlayColor = UIColor.color(fromRed: 239, green: 239, blue: 244, alpha: 0.6)
     static let navbarBackgroundColor = UIColor.color(fromRed: 247, green: 247, blue: 247)

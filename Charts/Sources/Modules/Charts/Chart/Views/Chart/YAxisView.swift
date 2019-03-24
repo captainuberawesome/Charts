@@ -152,28 +152,7 @@ class YAxisView: UIView, DayNightViewConfigurable {
     isAnimating = true
     
     let animatedOffset: CGFloat = animationDirection == .up ? 50 : -50
-    var keepFirstLabelStatic = false
-    
-    var newLabels: [UILabel] = []
-    for index in 0..<Constants.labelCount {
-      let label = UILabel()
-      addSubview(label)
-      label.textColor = dayNightModeToggler.dullestTextColor
-      label.font = UIFont.systemFont(ofSize: 11, weight: .light)
-      label.alpha = 0
-      let origin = CGPoint(x: 0, y: bounds.height - CGFloat(index) * CGFloat(currentStepPercentage) * bounds.height)
-      label.text = (currentMinValue + currentStepValue * index).shortText
-      label.sizeToFit()
-      label.frame.origin = CGPoint(x: origin.x,
-                                   y: origin.y - label.frame.size.height - 3 + animatedOffset)
-      if index == 0 &&  label.text == labels.first?.text {
-        keepFirstLabelStatic = true
-        label.frame.origin = CGPoint(x: origin.x,
-                                     y: origin.y - label.frame.size.height - 3)
-        label.alpha = 1
-      }
-      newLabels.append(label)
-    }
+    let (keepFirstLabelStatic, newLabels) = addLabels(animatedOffset: animatedOffset)
     
     UIView.animate(withDuration: 0.2, animations: {
       for (index, label) in self.labels.enumerated() {
@@ -198,6 +177,32 @@ class YAxisView: UIView, DayNightViewConfigurable {
       self.isAnimating = false
       self.animationCompletionClosure?()
     })
+  }
+  
+  private func addLabels(animatedOffset: CGFloat) -> (keepFirstLabelStatic: Bool, labels: [UILabel]) {
+    var keepFirstLabelStatic = false
+    var newLabels: [UILabel] = []
+    for index in 0..<Constants.labelCount {
+      let label = UILabel()
+      addSubview(label)
+      label.textColor = dayNightModeToggler.dullestTextColor
+      label.font = UIFont.systemFont(ofSize: 11, weight: .light)
+      label.alpha = 0
+      let origin = CGPoint(x: 0, y: bounds.height - CGFloat(index) * CGFloat(currentStepPercentage) * bounds.height)
+      label.text = (currentMinValue + currentStepValue * index).shortText
+      label.sizeToFit()
+      label.frame.origin = CGPoint(x: origin.x,
+                                   y: origin.y - label.frame.size.height - 3 + animatedOffset)
+      if index == 0 && label.text == labels.first?.text {
+        keepFirstLabelStatic = true
+        label.frame.origin = CGPoint(x: origin.x,
+                                     y: origin.y - label.frame.size.height - 3)
+        label.alpha = 1
+      }
+      newLabels.append(label)
+    }
+    
+    return (keepFirstLabelStatic: keepFirstLabelStatic, labels: newLabels)
   }
   
   // MARK: - Setup

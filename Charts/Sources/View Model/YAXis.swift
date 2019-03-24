@@ -81,7 +81,6 @@ class YAxis {
               maxValueAcrossY: maxValueAcrossY, step: step)
   }
   
-  
   // MARK: - Public methods
   
   func segmentedUnnormalizedValues(leftSegmentationIndex: Int, rightSegmentationIndex: Int) -> [Int] {

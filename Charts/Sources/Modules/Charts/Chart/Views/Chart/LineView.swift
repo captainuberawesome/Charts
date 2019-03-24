@@ -83,6 +83,8 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   }
   
   func configure(xAxis: XAxis, yAxis: YAxis) {
+    guard yAxis.allValues.count > 1 else { return }
+    
     updatePropertyAnimator?.stopAnimation(true)
     updatePropertyAnimator = nil
     updateDuringAnimationThrottler.cancel()
@@ -109,7 +111,7 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
     }
     
     let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(newWindowSize))
-    if contentWidth >= bounds.width  {
+    if contentWidth >= bounds.width {
       currentWindowSize = newWindowSize
       contentViewWidthConstraint?.constant = contentWidth
     } else {
@@ -133,15 +135,7 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
         }
       }
     } else {
-      displayLink?.remove(from: RunLoop.main, forMode: RunLoop.Mode.common)
-      displayLink = nil
-      let width = contentViewWidthConstraint?.constant ?? 0
-      let offset = width * CGFloat(xAxis.leftSegmentationLimit)
-      contentView.frame.size = CGSize(width: width, height: contentView.frame.height)
-      shapeLayer.frame = contentView.bounds
-      updatePoints(xAxis: xAxis, yAxis: yAxis)
-      shapeLayer.path = path(points: points).cgPath
-      scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
+      updatePath(xAxis: xAxis, yAxis: yAxis)
     }
   }
   
@@ -159,7 +153,21 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   
   // MARK: - Private methods
   
+  private func updatePath(xAxis: XAxis, yAxis: YAxis) {
+    displayLink?.remove(from: RunLoop.main, forMode: RunLoop.Mode.common)
+    displayLink = nil
+    let width = contentViewWidthConstraint?.constant ?? 0
+    let offset = width * CGFloat(xAxis.leftSegmentationLimit)
+    contentView.frame.size = CGSize(width: width, height: contentView.frame.height)
+    shapeLayer.frame = contentView.bounds
+    updatePoints(xAxis: xAxis, yAxis: yAxis)
+    shapeLayer.path = path(points: points).cgPath
+    scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
+  }
+  
   private func animateChange(xAxis: XAxis, yAxis: YAxis) {
+    guard xAxis.allValues.count > 1 else { return }
+    
     updatePropertyAnimator?.stopAnimation(true)
     updatePropertyAnimator = nil
     updateDuringAnimationThrottler.cancel()

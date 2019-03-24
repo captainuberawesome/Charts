@@ -97,7 +97,7 @@ class ChartView: UIView, DayNightViewConfigurable {
       }
     } else {
       chartLinesUpdateThrottler.addWork { [weak self] in
-        for (index, yAxis) in chart.yAxes.enumerated() {
+        for (index, yAxis) in chart.yAxes.enumerated() where index < (self?.lineViews.count ?? 0) {
           let lineView = self?.lineViews[index]
           lineView?.frame = self?.linesContainerView.bounds ?? .zero
           lineView?.configure(xAxis: xAxis, yAxis: yAxis)
@@ -105,7 +105,6 @@ class ChartView: UIView, DayNightViewConfigurable {
       }
     }
    
-    
     if let yAxis = chart.yAxes.first(where: { $0.isEnabled }) {
       yAxisView.layoutIfNeeded()
       yAxisView.configure(yAxis: yAxis)
@@ -139,7 +138,7 @@ class ChartView: UIView, DayNightViewConfigurable {
     }
     
     let xAxis = chart.xAxis
-    for (index, yAxis) in chart.yAxes.enumerated() {
+    for (index, yAxis) in chart.yAxes.enumerated() where index < lineViews.count {
       let lineView = lineViews[index]
       lineView.frame = linesContainerView.bounds
       lineView.reconfigureAnimated(xAxis: xAxis, yAxis: yAxis)
@@ -175,7 +174,7 @@ class ChartView: UIView, DayNightViewConfigurable {
     }
     backgroundLinesView.addVerticalLine(atXCoordinate: xAxisTapData.location.x)
     let visibleLineViews = lineViews.filter { $0.isVisible }
-    for (index, tapData) in yValues.enumerated() {
+    for (index, tapData) in yValues.enumerated() where index < lineViews.count {
       let lineView = visibleLineViews[index]
       lineView.showCircleView(for: tapData)
     }

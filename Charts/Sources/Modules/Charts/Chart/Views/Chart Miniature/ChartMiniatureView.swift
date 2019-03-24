@@ -64,11 +64,7 @@ class ChartMiniatureView: ViewWithTouchesOutside, DayNightViewConfigurable {
   // MARK: - Public methods
   
   func configure(chart: Chart) {
-    guard bounds.width > 0, bounds.height > 0 else {
-      return
-    }
-    
-    if bounds == configuredForBounds {
+    guard chart.xAxis.allValues.count > 1, bounds.width > 0, bounds.height > 0, bounds != configuredForBounds else {
       return
     }
     
@@ -87,12 +83,16 @@ class ChartMiniatureView: ViewWithTouchesOutside, DayNightViewConfigurable {
   }
   
   func animate(to chart: Chart) {
+    guard chart.xAxis.allValues.count > 1 else { return }
+    
     let xAxis = chart.xAxis
     for (index, yAxis) in chart.yAxes.enumerated() {
       let points = createPointsForLines(xAxis: xAxis, yAxis: yAxis)
-      let lineView = lineViews[index]
-      lineView.frame = bounds
-      lineView.animate(to: points, isEnabled: yAxis.isEnabled)
+      if index < lineViews.count {
+        let lineView = lineViews[index]
+        lineView.frame = bounds
+        lineView.animate(to: points, isEnabled: yAxis.isEnabled)
+      }
     }
   }
   

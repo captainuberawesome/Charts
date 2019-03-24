@@ -133,8 +133,95 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
     setNeedsStatusBarAppearanceUpdate()
   }
   
-  // MARK: - Setup
+  // MARK: - Configure chart
   
+  private func configure() {
+    guard let chart = chart else { return }
+    chartElemetsToggleView.configure(yAxes: chart.yAxes)
+    chartView.configure(chart: chart)
+  }
+  
+  // MARK: - Bind chart callbacks
+  
+  private func bindChart() {
+    chart?.onSegmentationUpdated = { [weak self] in
+      guard let self = self, let chart = self.chart else { return }
+      self.chartView.configure(chart: chart)
+    }
+    chart?.onSegmentationNormalizedUpdated = { [weak self] in
+      guard let self = self, let chart = self.chart else { return }
+      self.chartView.animate(to: chart)
+    }
+    chart?.onNeedsXAxisUpdate = { [weak self] in
+      guard let self = self, let chart = self.chart else { return }
+      self.chartView.configureXAxis(chart: chart)
+    }
+  }
+  
+  // MARK: - Private methods
+  
+  private func handleYAxisToggled() {
+    chart?.updateSegmentation(shouldWait: false)
+    if let chart = chart {
+      chartMiniatureView.animate(to: chart)
+    }
+  }
+  
+  private func reconfigureForChartChange() {
+    chartView.removeFromSuperview()
+    chartView = ChartView(dayNightModeToggler: dayNightModeToggler,
+                          frame: CGRect(origin: .zero,
+                                        size: CGSize(width: view.bounds.width - 32, height: 310)))
+    chartView.animationsAllowed = false
+    setupChartView()
+    chartMiniatureView.removeFromSuperview()
+    chartMiniatureView = ChartMiniatureView(frame: CGRect(origin: .zero,
+                                                          size: CGSize(width: view.bounds.width - 32, height: 44)))
+    setupChartMiniatureView()
+    chartView.setNeedsLayout()
+    chartView.layoutIfNeeded()
+    chartMiniatureView.setNeedsLayout()
+    chartMiniatureView.layoutIfNeeded()
+    configure()
+    bindChart()
+    configureChartMiniatureViewPosition()
+    chartView.animationsAllowed = true
+    configure(dayNightModeToggler: dayNightModeToggler)
+  }
+  
+  private func configureChartMiniatureViewPosition() {
+    chartMiniatureView.layoutIfNeeded()
+    chartMiniatureView.leftHandleValue = 0.6
+    chartMiniatureView.rightHandleValue = 1
+    chart?.xAxis.updateBothSegmentationLimits(leftLimit: chartMiniatureView.leftHandleValue,
+                                              rightLimit: chartMiniatureView.rightHandleValue)
+    chart?.updateSegmentation(shouldWait: false)
+    chartView.adjustXAxisValuesAlpha()
+  }
+  
+  // MARK: - Actions
+  
+  @objc private func handleSegmentSelected(_ sender: UISegmentedControl) {
+    guard segmentedControl.selectedSegmentIndex != currentSelectedIndex else { return }
+    segmentedControl.isUserInteractionEnabled = false
+    currentSelectedIndex = segmentedControl.selectedSegmentIndex
+    chart = Chart(chart: charts[segmentedControl.selectedSegmentIndex])
+    reconfigureForChartChange()
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+      self.segmentedControl.isUserInteractionEnabled = true
+    }
+  }
+  
+  @objc private func handleSwitchDisplayModesButtonTap(_ sender: UIButton) {
+    dayNightModeToggler.toggle()
+    configure(dayNightModeToggler: dayNightModeToggler)
+    delegate?.chartViewControllerDidToggleDayNightMode(self)
+  }
+}
+
+// MARK: - Setup UI
+
+extension ChartViewController {
   private func setup() {
     setupScrollView()
     setupChartNameLabel()
@@ -182,7 +269,7 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
     segmentedControl.leadingAnchor.constraint(greaterThanOrEqualTo: segmentedControlContainer.leadingAnchor,
                                               constant: 8).isActive = true
     segmentedControl.trailingAnchor.constraint(lessThanOrEqualTo: segmentedControlContainer.trailingAnchor,
-                                              constant: -8).isActive = true
+                                               constant: -8).isActive = true
     for index in 0..<charts.count {
       segmentedControl.insertSegment(withTitle: "Chart #\(index + 1)", at: index, animated: false)
     }
@@ -196,7 +283,7 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
     chartsBackgroundView.topAnchor.constraint(equalTo: segmentedControlContainer.bottomAnchor).isActive = true
     chartsBackgroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
     chartsBackgroundView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
-  
+    
     chartsBackgroundView.addSubview(chartsTopSeparatorView)
     chartsTopSeparatorView.translatesAutoresizingMaskIntoConstraints = false
     chartsTopSeparatorView.topAnchor.constraint(equalTo: chartsBackgroundView.topAnchor).isActive = true
@@ -319,90 +406,5 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
     switchDisplayModesButton.trailingAnchor.constraint(equalTo: buttonContainerView.trailingAnchor).isActive = true
     switchDisplayModesButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .regular)
     switchDisplayModesButton.addTarget(self, action: #selector(handleSwitchDisplayModesButtonTap(_:)), for: .touchUpInside)
-  }
-  
-  // MARK: - Configure chart
-  
-  private func configure() {
-    guard let chart = chart else { return }
-    chartElemetsToggleView.configure(yAxes: chart.yAxes)
-    chartView.configure(chart: chart)
-  }
-  
-  // MARK: - Bind chart callbacks
-  
-  private func bindChart() {
-    chart?.onSegmentationUpdated = { [weak self] in
-      guard let self = self, let chart = self.chart else { return }
-      self.chartView.configure(chart: chart)
-    }
-    chart?.onSegmentationNormalizedUpdated = { [weak self] in
-      guard let self = self, let chart = self.chart else { return }
-      self.chartView.animate(to: chart)
-    }
-    chart?.onNeedsXAxisUpdate = { [weak self] in
-      guard let self = self, let chart = self.chart else { return }
-      self.chartView.configureXAxis(chart: chart)
-    }
-  }
-  
-  // MARK: - Private methods
-  
-  private func handleYAxisToggled() {
-    chart?.updateSegmentation(shouldWait: false)
-    if let chart = chart {
-      chartMiniatureView.animate(to: chart)
-    }
-  }
-  
-  private func reconfigureForChartChange() {
-    chartView.removeFromSuperview()
-    chartView = ChartView(dayNightModeToggler: dayNightModeToggler,
-                          frame: CGRect(origin: .zero,
-                                        size: CGSize(width: view.bounds.width - 32, height: 310)))
-    chartView.animationsAllowed = false
-    setupChartView()
-    chartMiniatureView.removeFromSuperview()
-    chartMiniatureView = ChartMiniatureView(frame: CGRect(origin: .zero,
-                                                          size: CGSize(width: view.bounds.width - 32, height: 44)))
-    setupChartMiniatureView()
-    chartView.setNeedsLayout()
-    chartView.layoutIfNeeded()
-    chartMiniatureView.setNeedsLayout()
-    chartMiniatureView.layoutIfNeeded()
-    configure()
-    bindChart()
-    configureChartMiniatureViewPosition()
-    chartView.animationsAllowed = true
-    configure(dayNightModeToggler: dayNightModeToggler)
-  }
-  
-  private func configureChartMiniatureViewPosition() {
-    chartMiniatureView.layoutIfNeeded()
-    chartMiniatureView.leftHandleValue = 0.6
-    chartMiniatureView.rightHandleValue = 1
-    chart?.xAxis.updateBothSegmentationLimits(leftLimit: chartMiniatureView.leftHandleValue,
-                                              rightLimit: chartMiniatureView.rightHandleValue)
-    chart?.updateSegmentation(shouldWait: false)
-    chartView.adjustXAxisValuesAlpha()
-  }
-  
-  // MARK: - Actions
-  
-  @objc private func handleSegmentSelected(_ sender: UISegmentedControl) {
-    guard segmentedControl.selectedSegmentIndex != currentSelectedIndex else { return }
-    segmentedControl.isUserInteractionEnabled = false
-    currentSelectedIndex = segmentedControl.selectedSegmentIndex
-    chart = Chart(chart: charts[segmentedControl.selectedSegmentIndex])
-    reconfigureForChartChange()
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-      self.segmentedControl.isUserInteractionEnabled = true
-    }
-  }
-  
-  @objc private func handleSwitchDisplayModesButtonTap(_ sender: UIButton) {
-    dayNightModeToggler.toggle()
-    configure(dayNightModeToggler: dayNightModeToggler)
-    delegate?.chartViewControllerDidToggleDayNightMode(self)
   }
 }

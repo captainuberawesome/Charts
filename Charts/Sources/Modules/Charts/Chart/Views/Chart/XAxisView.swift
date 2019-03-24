@@ -32,7 +32,6 @@ class LabelContainer {
   }
 }
 
-
 class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
   
   // MARK: - Properties
@@ -72,7 +71,8 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
    // MARK: - Public methods
   
   func configure(xAxis: XAxis) {
-    guard !xAxis.allValues.isEmpty else { return }
+    guard xAxis.allValues.count > 1 else { return }
+    
     let oldWindowSize = currentWindowSize
     var oldLabels = labels
     
@@ -91,7 +91,7 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
     totalWindowSize = Double(xAxis.allValues.count)
     let newWindowSize = xAxis.windowSize * totalWindowSize
     let contentWidth = bounds.width * (CGFloat(totalWindowSize) / CGFloat(newWindowSize))
-    if contentWidth >= bounds.width  {
+    if contentWidth >= bounds.width {
       currentWindowSize = newWindowSize
       contentViewWidthConstraint?.constant = contentWidth
     } else {
@@ -113,12 +113,7 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
     let newlabelCount = Int(floor(Double(xAxis.allValues.count) / Double(step)))
     oldLabels = newlabelCount == oldLabels.count ? oldLabels : []
     
-    var index = 0
-    addLabel(at: 0, xAxis: xAxis)
-    while index < xAxis.allValues.count {
-      index += step
-      addLabel(at: index, xAxis: xAxis, oldLabels: oldLabels)
-    }
+    addLabels(xAxis: xAxis, step: step, oldLabels: oldLabels)
     
     var minAlpha: CGFloat = 1
     for (index, label) in labels.enumerated() {
@@ -130,37 +125,9 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
       }
     }
     
-    scroll(to: windowOffset, hideLabels: false)
+    scroll(to: windowOffset)
     
-    let firstIndex = labels.enumerated().first(where: {
-      !$0.element.isDisappearing && !$0.element.label.isHidden && $0.element.label.alpha == 1
-    })?.offset ?? 0
-    let secondIndex = labels.enumerated().first(where: {
-      !$0.element.isDisappearing && !$0.element.label.isHidden && $0.element.label.alpha == 1
-        && $0.offset != firstIndex
-    })?.offset ?? 0
-    
-    let adjustedStep = secondIndex - firstIndex
-    var indices: [Int] = []
-    if adjustedStep > 0 {
-      for index in stride(from: 0, to: labels.count, by: adjustedStep) {
-        indices.append(index)
-      }
-      for (index, label) in labels.enumerated() {
-        if !indices.contains(index) {
-          label.isDisappearing = true
-        }
-      }
-    }
-
-    labels.filter({ $0.isDisappearing }).forEach { $0.label.alpha = minAlpha }
-    
-    alphaAdjustmentWork?.cancel()
-    let work = DispatchWorkItem { [weak self] in
-      self?.adjustAlpha()
-    }
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35, execute: work)
-    alphaAdjustmentWork = work
+    normalizeLabelsAlpha(minAlpha: minAlpha)
   }
   
   func adjustAlpha(animate: Bool = true) {
@@ -203,6 +170,47 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
   
    // MARK: - Private methods
   
+  private func normalizeLabelsAlpha(minAlpha: CGFloat) {
+    let firstIndex = labels.enumerated().first {
+      !$0.element.isDisappearing && !$0.element.label.isHidden && $0.element.label.alpha == 1
+      }?.offset ?? 0
+    let secondIndex = labels.enumerated().first {
+      !$0.element.isDisappearing && !$0.element.label.isHidden && $0.element.label.alpha == 1
+        && $0.offset != firstIndex
+      }?.offset ?? 0
+    
+    let adjustedStep = secondIndex - firstIndex
+    var indices: [Int] = []
+    if adjustedStep > 0 {
+      for index in stride(from: 0, to: labels.count, by: adjustedStep) {
+        indices.append(index)
+      }
+      for (index, label) in labels.enumerated() {
+        if !indices.contains(index) {
+          label.isDisappearing = true
+        }
+      }
+    }
+    
+    labels.filter { $0.isDisappearing }.forEach { $0.label.alpha = minAlpha }
+    
+    alphaAdjustmentWork?.cancel()
+    let work = DispatchWorkItem { [weak self] in
+      self?.adjustAlpha()
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.35, execute: work)
+    alphaAdjustmentWork = work
+  }
+  
+  private func addLabels(xAxis: XAxis, step: Int, oldLabels: [LabelContainer]) {
+    var index = 0
+    addLabel(at: 0, xAxis: xAxis)
+    while index < xAxis.allValues.count {
+      index += step
+      addLabel(at: index, xAxis: xAxis, oldLabels: oldLabels)
+    }
+  }
+  
   private func addLabel(at index: Int, xAxis: XAxis, oldLabels: [LabelContainer] = []) {
     guard index < xAxis.allValues.count else {
       return
@@ -212,6 +220,7 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
     let value = xAxis.allValues[index]
     let percentageValue = value.percentageValue
     let offset = CGFloat(percentageValue) * contentWidth
+    
     let label = createLabel()
     contentView.addSubview(label)
     let date = Date(timeIntervalSince1970: value.actualValue)
@@ -222,19 +231,7 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
                                  y: bounds.height - label.frame.size.height)
     let labelContainer = LabelContainer(label: label, valueIndex: index)
     
-    let firstIndex = labels.enumerated().first(where: {
-      !$0.element.isDisappearing
-    })?.element.valueIndex ?? 0
-    let secondIndex = labels.enumerated().first(where: {
-      !$0.element.isDisappearing && $0.element.valueIndex != firstIndex
-    })?.element.valueIndex ?? 0
-    
-    let step = secondIndex - firstIndex
-    
-    var notDivisibleByStep = true
-    if step > 1 {
-      notDivisibleByStep = index % step != 0
-    }
+    let notDivisibleByStep = checkIfValueIndexIsNotDivisibleByCurrentStep(index: index)
     
     let nonDisappearing = labels.filter { !$0.isDisappearing }
     if let previousLabel = nonDisappearing.last, notDivisibleByStep {
@@ -265,6 +262,24 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
     labels.append(labelContainer)
   }
   
+  private func checkIfValueIndexIsNotDivisibleByCurrentStep(index: Int) -> Bool {
+    let firstIndex = labels.enumerated().first {
+      !$0.element.isDisappearing
+      }?.element.valueIndex ?? 0
+    let secondIndex = labels.enumerated().first {
+      !$0.element.isDisappearing && $0.element.valueIndex != firstIndex
+      }?.element.valueIndex ?? 0
+    
+    let step = secondIndex - firstIndex
+    
+    var notDivisibleByStep = true
+    if step > 1 {
+      notDivisibleByStep = index % step != 0
+    }
+    
+    return notDivisibleByStep
+  }
+  
   private func hideLabelIfNeeded(_ label: LabelContainer, index: Int) {
     let labelFrame = convert(label.frame, from: scrollView)
     let outOfBounds = labelFrame.minX < 0 || labelFrame.maxX > bounds.width
@@ -284,12 +299,10 @@ class XAxisView: UIView, ViewScrollable, DayNightViewConfigurable {
     scroll(to: offset)
   }
   
-  private func scroll(to offset: CGFloat, hideLabels: Bool = true) {
+  private func scroll(to offset: CGFloat) {
     scrollView.setContentOffset(CGPoint(x: offset, y: 0), animated: false)
-    if hideLabels {
-      for (index, label) in labels.enumerated() {
-        hideLabelIfNeeded(label, index: index)
-      }
+    for (index, label) in labels.enumerated() {
+      hideLabelIfNeeded(label, index: index)
     }
     configuredForBounds = bounds
   }
