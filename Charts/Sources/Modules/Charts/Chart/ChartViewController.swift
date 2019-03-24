@@ -31,7 +31,6 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   private let buttonTopSeparatorView = UIView()
   private let buttonBottomSeparatorView = UIView()
   private let chartElemetsToggleView = ChartElementsToggleView()
-  private var chartUpdateWorkItem: DispatchWorkItem?
   private let switchDisplayModesButton = UIButton(type: .system)
   
   // MARK: - Properties
@@ -334,14 +333,8 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
   
   private func bindChart() {
     chart?.onSegmentationUpdated = { [weak self] in
-      guard let self = self else { return }
-      self.chartUpdateWorkItem?.cancel()
-      let work = DispatchWorkItem { [weak self] in
-        guard let self = self, let chart = self.chart else { return }
-        self.chartView.configure(chart: chart)
-      }
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.001, execute: work)
-      self.chartUpdateWorkItem = work
+      guard let self = self, let chart = self.chart else { return }
+      self.chartView.configure(chart: chart)
     }
     chart?.onSegmentationNormalizedUpdated = { [weak self] in
       guard let self = self, let chart = self.chart else { return }
@@ -391,6 +384,7 @@ class ChartViewController: UIViewController, DayNightViewConfigurable {
     chart?.xAxis.updateBothSegmentationLimits(leftLimit: chartMiniatureView.leftHandleValue,
                                               rightLimit: chartMiniatureView.rightHandleValue)
     chart?.updateSegmentation(shouldWait: false)
+    chartView.adjustXAxisValuesAlpha()
   }
   
   // MARK: - Actions

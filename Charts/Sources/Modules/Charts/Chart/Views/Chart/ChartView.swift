@@ -120,6 +120,10 @@ class ChartView: UIView, DayNightViewConfigurable {
     xAxisView.configure(xAxis: chart.xAxis)
   }
   
+  func adjustXAxisValuesAlpha() {
+    xAxisView.adjustAlpha(animate: false)
+  }
+  
   func animate(to chart: Chart) {
     chartSelectionBubbleView.removeFromSuperview()
     backgroundLinesView.removeVerticalLine()
@@ -146,7 +150,6 @@ class ChartView: UIView, DayNightViewConfigurable {
       backgroundLinesView.layoutIfNeeded()
       backgroundLinesView.animate(yAxis: yAxis)
     }
-    xAxisView.configure(xAxis: chart.xAxis)
   }
   
   func stopAnimation() {

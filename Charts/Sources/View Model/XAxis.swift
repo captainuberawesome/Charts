@@ -48,7 +48,7 @@ class XAxis {
       })?.offset {
         rightSegmentationIndex = (allValues.count - 1) - rightIndex
         if rightSegmentationIndex <= leftSegmentationIndex {
-          rightSegmentationIndex = leftSegmentationIndex + 2
+          rightSegmentationIndex = leftSegmentationIndex + 1
         }
         guard !ignoreSegmentationChange else { return }
         onSegmentationChanged?()
