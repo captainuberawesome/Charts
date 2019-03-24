@@ -80,7 +80,11 @@ class BubbleView: UIView, DayNightViewConfigurable {
       let label = UILabel()
       label.textColor = UIColor(hexString: value.colorHex)
       label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
-      label.text = "\(value.actualValue)"
+      let numberFormatter = NumberFormatter()
+      numberFormatter.usesGroupingSeparator = true
+      numberFormatter.groupingSize = 3
+      numberFormatter.groupingSeparator = " "
+      label.text = numberFormatter.string(from: NSNumber(value: value.actualValue)) ?? String(describing: value.actualValue)
       label.textAlignment = .right
       stackView.addArrangedSubview(label)
       label.translatesAutoresizingMaskIntoConstraints = false
