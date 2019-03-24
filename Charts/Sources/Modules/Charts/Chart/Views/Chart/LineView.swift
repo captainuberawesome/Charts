@@ -18,7 +18,7 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   private var currentWindowSize: Double = 0
   private let dayNightModeToggler: DayNightModeToggler
   private var animationFinishWorkItem: DispatchWorkItem?
-  private let animationThrottler = Throttler(mustRunOnceInInterval: 0.1)
+  private let animationThrottler = Throttler(mustRunOnceInInterval: 0.15)
   private (set) var isVisible = true
   
   var oldPoints: [CGPoint] = []
@@ -73,8 +73,15 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
   
   func showCircleView(for tapData: YAxisTapData) {
     let center = convert(tapData.location, from: superview)
-    circleView.center = center
-    circleView.isHidden = false
+    if self.circleView.isHidden {
+      circleView.center = center
+      circleView.isHidden = false
+    } else {
+      UIView.animate(withDuration: 0.2) {
+        self.circleView.center = center
+      }
+      circleView.isHidden = false
+    }
   }
   
   func hideCircleView() {
@@ -151,18 +158,17 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
     updatePoints(xAxis: xAxis, yAxis: yAxis)
     
     startTime = CFAbsoluteTimeGetCurrent()
+    displayLink?.remove(from: RunLoop.main, forMode: RunLoop.Mode.common)
     
     let work = DispatchWorkItem { [weak self] in
       self?.isAnimating = false
       self?.configure(xAxis: xAxis, yAxis: yAxis)
     }
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: work)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15, execute: work)
     animationFinishWorkItem = work
     
-    if !isAnimating {
-      displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
-      displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
-    }
+    displayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLink(displayLink:)))
+    displayLink?.add(to: RunLoop.main, forMode: RunLoop.Mode.common)
     
     isAnimating = true
     
@@ -187,6 +193,7 @@ class LineView: UIView, ViewScrollable, LineAnimating, DayNightViewConfigurable 
     guard contentWidth >= bounds.width else {
       return
     }
+    contentViewWidthConstraint?.constant = contentWidth
     contentView.frame.size = CGSize(width: contentWidth, height: contentView.frame.height)
     shapeLayer.frame = contentView.bounds
     let offset = contentWidth * CGFloat(xAxis.leftSegmentationLimit)

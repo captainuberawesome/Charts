@@ -9,7 +9,7 @@
 import Foundation
 
 private struct Constants {
-  static let normalizationDelay: TimeInterval = 0.15
+  static let normalizationDelay: TimeInterval = 0.033
 }
 
 class Chart {

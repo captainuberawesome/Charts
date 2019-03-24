@@ -74,7 +74,7 @@ class ChartView: UIView, DayNightViewConfigurable {
   // MARK: - Public methods
   
   func configure(chart: Chart) {
-    chartSelectionBubbleView.removeFromSuperview()
+    chartSelectionBubbleView.isHidden = true
     backgroundLinesView.removeVerticalLine()
     lineViews.forEach { $0.hideCircleView() }
     
@@ -122,7 +122,7 @@ class ChartView: UIView, DayNightViewConfigurable {
   }
   
   func animate(to chart: Chart) {
-    chartSelectionBubbleView.removeFromSuperview()
+    chartSelectionBubbleView.isHidden = true
     backgroundLinesView.removeVerticalLine()
     lineViews.forEach { $0.hideCircleView() }
     
@@ -165,9 +165,8 @@ class ChartView: UIView, DayNightViewConfigurable {
       let location = yAxisView.location(forValue: yValue, xCoordinate: xAxisTapData.location.x)
       yValues.append(YAxisTapData(value: yValue, location: location))
     }
-    addSubview(chartSelectionBubbleView)
     chartSelectionBubbleView.onBubbleTapped = { [unowned self] in
-      self.chartSelectionBubbleView.removeFromSuperview()
+      self.chartSelectionBubbleView.isHidden = true
       self.backgroundLinesView.removeVerticalLine()
       self.lineViews.forEach { $0.hideCircleView() }
     }
@@ -179,16 +178,28 @@ class ChartView: UIView, DayNightViewConfigurable {
     }
     chartSelectionBubbleView.configure(time: xAxisTapData.value, tapData: yValues)
     
-    let bubbleWidth = chartSelectionBubbleView.calculatedWidth
-    chartSelectionBubbleView.frame = CGRect(origin: .zero,
-                                            size: CGSize(width: bubbleWidth, height: linesContainerView.bounds.height))
-    chartSelectionBubbleView.center = CGPoint(x: xAxisTapData.location.x, y: linesContainerView.center.y)
-    if chartSelectionBubbleView.frame.origin.x < -5 {
-      chartSelectionBubbleView.frame.origin = CGPoint(x: -5, y: chartSelectionBubbleView.frame.origin.y)
+    let configureFrame = {
+      let bubbleWidth = self.chartSelectionBubbleView.calculatedWidth
+      self.chartSelectionBubbleView.frame = CGRect(origin: .zero,
+                                              size: CGSize(width: bubbleWidth, height: self.linesContainerView.bounds.height))
+      self.chartSelectionBubbleView.center = CGPoint(x: xAxisTapData.location.x, y: self.linesContainerView.center.y)
+      if self.chartSelectionBubbleView.frame.origin.x < -5 {
+        self.chartSelectionBubbleView.frame.origin = CGPoint(x: -5, y: self.chartSelectionBubbleView.frame.origin.y)
+      }
+      if self.chartSelectionBubbleView.frame.maxX > self.bounds.width + 5 {
+        self.chartSelectionBubbleView.frame.origin = CGPoint(x: self.bounds.width + 5 - bubbleWidth,
+                                                        y: self.chartSelectionBubbleView.frame.origin.y)
+      }
     }
-    if chartSelectionBubbleView.frame.maxX > bounds.width + 5 {
-      chartSelectionBubbleView.frame.origin = CGPoint(x: bounds.width + 5 - bubbleWidth,
-                                                      y: chartSelectionBubbleView.frame.origin.y)
+    
+    if chartSelectionBubbleView.isHidden {
+      configureFrame()
+      chartSelectionBubbleView.isHidden = false
+    } else {
+      chartSelectionBubbleView.isHidden = false
+      UIView.animate(withDuration: 0.2) {
+        configureFrame()
+      }
     }
   }
   
@@ -235,6 +246,9 @@ class ChartView: UIView, DayNightViewConfigurable {
     xAxisView.trailingAnchor.constraint(equalTo: backgroundLinesView.trailingAnchor).isActive = true
     xAxisView.topAnchor.constraint(equalTo: backgroundLinesView.bottomAnchor).isActive = true
     xAxisView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+    
+    addSubview(chartSelectionBubbleView)
+    chartSelectionBubbleView.isHidden = true
   }
   
   // MARK: - Actions

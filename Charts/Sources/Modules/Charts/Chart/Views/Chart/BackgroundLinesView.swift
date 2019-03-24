@@ -51,15 +51,24 @@ class BackgroundLinesView: UIView, DayNightViewConfigurable {
   }
   
   func addVerticalLine(atXCoordinate xCoordinate: CGFloat) {
-    verticalLineView.removeFromSuperview()
-    addSubview(verticalLineView)
     verticalLineView.backgroundColor = dayNightModeToggler.selectionBubbleVerticalLineColor
-    verticalLineView.frame = CGRect(x: xCoordinate - 0.5, y: 5, width: 1,
-                                    height: bounds.height - 5)
+    
+    if verticalLineView.isHidden {
+      verticalLineView.isHidden = false
+      verticalLineView.frame = CGRect(x: xCoordinate - 0.5, y: 5, width: 1,
+                                      height: bounds.height - 5)
+    } else {
+      UIView.animate(withDuration: 0.2) {
+        self.verticalLineView.frame = CGRect(x: xCoordinate - 0.5, y: 5, width: 1,
+                                             height: self.bounds.height - 5)
+      }
+      verticalLineView.isHidden = false
+    }
+    
   }
   
   func removeVerticalLine() {
-    verticalLineView.removeFromSuperview()
+    verticalLineView.isHidden = true
   }
   
   func stopAnimation() {
@@ -94,6 +103,8 @@ class BackgroundLinesView: UIView, DayNightViewConfigurable {
    // MARK: - Setup
   
   private func setup() {
+    addSubview(verticalLineView)
+    verticalLineView.isHidden = true
     for index in 0..<Constants.lineCount {
       let shapeLayer = CAShapeLayer()
       shapeLayer.fillColor = UIColor.clear.cgColor
