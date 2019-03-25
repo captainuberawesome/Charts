@@ -73,7 +73,8 @@ class ChartMiniatureView: ViewWithTouchesOutside, DayNightViewConfigurable {
     let xAxis = chart.xAxis
     for yAxis in chart.toggledYAxes {
       let points = createPointsForLines(xAxis: xAxis, yAxis: yAxis)
-      let lineView = SimpleLineView(frame: bounds, points: points, color: UIColor(hexString: yAxis.colorHex))
+      let lineView = SimpleLineView(frame: bounds.inset(by: UIEdgeInsets(top: 1, left: 0, bottom: 1, right: 0)),
+                                    points: points, color: UIColor(hexString: yAxis.colorHex))
       lineView.clipsToBounds = true
       lineViews.append(lineView)
       addSubview(lineView)
@@ -90,7 +91,7 @@ class ChartMiniatureView: ViewWithTouchesOutside, DayNightViewConfigurable {
       let points = createPointsForLines(xAxis: xAxis, yAxis: yAxis)
       if index < lineViews.count {
         let lineView = lineViews[index]
-        lineView.frame = bounds
+        lineView.frame = bounds.inset(by: UIEdgeInsets(top: 1, left: 0, bottom: 1, right: 0))
         lineView.animate(to: points, isEnabled: yAxis.isEnabled)
       }
     }
