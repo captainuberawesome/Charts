@@ -22,7 +22,7 @@ struct DataImporter {
       guard let chartRawDataArray = jsonResult as? [[String: Any]] else {
         return []
       }
-      for chartRawData in chartRawDataArray {
+      for (index, chartRawData) in chartRawDataArray.enumerated() {
         let chartData = try ChartData(dictionary: chartRawData)
         let chartColumns = try chartData.toChartColumns()
         
@@ -38,7 +38,7 @@ struct DataImporter {
                 minValueAcrossY: yAxisSpan.minY, maxValueAcrossY: yAxisSpan.maxY, step: yAxisSpan.step)
         }
         let xAxis = XAxis(values: chartColumns.xColumn.values)
-        let chart = Chart(xAxis: xAxis, yAxes: yAxes)
+        let chart = Chart(name: "CHART #\(index + 1)", xAxis: xAxis, yAxes: yAxes)
         charts.append(chart)
       }
     } catch {

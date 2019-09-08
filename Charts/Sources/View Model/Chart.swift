@@ -9,12 +9,12 @@
 import Foundation
 
 private struct Constants {
-  static let normalizationDelay: TimeInterval = 0.15
+  static let normalizationDelay: TimeInterval = 0.033
 }
 
 class Chart {
   // MARK: - Properties
-  
+  let name: String
   var yAxes: [YAxis]
   var toggledYAxes: [YAxis] {
     return yAxes.filter { $0.isEnabled }
@@ -29,9 +29,10 @@ class Chart {
   
   // MARK: - Initializer
   
-  init(xAxis: XAxis, yAxes: [YAxis]) {
+  init(name: String, xAxis: XAxis, yAxes: [YAxis]) {
     self.xAxis = xAxis
     self.yAxes = yAxes
+    self.name = name
     
     xAxis.onSegmentationChanged = { [unowned self] in
       self.updateSegmentation()
@@ -41,7 +42,7 @@ class Chart {
   convenience init(chart: Chart) {
     let xAxis = XAxis(xAxis: chart.xAxis)
     let yAxes = chart.yAxes.map { YAxis(yAxis: $0) }
-    self.init(xAxis: xAxis, yAxes: yAxes)
+    self.init(name: chart.name, xAxis: xAxis, yAxes: yAxes)
   }
   
   // MARK: - Public method

@@ -21,6 +21,8 @@
 		FD1674BD223FF0AF00B3EDC6 /* DayNightModeToggler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1674BC223FF0AF00B3EDC6 /* DayNightModeToggler.swift */; };
 		FD1674BF223FF0C700B3EDC6 /* UIColor+AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1674BE223FF0C700B3EDC6 /* UIColor+AppColors.swift */; };
 		FD1674C1223FF70100B3EDC6 /* DayNightViewConfigurable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1674C0223FF70100B3EDC6 /* DayNightViewConfigurable.swift */; };
+		FD5158EA23251AB90095AA3E /* ChartsContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5158E923251AB90095AA3E /* ChartsContainerViewController.swift */; };
+		FD5158EC23252DE80095AA3E /* UIViewController+Children.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5158EB23252DE80095AA3E /* UIViewController+Children.swift */; };
 		FD6B35C8223E2CA500290F7C /* chart_data.json in Resources */ = {isa = PBXBuildFile; fileRef = FD6B35C2223E2CA400290F7C /* chart_data.json */; };
 		FD6B35C9223E2CA500290F7C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FD6B35C3223E2CA400290F7C /* Assets.xcassets */; };
 		FD6B35CA223E2CA500290F7C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FD6B35C4223E2CA400290F7C /* LaunchScreen.storyboard */; };
@@ -59,6 +61,8 @@
 		FD1674BC223FF0AF00B3EDC6 /* DayNightModeToggler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayNightModeToggler.swift; sourceTree = "<group>"; };
 		FD1674BE223FF0C700B3EDC6 /* UIColor+AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+AppColors.swift"; sourceTree = "<group>"; };
 		FD1674C0223FF70100B3EDC6 /* DayNightViewConfigurable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayNightViewConfigurable.swift; sourceTree = "<group>"; };
+		FD5158E923251AB90095AA3E /* ChartsContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartsContainerViewController.swift; sourceTree = "<group>"; };
+		FD5158EB23252DE80095AA3E /* UIViewController+Children.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Children.swift"; sourceTree = "<group>"; };
 		FD6B35C2223E2CA400290F7C /* chart_data.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = chart_data.json; sourceTree = "<group>"; };
 		FD6B35C3223E2CA400290F7C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FD6B35C5223E2CA400290F7C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -216,6 +220,7 @@
 				FD1674BE223FF0C700B3EDC6 /* UIColor+AppColors.swift */,
 				FDA2A9F4223CB61500EE69B5 /* UIView+RoundCorners.swift */,
 				8B321CC6224395640007F20F /* Int+ShortText.swift */,
+				FD5158EB23252DE80095AA3E /* UIViewController+Children.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -251,6 +256,7 @@
 			children = (
 				FDA2AA0F223D3DC600EE69B5 /* Views */,
 				FDA2AA0E223D3DC600EE69B5 /* ChartViewController.swift */,
+				FD5158E923251AB90095AA3E /* ChartsContainerViewController.swift */,
 			);
 			path = Chart;
 			sourceTree = "<group>";
@@ -362,7 +368,9 @@
 				FDA2AA16223D3DC600EE69B5 /* ChartViewController.swift in Sources */,
 				FDA2A9FE223CB61500EE69B5 /* DataImporter.swift in Sources */,
 				FD6B35E7223E9DD500290F7C /* ChartSelectionBubbleView.swift in Sources */,
+				FD5158EC23252DE80095AA3E /* UIViewController+Children.swift in Sources */,
 				FD1674AC223FD79400B3EDC6 /* ChartElementView.swift in Sources */,
+				FD5158EA23251AB90095AA3E /* ChartsContainerViewController.swift in Sources */,
 				FDA2AA02223CB61500EE69B5 /* AppDelegate.swift in Sources */,
 				FD1674A8223FD1C100B3EDC6 /* CircleView.swift in Sources */,
 				FD6B35E2223E9DA600290F7C /* ChartMiniatureView.swift in Sources */,
@@ -519,7 +527,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "General Development Profile";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -542,7 +550,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Chart Sample Ad Hoc Profile";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

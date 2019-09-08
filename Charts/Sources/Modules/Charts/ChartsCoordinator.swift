@@ -28,7 +28,7 @@ class ChartsCoordinator {
   }
   
   func showChartScreen(charts: [Chart]) {
-    let viewController = ChartViewController(charts: charts, dayNightModeToggler: dayNightModeToggler)
+    let viewController = ChartsContainerViewController(charts: charts, dayNightModeToggler: dayNightModeToggler)
     viewController.delegate = self
     viewController.title = "Statistics"
     navigationController.pushViewController(viewController, animated: true)
@@ -37,8 +37,8 @@ class ChartsCoordinator {
 
 // MARK: - ChartViewControllerDelegate
 
-extension ChartsCoordinator: ChartViewControllerDelegate {
-  func chartViewControllerDidToggleDayNightMode(_ viewController: ChartViewController) {
+extension ChartsCoordinator: ChartsContainerViewControllerDelegate {
+  func chartViewControllerDidToggleDayNightMode(_ viewController: ChartsContainerViewController) {
     navigationController.configureNavigationBarAppearance(dayNightModeToggler: dayNightModeToggler)
   }
 }

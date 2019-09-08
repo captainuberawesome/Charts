@@ -55,7 +55,9 @@ class ChartView: UIView, DayNightViewConfigurable {
     backgroundLinesView = BackgroundLinesView(dayNightModeToggler: dayNightModeToggler)
     super.init(frame: frame)
     setup()
-    yAxisView.addGestureRecognizer(ImmediatePanGestureRecognizer(target: self, action: #selector(handlePan(_:))))
+    let panGesture = ImmediatePanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+    panGesture.delegate = self
+    yAxisView.addGestureRecognizer(panGesture)
   }
   
   required init?(coder aDecoder: NSCoder) {
@@ -267,5 +269,14 @@ class ChartView: UIView, DayNightViewConfigurable {
     }
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.01, execute: work)
     handlePanGestureWorkItem = work
+  }
+}
+
+// MARK: - UIGestureRecognizerDelegate
+
+extension ChartView: UIGestureRecognizerDelegate {
+  func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+                         shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    return true
   }
 }
